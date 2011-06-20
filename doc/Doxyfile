@@ -51,7 +51,7 @@ PROJECT_LOGO           =
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = /home/quendi/Develop/Workspace/Kirawnik/doc/develop-manual
+OUTPUT_DIRECTORY       = develop-manual
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -321,7 +321,7 @@ SYMBOL_CACHE_SIZE      = 0
 # Private class members and static file members will be hidden unless 
 # the EXTRACT_PRIVATE and EXTRACT_STATIC tags are set to YES
 
-EXTRACT_ALL            = NO
+EXTRACT_ALL            = YES
 
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class 
 # will be included in the documentation.
@@ -884,13 +884,13 @@ HTML_STYLESHEET        =
 # 180 is cyan, 240 is blue, 300 purple, and 360 is red again. 
 # The allowed range is 0 to 359.
 
-HTML_COLORSTYLE_HUE    = 69
+HTML_COLORSTYLE_HUE    = 119
 
 # The HTML_COLORSTYLE_SAT tag controls the purity (or saturation) of 
 # the colors in the HTML output. For a value of 0 the output will use 
 # grayscales only. A value of 255 will produce the most vivid colors.
 
-HTML_COLORSTYLE_SAT    = 97
+HTML_COLORSTYLE_SAT    = 47
 
 # The HTML_COLORSTYLE_GAMMA tag controls the gamma correction applied to 
 # the luminance component of the colors in the HTML output. Values below 
@@ -899,7 +899,7 @@ HTML_COLORSTYLE_SAT    = 97
 # so 80 represents a gamma of 0.8, The value 220 represents a gamma of 2.2, 
 # and 100 does not change the gamma.
 
-HTML_COLORSTYLE_GAMMA  = 235
+HTML_COLORSTYLE_GAMMA  = 131
 
 # If the HTML_TIMESTAMP tag is set to YES then the footer of each generated HTML 
 # page will contain the date and time when the page was generated. Setting 

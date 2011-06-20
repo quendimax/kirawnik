@@ -10,6 +10,12 @@
 #include "FileInfo.h"
 
 
+/*!
+  Sets the file which the FileInfo object provides.
+
+  If the object is not empty then old information deletes and creates
+  information about new file.
+  */
 void FileInfo::setFile(const char *fileName)
 {
 	assert(fileName > 0);
@@ -26,18 +32,39 @@ void FileInfo::setFile(const char *fileName)
 }
 
 
+/*!
+  Sets the file which the FileInfo object provides.
+
+  If the object is not empty then old information deletes and creates
+  information about new file.
+
+  File pointer must be opened.
+  */
 void FileInfo::setFile(FILE *file)
 {
 	assert(file > 0);
 }
 
 
+/*!
+  Sets the file which the FileInfo object provides.
+
+  If the object is not empty then old information deletes and creates
+  information about new file.
+
+  File descriptor must be opened.
+  */
 void FileInfo::setFile(int file)
 {
 	assert(file > 0);
 }
 
 
+/*!
+  Returns owner's name.
+
+  Note, first time the call of this method is slowly.
+  */
 const char *FileInfo::owner() const
 {
 	if (m_owner == NULL) {
@@ -52,6 +79,11 @@ const char *FileInfo::owner() const
 }
 
 
+/*!
+  Returns group's name.
+
+  Note, first time the call of this method is slowly.
+  */
 const char *FileInfo::group() const
 {
 	if (m_group == NULL) {
@@ -66,6 +98,9 @@ const char *FileInfo::group() const
 }
 
 
+/*!
+  Makes a copy of the given FileInfo object.
+  */
 FileInfo &FileInfo::operator= (const FileInfo &item)
 {
 	m_exists = item.m_exists;
@@ -84,6 +119,9 @@ FileInfo &FileInfo::operator= (const FileInfo &item)
 }
 
 
+/*!
+  Clears the FileInfo object and frees resources.
+  */
 void FileInfo::clear()
 {
 	if (m_owner) free(m_owner);
@@ -104,6 +142,10 @@ void FileInfo::clear()
 }
 
 
+/*!
+  Clear the FileInfo object but doesn't free resources.
+  \note This method must be called in costructor only!
+  */
 void FileInfo::clearForConstructor()
 {
 	m_exists = false;
@@ -118,6 +160,11 @@ void FileInfo::clearForConstructor()
 }
 
 
+/*!
+  Creates file name, base name, suffix, path and others.
+
+  If <i>name</i> is relative path name then uses current path.
+  */
 void FileInfo::createFileName(const char *name)
 {
 	// create absolute name
