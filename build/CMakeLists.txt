@@ -18,7 +18,7 @@ find_package (Qt4 REQUIRED)
 include (${QT_USE_FILE})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
 
-add_definitions (-Wall -std=c++0x -pedantic)
+add_definitions (-Wall -std=c++0x)
 
 add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${MOC_SOURCES})
 
