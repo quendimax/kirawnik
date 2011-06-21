@@ -216,13 +216,19 @@ void FileInfo::createFileName(const char *name)
 		m_suffix = p + 1;
 	else
 		m_suffix = m_fullName + fullNameLen;
+	int suffixLen = strlen(m_suffix);
 
-	int baseLen = (m_suffix - m_fileName) - 1;
+	// create base name
+	int baseLen = (m_suffix - m_fileName) - (suffixLen == 0 ? 0 : 1);
+	if (baseLen == 0) baseLen = 1;
 	m_baseName = (char *) malloc(baseLen + 1);
 	memcpy(m_baseName, m_fileName, baseLen);
 	m_baseName[baseLen] = '\0';
 
+	// create absolute path
 	int pathLen = m_fileName - m_fullName;
+	if (pathLen == 0)
+		pathLen = 1;
 	m_path = (char *) malloc(pathLen + 1);
 	memcpy(m_path, m_fullName, pathLen);
 	m_path[pathLen] = '\0';
