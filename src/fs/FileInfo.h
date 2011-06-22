@@ -127,7 +127,7 @@ inline const char *FileInfo::absolutePath() const { return m_path; }
 
 
 /*!
-  Returns the suffix of the file.
+  Returns the suffix of the file. Directories don't contain a suffix.
 
   If file name is "archive.tar.gz" then the method returns "tar.gz".
   If file name is ".bashrc" then the method returns "".

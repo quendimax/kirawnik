@@ -26,9 +26,11 @@ void FileInfo::setFile(const char *fileName)
 	if (access(fileName, F_OK)) return;
 	else m_exists = true;
 
-	createFileName(fileName);
-
+	// lstat must be call befor createFileName!!!
+	// becouse createFileName uses m_stat
 	lstat(fileName, &m_stat);
+
+	createFileName(fileName);
 }
 
 
@@ -209,13 +211,18 @@ void FileInfo::createFileName(const char *name)
 	m_fileName = p + 1;
 
 	// create suffix
-	p = m_fileName + 1;					// +1 for files which begin from '.'
-	while (*p != '.' && *p != '\0')
-		p++;
-	if (*p == '.')
-		m_suffix = p + 1;
-	else
+	if (isDir()) {
 		m_suffix = m_fullName + fullNameLen;
+	}
+	else {
+		p = m_fileName + 1;					// +1 for files which begin from '.'
+		while (*p != '.' && *p != '\0')
+			p++;
+		if (*p == '.')
+			m_suffix = p + 1;
+		else
+			m_suffix = m_fullName + fullNameLen;
+	}
 	int suffixLen = strlen(m_suffix);
 
 	// create base name
