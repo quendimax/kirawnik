@@ -1,5 +1,5 @@
-#ifndef __FILEINFO_H__
-#define __FILEINFO_H__
+#ifndef __FS_FILEINFO_H__
+#define __FS_FILEINFO_H__
 
 #include <sys/stat.h>
 #include <stdio.h>
@@ -207,4 +207,4 @@ inline bool FileInfo::isCharSpecFile() const { return m_stat.st_mode & S_IFCHR; 
 inline bool FileInfo::isSpecFile() const { return isBlockSpecFile() || isCharSpecFile(); }
 
 
-#endif //__FILEINFO_H__
+#endif //__FS_FILEINFO_H__
