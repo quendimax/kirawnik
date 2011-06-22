@@ -3,11 +3,13 @@ cmake_minimum_required (VERSION 2.6)
 set (PROJECT kirawnik)
 
 set (HEADERS
-	../src/fs/FileInfo.h)
+	../src/fs/FileInfo.h
+	../src/fs/Directory.h)
 
 set (SOURCES
 	../src/main.cpp
-	../src/fs/FileInfo.cpp)
+	../src/fs/FileInfo.cpp
+	../src/fs/Directory.cpp)
 
 
 project (${PROJECT})
