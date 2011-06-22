@@ -11,11 +11,12 @@
 class FileInfo
 {
 public:
-	explicit FileInfo();
+	FileInfo();
+	FileInfo(const FileInfo &);
 	explicit FileInfo(const char *fileName);
 	explicit FileInfo(int file);
 	explicit FileInfo(FILE *file);
-	virtual ~FileInfo();
+	~FileInfo();
 
 	void setFile(const char *fileName);
 	void setFile(int file);

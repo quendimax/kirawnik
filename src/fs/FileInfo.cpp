@@ -11,6 +11,17 @@
 
 
 /*!
+  Constructs a FileInfo object that is a copy the FileInfo object
+  <i>fileInfo</i>
+  */
+FileInfo::FileInfo(const FileInfo &fileInfo)
+{
+	clearForConstructor();
+	*this = fileInfo;
+}
+
+
+/*!
   Sets the file which the FileInfo object provides.
 
   If the object is not empty then old information deletes and creates
