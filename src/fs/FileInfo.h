@@ -14,13 +14,9 @@ public:
 	FileInfo();
 	FileInfo(const FileInfo &);
 	explicit FileInfo(const char *fileName);
-	explicit FileInfo(int file);
-	explicit FileInfo(FILE *file);
 	~FileInfo();
 
 	void setFile(const char *fileName);
-	void setFile(int file);
-	void setFile(FILE *file);
 
 	const char *fileName() const;
 	const char *absoluteFilePath() const;
@@ -80,26 +76,6 @@ inline FileInfo::FileInfo(const char *fileName)
 {
 	clearForConstructor();
 	setFile(fileName);
-}
-
-
-/*!
-  Constructs a new FileInfo object. <i>file</i> is opened file descriptor.
-  */
-inline FileInfo::FileInfo(int file)
-{
-	clearForConstructor();
-	setFile(file);
-}
-
-
-/*!
-  Constructs a new FileInfo object. <i>file</i> is opened pointer to FILE.
-  */
-inline FileInfo::FileInfo(FILE *file)
-{
-	clearForConstructor();
-	setFile(file);
 }
 
 

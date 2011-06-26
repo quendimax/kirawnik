@@ -46,34 +46,6 @@ void FileInfo::setFile(const char *fileName)
 
 
 /*!
-  Sets the file which the FileInfo object provides.
-
-  If the object is not empty then old information deletes and creates
-  information about new file.
-
-  File pointer must be opened.
-  */
-void FileInfo::setFile(FILE *file)
-{
-	assert(file > 0);
-}
-
-
-/*!
-  Sets the file which the FileInfo object provides.
-
-  If the object is not empty then old information deletes and creates
-  information about new file.
-
-  File descriptor must be opened.
-  */
-void FileInfo::setFile(int file)
-{
-	assert(file > 0);
-}
-
-
-/*!
   Returns owner's name.
 
   Note, first time the call of this method is slowly.
