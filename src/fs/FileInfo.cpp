@@ -22,8 +22,7 @@ FileInfo::FileInfo(const FileInfo &fileInfo)
 
 
 /*!
-  Sets the file which the FileInfo object provides.
-
+  Sets the file which the FileInfo object provides. <br>
   If the object is not empty then old information deletes and creates
   information about new file.
   */
@@ -46,8 +45,7 @@ void FileInfo::setFile(const char *fileName)
 
 
 /*!
-  Returns owner's name.
-
+  Returns owner's name. <br>
   Note, first time the call of this method is slowly.
   */
 const char *FileInfo::owner() const
@@ -65,8 +63,7 @@ const char *FileInfo::owner() const
 
 
 /*!
-  Returns group's name.
-
+  Returns group's name. <br>
   Note, first time the call of this method is slowly.
   */
 const char *FileInfo::group() const
