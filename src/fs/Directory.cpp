@@ -54,6 +54,8 @@ bool Directory::cd(const char *newFolder)
   */
 bool Directory::cdUp()
 {
+	char *fileName = strdup(m_info.absoluteFilePath());
+
 	return true;
 }
 
@@ -63,6 +65,13 @@ bool Directory::cdUp()
   */
 Directory &Directory::operator=(const Directory &dir)
 {
+	this->m_count = dir.m_count;
+	this->m_info = dir.m_info;
+
+	m_files = (char **) malloc(sizeof (char *) * m_count);
+	for (int i = 0; i < m_count; i++)
+		m_files = strdup(dir.m_files[i]);
+
 	return *this;
 }
 
