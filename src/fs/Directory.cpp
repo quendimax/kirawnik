@@ -12,6 +12,7 @@
   (current directory).
   */
 Directory::Directory(const char *dirName)
+    : m_files(0)
 {
 	if (dirName[0] == '\0') dirName = ".";
 
@@ -124,6 +125,7 @@ bool Directory::getFileList()
 	}
 
 	m_count = 0;
+	m_files = 0;
 	errno = 0;
 	while ((d = readdir(dir)) != NULL) {
 		if (m_count % 4 == 0) {
@@ -150,5 +152,8 @@ void Directory::clear()
 {
 	for (int i = 0; i < m_count; i++)
 		free(m_files[i]);
+
 	free(m_files);
+	m_files = 0;
+	m_count = 0;
 }

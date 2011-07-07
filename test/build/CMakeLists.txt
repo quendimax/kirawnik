@@ -6,7 +6,7 @@ set (LIBS gtest gtest_main pthread)
 project (${PROJECT})
 
 include_directories (../../src/)
-
+add_definitions(-g)
 set (HEADERS
 	../../src/fs/FileInfo.h
 	../../src/fs/Directory.h)
