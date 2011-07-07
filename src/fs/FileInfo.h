@@ -2,7 +2,6 @@
 #define __FS_FILEINFO_H__
 
 #include <sys/stat.h>
-#include <stdio.h>
 
 
 /*!
