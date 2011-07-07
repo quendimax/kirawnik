@@ -28,6 +28,7 @@ public:
 
 private:
 	bool getFileList();
+	void clear();
 
 private:
 	char **m_files;
