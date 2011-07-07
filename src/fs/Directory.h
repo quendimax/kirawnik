@@ -37,13 +37,13 @@ private:
 
 
 /*! Returns the FileInfo object about the Directory object. */
-const FileInfo &Directory::fileInfo() const { return m_info; }
+inline const FileInfo &Directory::fileInfo() const { return m_info; }
 
 /*! Returns count of files in the directory. */
-int Directory::count() const { return m_count; }
+inline int Directory::count() const { return m_count; }
 
 /*! Returns <i>true</i> if directory exists. Else returns <i>false</i>. */
-bool Directory::exists() const { return m_info.exists(); }
+inline bool Directory::exists() const { return m_info.exists(); }
 
 
 /*!
@@ -51,7 +51,7 @@ bool Directory::exists() const { return m_info.exists(); }
   class.
   \see fileInfo()
   */
-const char *Directory::dirName() const { return m_info.fileName(); }
+inline const char *Directory::dirName() const { return m_info.fileName(); }
 
 
 #endif //__FS_DIRECTORY_H__
