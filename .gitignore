@@ -1,7 +1,8 @@
 qtcreator-build
-kirawnik-build-desktop
+kirawnik-build-*
 debug
 release
 bin
 Makefile*
 *.o
+kirawnik.pro.user
