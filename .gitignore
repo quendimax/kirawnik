@@ -1,0 +1,7 @@
+qtcreator-build
+kirawnik-build-desktop
+debug
+release
+bin
+Makefile*
+*.o
