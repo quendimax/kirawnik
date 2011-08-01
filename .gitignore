@@ -3,6 +3,8 @@ kirawnik-build-*
 debug
 release
 bin
-Makefile*
+Makefile
+Makefile.Debug
+Makefile.Release
 *.o
 kirawnik.pro.user

@@ -11,7 +11,8 @@ class Application : public QApplication
 	Q_OBJECT
 
 public:
-	Application(int &argc, char **argv);
+	explicit Application(int &argc, char **argv);
+	virtual ~Application();
 
 	inline QSettings *settings() { return m_settings; }
 
