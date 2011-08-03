@@ -29,9 +29,13 @@ PRECOMPILED_HEADER = pch.h
 
 HEADERS = \
 		MainWindow.h \
-		Application.h
+		Application.h \
+		FileSystemView.h \
+		FilePanel.h
 
 SOURCES = \
 		main.cpp \
 		MainWindow.cpp \
-		Application.cpp
+		Application.cpp \
+		FileSystemView.cpp \
+		FilePanel.cpp
