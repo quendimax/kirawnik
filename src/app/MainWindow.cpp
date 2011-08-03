@@ -1,12 +1,17 @@
 #include <QtCore/QSettings>
+#include <QtGui/QKeyEvent>
 
 #include "Application.h"
+#include "FileSystemView.h"
 #include "MainWindow.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
+	fsView = new FileSystemView;
+	setCentralWidget(fsView);
+
 	readSettings();
 }
 

@@ -3,7 +3,12 @@
 
 #include <QtGui/QMainWindow>
 
+class FileSystemView;
 
+
+/*!
+  Contains general central widget and saves window geometry settings
+  */
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -15,6 +20,9 @@ public:
 private:
 	void readSettings();
 	void writeSettings();
+
+private:
+	FileSystemView *fsView;
 };
 
 

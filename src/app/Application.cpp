@@ -1,9 +1,6 @@
 #include "Application.h"
 
 
-Application *kApp = 0;
-
-
 Application::Application(int &argc, char **argv)
     : QApplication(argc, argv)
 {
@@ -14,8 +11,6 @@ Application::Application(int &argc, char **argv)
 	m_settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
 	                           QApplication::organizationName(),
 	                           QApplication::applicationName().toLower());
-
-	kApp = this;
 }
 
 
