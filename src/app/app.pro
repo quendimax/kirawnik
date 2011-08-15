@@ -28,14 +28,17 @@ CONFIG += precompile_header
 PRECOMPILED_HEADER = pch.h
 
 HEADERS = \
+		Global.h \
 		MainWindow.h \
 		Application.h \
 		FileSystemView.h \
-		FilePanel.h
+		FilePanel.h \
+		Header.h
 
 SOURCES = \
 		main.cpp \
 		MainWindow.cpp \
 		Application.cpp \
 		FileSystemView.cpp \
-		FilePanel.cpp
+		FilePanel.cpp \
+		Header.cpp
