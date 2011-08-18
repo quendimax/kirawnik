@@ -1,7 +1,7 @@
 #ifndef __FILEPANEL_H__
 #define __FILEPANEL_H__
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 
 /*!

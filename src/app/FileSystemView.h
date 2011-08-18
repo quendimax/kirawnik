@@ -1,7 +1,7 @@
 #ifndef __FILESYSTEMVIEW_H__
 #define __FILESYSTEMVIEW_H__
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 
 class QPushButton;

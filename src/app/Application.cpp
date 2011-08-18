@@ -1,3 +1,5 @@
+#include <QSettings>
+
 #include "Application.h"
 
 
