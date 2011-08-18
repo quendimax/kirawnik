@@ -1,6 +1,6 @@
-#include <QtGui/QPushButton>
-#include <QtGui/QLayout>
-#include <QtGui/QSplitter>
+#include <QPushButton>
+#include <QLayout>
+#include <QSplitter>
 
 #include "FilePanel.h"
 #include "FileSystemView.h"
@@ -37,6 +37,8 @@ FileSystemView::FileSystemView(QWidget *parent)
 	m_rightPanel = new FilePanel;
 
 	QSplitter *splitter = new QSplitter(Qt::Horizontal);
+	splitter->setContentsMargins(0, 0, 0, 0);
+	splitter->setFrameStyle(QFrame::NoFrame);
 	splitter->addWidget(m_leftPanel);
 	splitter->addWidget(m_rightPanel);
 

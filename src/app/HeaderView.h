@@ -17,13 +17,16 @@ public:
 	virtual ~HeaderView();
 
 protected:
-	void paintEvent(QPaintEvent *);
 	void mousePressEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent *);
+	void mouseMoveEvent(QMouseEvent *);
+	void paintEvent(QPaintEvent *);
 
 private:
 	void initStyleOption(QStyleOption *option);
 	void paintSection(int index, QPainter &painter);
+
+	int indexAt(const QPoint &pos);
 
 	void readSettings();
 	void writeSettings();
@@ -55,10 +58,10 @@ private:
 
 private:
 	static HeaderItem s_items[];
+	static ItemFlag s_showItems;
+	static int s_showItemCount;
+	static int s_itemCount;
 
-	int m_itemCount;
-	int m_showItemCount;
-	ItemFlag m_showItems;
 	ItemFlag m_selectItem;
 	ItemFlag m_pressedItem;
 	bool m_reverseSorting;

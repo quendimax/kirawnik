@@ -1,5 +1,3 @@
-#include <QtCore/QSettings>
-
 #include "Application.h"
 #include "MainWindow.h"
 
