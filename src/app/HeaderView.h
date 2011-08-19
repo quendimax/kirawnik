@@ -2,6 +2,7 @@
 #define __HEADERVIEW_H__
 
 #include <QStyleOptionHeader>
+#include <QList>
 #include <QWidget>
 
 class QPainter;
@@ -17,6 +18,7 @@ public:
 	virtual ~HeaderView();
 
 protected:
+	void contextMenuEvent(QContextMenuEvent *);
 	void mousePressEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent *);
 	void mouseMoveEvent(QMouseEvent *);
@@ -25,13 +27,21 @@ protected:
 private:
 	void initStyleOption(QStyleOption *option);
 	void paintSection(int index, QPainter &painter);
+	void updateAll();
 
-	int indexAt(const QPoint &pos);
+	int indexAt(const QPoint &pos, bool *isResize = 0);
 
 	void readSettings();
 	void writeSettings();
 
 private:
+	enum HeaderState {
+		HS_Free,
+		HS_Pressing,
+		HS_Resizing,
+		HS_Moving
+	};
+
 	enum ItemFlag {
 		Item_Name = 0x01,
 		Item_Suffix = 0x02,
@@ -57,13 +67,19 @@ private:
 	};
 
 private:
+	static QList<HeaderView *> s_headerViews;
 	static HeaderItem s_items[];
 	static ItemFlag s_showItems;
 	static int s_showItemCount;
 	static int s_itemCount;
 
-	ItemFlag m_selectItem;
-	ItemFlag m_pressedItem;
+	int m_objectNumber;
+
+	QPoint m_pos;
+	HeaderState m_headerState;
+	ItemFlag m_sortingItem;
+	int m_pressedItem;
+	int m_resizeItem;
 	bool m_reverseSorting;
 };
 
