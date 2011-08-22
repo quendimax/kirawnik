@@ -1,4 +1,5 @@
 #include <QCursor>
+#include <QLabel>
 #include <QPainter>
 #include <QSettings>
 #include <QMouseEvent>
@@ -11,13 +12,15 @@
 
 int HeaderView::s_showItemCount;
 int HeaderView::s_itemCount;
+int HeaderView::s_objectCount = 0;
 QList<HeaderView *> HeaderView::s_headerViews;
+QMenu *HeaderView::s_menu = 0;
 
-HeaderView::ItemFlag HeaderView::s_showItems;
+HeaderView::ItemFlags HeaderView::s_showItems;
 HeaderView::HeaderItem HeaderView::s_items[] = {
 	{ 0, 0, Item_Name, tr("Name") },
 	{ 0, 0, Item_Suffix, tr("Ext") },
-	{ 0, 0, Item_Size, tr("Suffix") },
+	{ 0, 0, Item_Size, tr("Size") },
 	{ 0, 0, Item_TextPerms, tr("Perms (rwx)") },
 	{ 0, 0, Item_DigitPerms, tr("Perms") },
 	{ 0, 0, Item_Owner, tr("Owner") },
@@ -30,10 +33,12 @@ HeaderView::HeaderItem HeaderView::s_items[] = {
 HeaderView::HeaderView(QWidget *parent)
 	: QWidget(parent)
 {
-	static int s_objectCount = 0;
+	// must be first
 	m_objectNumber = s_objectCount;
 	s_objectCount++;
+	Q_ASSERT(0 < s_objectCount && s_objectCount <= 2);
 
+	s_itemCount = sizeof s_items / sizeof s_items[0];
 	s_headerViews.append(this);
 
 	m_headerState = HS_Free;
@@ -53,26 +58,62 @@ HeaderView::~HeaderView()
 {
 	writeSettings();
 	s_headerViews.removeAll(this);
+
+	// must be last
+	s_objectCount--;
 }
 
 
 void HeaderView::contextMenuEvent(QContextMenuEvent *e)
 {
-	static QMenu *menu = 0;
+	QAction *action = s_menu->exec(e->globalPos());
+	if (action) {
+		bool ok;
+		ItemFlag flag = (ItemFlag) action->data().toUInt(&ok);
+		Q_ASSERT(ok);
 
-	if (menu == 0) {
-		menu = new QMenu(this);
-
-		for (int i = 0; i < s_itemCount; i++) {
-			QAction *action = menu->addAction(s_items[i].name);
-			action->setCheckable(true);
-			if (s_items[i].type & s_showItems)
-				action->setChecked(true);
+		if (s_showItemCount == 1 && flag == m_sortingItem) {
+			action->setChecked(true);
+			return;
 		}
-	}
 
-	if (menu->exec(e->globalPos()))
+		int index;
+		for (index = 0; index < s_itemCount; index++) {
+			if (s_items[index].type == flag)
+				break;
+		}
+		Q_ASSERT(index < s_itemCount);
+
+		if (action->isChecked()) {
+			s_showItems |= flag;
+			s_items[index].offset = 0;
+			for (int i = s_itemCount - s_showItemCount; i < s_itemCount; i++)
+				s_items[i].offset += s_items[index].width;
+
+			s_showItemCount++;
+		}
+		else {
+			s_showItems &= ~flag;
+			s_items[index].offset = -1;
+			for (int i = index + 1; i < s_itemCount; i++)
+				s_items[i].offset -= s_items[index].width;
+
+			if (s_items[index].type == m_sortingItem) {
+				for (int i = s_itemCount - s_showItemCount; i < s_itemCount; i++) {
+					if (i != index) {
+						m_sortingItem = s_items[i].type;
+						break;
+					}
+				}
+				m_reverseSorting = false;
+			}
+
+			s_showItemCount--;
+		}
+
+		qSort(s_items, s_items + s_itemCount);
 		updateAll();
+	}
 }
 
 
@@ -83,13 +124,13 @@ void HeaderView::mousePressEvent(QMouseEvent *e)
 		return;
 	}
 
-	m_pos = e->pos();
+	m_oldPos = e->pos();
 
 	bool isResize;
 	int index = indexAt(e->pos(), &isResize);
 
 	if (index < 0) {
-		m_headerState = HS_Pressing;
+		m_headerState = HS_OutPressing;
 		return;
 	}
 	if (isResize) {
@@ -97,7 +138,7 @@ void HeaderView::mousePressEvent(QMouseEvent *e)
 		m_resizeItem = index;
 	}
 	else {
-		m_headerState = HS_Moving;
+		m_headerState = HS_Pressing;
 		m_pressedItem = index;
 	}
 
@@ -112,7 +153,7 @@ void HeaderView::mouseReleaseEvent(QMouseEvent *e)
 		return;
 	}
 
-	if (m_pressedItem > -1) {
+	if (m_pressedItem > -1 && m_headerState != HS_Moving) {
 		int index = indexAt(e->pos());
 
 		if (index != m_pressedItem) {
@@ -140,7 +181,8 @@ void HeaderView::mouseReleaseEvent(QMouseEvent *e)
 void HeaderView::mouseMoveEvent(QMouseEvent *e)
 {
 	switch (m_headerState) {
-	case HS_Free: {
+	case HS_Free:
+	case HS_OutPressing:{
 		static const Qt::CursorShape defaultCursorShape = cursor().shape();
 		bool isResize;
 		indexAt(e->pos(), &isResize);
@@ -152,23 +194,25 @@ void HeaderView::mouseMoveEvent(QMouseEvent *e)
 		break;
 
 	case HS_Resizing: {
-		int delta = e->pos().x() - m_pos.x();
+		int delta = e->pos().x() - m_oldPos.x();
 		if (s_items[m_resizeItem].width < 32 && delta < 0)
 			break;
 
 		s_items[m_resizeItem].width += delta;
 		for (int i = m_resizeItem + 1; i < s_itemCount; i++)
 			s_items[i].offset += delta;
-		m_pos = e->pos();
+		m_oldPos = e->pos();
 		updateAll();
 		}
 		break;
 
-	case HS_Pressing: {
-		}
+	case HS_Pressing:
+		if ((e->pos() - m_oldPos).manhattanLength() > 3)
+			m_headerState = HS_Moving;
 		break;
 
 	case HS_Moving: {
+
 		}
 		break;
 	}
@@ -190,6 +234,36 @@ void HeaderView::paintEvent(QPaintEvent *)
 		if (s_items[i].type & s_showItems)
 			paintSection(i, painter);
 	}
+}
+
+
+/*!
+  It musts be called before first sorting of s_items,
+  and after reading s_items' settings.
+  */
+void HeaderView::initMenu()
+{
+	if (s_objectCount != 1)
+		return;
+
+	s_menu = new QMenu;
+
+	for (int i = 0; i < s_itemCount; i++) {
+		QAction *action = s_menu->addAction(s_items[i].name);
+		action->setData((uint) s_items[i].type);
+		action->setCheckable(true);
+		if (s_items[i].type & s_showItems)
+			action->setChecked(true);
+	}
+}
+
+
+void HeaderView::destroyMenu()
+{
+	if (s_objectCount != 1)
+		return;
+
+	delete s_menu;
 }
 
 
@@ -218,12 +292,12 @@ void HeaderView::paintSection(int index, QPainter &painter)
 	else {
 		if (index == s_itemCount - s_showItemCount) {
 			option.position = QStyleOptionHeader::Beginning;
-			if (s_items[index + 1].type & m_sortingItem)
+			if (s_items[index + 1].type == m_sortingItem)
 				option.selectedPosition = QStyleOptionHeader::NextIsSelected;
 		}
 		else if (index == s_itemCount - 1) {
 			option.position = QStyleOptionHeader::End;
-			if (s_items[index - 1].type & m_sortingItem)
+			if (s_items[index - 1].type == m_sortingItem)
 				option.selectedPosition = QStyleOptionHeader::PreviousIsSelected;
 		}
 		else {
@@ -231,7 +305,7 @@ void HeaderView::paintSection(int index, QPainter &painter)
 		}
 	}
 
-	if (s_items[index].type & m_sortingItem) {
+	if (s_items[index].type == m_sortingItem) {
 		if (m_reverseSorting)
 			option.sortIndicator = QStyleOptionHeader::SortUp;
 		else
@@ -285,22 +359,31 @@ void HeaderView::readSettings()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("HeaderView");
 
-	m_sortingItem = (ItemFlag) sets->value("SelectItem." + QString::number(m_objectNumber), Item_Name).toUInt();
+	bool ok;
+	m_sortingItem = (ItemFlag) sets->value("SortingItem." + QString::number(m_objectNumber), Item_Name).toUInt(&ok);
+	Q_ASSERT(ok);
 	m_reverseSorting = sets->value("ReverseSorting." + QString::number(m_objectNumber), false).toBool();
 
 	static bool wasCalled = false;
 	if (!wasCalled) {
 		wasCalled = true;
 
-		s_showItems = (ItemFlag) sets->value("ShowItems", Item_All).toUInt();
-		s_showItemCount = s_itemCount = sizeof s_items / sizeof s_items[0];
+		bool ok;
+		s_showItems = (ItemFlag) sets->value("ShowItems", Item_All).toUInt(&ok);
+		Q_ASSERT(ok);
+		s_showItemCount = sets->value("ShowItemCount", s_itemCount).toInt(&ok);
+		Q_ASSERT(ok);
 
 		int offset = 0, width = 60;
 		for (int i = 0; i < s_itemCount; i++) {
 			s_items[i].offset = sets->value(QString::number(s_items[i].type, 16) + ".Offset", offset).toInt();
+			Q_ASSERT(ok);
 			s_items[i].width = sets->value(QString::number(s_items[i].type, 16) + ".Width", width).toInt();
+			Q_ASSERT(ok);
 			offset += width;
 		}
+		initMenu();
+		qSort(s_items, s_items + s_itemCount);
 	}
 
 	sets->endGroup();
@@ -312,14 +395,19 @@ void HeaderView::writeSettings()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("HeaderView");
 
-	sets->setValue("ShowItems", (uint) s_showItems);
-	sets->setValue("SelectItem." + QString::number(m_objectNumber), (uint) m_sortingItem);
+	sets->setValue("SortingItem." + QString::number(m_objectNumber), (uint) m_sortingItem);
 	sets->setValue("ReverseSorting." + QString::number(m_objectNumber), m_reverseSorting);
 
-	for (int i = 0; i < s_itemCount; i++) {
-		sets->setValue(QString::number(s_items[i].type, 16) + ".Offset", s_items[i].offset);
-		sets->setValue(QString::number(s_items[i].type, 16) + ".Width", s_items[i].width);
+	if (s_objectCount == 1) {
+		sets->setValue("ShowItems", (uint) s_showItems);
+		sets->setValue("ShowItemCount", s_showItemCount);
+
+		for (int i = 0; i < s_itemCount; i++) {
+			sets->setValue(QString::number(s_items[i].type, 16) + ".Offset", s_items[i].offset);
+			sets->setValue(QString::number(s_items[i].type, 16) + ".Width", s_items[i].width);
+		}
 	}
+	destroyMenu();
 
 	sets->endGroup();
 }
