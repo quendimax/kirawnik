@@ -5,6 +5,7 @@
 #include <QList>
 #include <QWidget>
 
+class QMenu;
 class QPainter;
 class QStyleOption;
 
@@ -25,6 +26,8 @@ protected:
 	void paintEvent(QPaintEvent *);
 
 private:
+	void initMenu();
+	void destroyMenu();
 	void initStyleOption(QStyleOption *option);
 	void paintSection(int index, QPainter &painter);
 	void updateAll();
@@ -36,10 +39,11 @@ private:
 
 private:
 	enum HeaderState {
-		HS_Free,
-		HS_Pressing,
-		HS_Resizing,
-		HS_Moving
+		HS_Free,           //!< mouse buttons is raisen
+		HS_Pressing,       //!< mouse left button is pressing on not control items
+		HS_OutPressing,    //!< mouse left button is pressing out of headers
+		HS_Resizing,       //!< mouse left button is pressing on resize item
+		HS_Moving          //!< mouse left button is pressing on header item
 	};
 
 	enum ItemFlag {
@@ -55,6 +59,7 @@ private:
 		Item_None = 0,
 		Item_All = 0xFF
 	};
+	typedef QFlags<ItemFlag> ItemFlags;
 
 	struct HeaderItem
 	{
@@ -69,13 +74,15 @@ private:
 private:
 	static QList<HeaderView *> s_headerViews;
 	static HeaderItem s_items[];
-	static ItemFlag s_showItems;
+	static ItemFlags s_showItems;
 	static int s_showItemCount;
 	static int s_itemCount;
+	static int s_objectCount;
+	static QMenu *s_menu;
 
 	int m_objectNumber;
 
-	QPoint m_pos;
+	QPoint m_oldPos;
 	HeaderState m_headerState;
 	ItemFlag m_sortingItem;
 	int m_pressedItem;
