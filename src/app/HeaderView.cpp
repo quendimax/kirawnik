@@ -54,7 +54,7 @@ HeaderView::HeaderView(QWidget *parent)
 	readSettings();
 
 	// will called with first object only
-	if (m_objectNumber == 1) {
+	if (m_objectNumber == 0) {
 		initMenu();
 		qSort(s_items, s_items + s_itemCount);
 	}
@@ -64,7 +64,7 @@ HeaderView::HeaderView(QWidget *parent)
 HeaderView::~HeaderView()
 {
 	// will called with last object only
-	if (m_objectNumber == 1) {
+	if (m_objectNumber == 0) {
 		destroyMenu();
 	}
 	writeSettings();
@@ -126,6 +126,7 @@ void HeaderView::contextMenuEvent(QContextMenuEvent *e)
 
 		qSort(s_items, s_items + s_itemCount);
 		updateAll();
+		emit geometryChanged();
 	}
 }
 
@@ -178,6 +179,7 @@ void HeaderView::mouseReleaseEvent(QMouseEvent *e)
 				m_sortingItem = newSortingItem;
 				m_reverseSorting = false;
 			}
+			emit sortingChanged(newSortingItem, m_reverseSorting);
 		}
 	}
 	m_pressedItem = Krw::Sort_None;
@@ -214,6 +216,7 @@ void HeaderView::mouseMoveEvent(QMouseEvent *e)
 			s_items[i].offset += delta;
 		m_oldPos = e->pos();
 		updateAll();
+		emit geometryChanged();
 		}
 		break;
 
@@ -248,6 +251,7 @@ void HeaderView::mouseMoveEvent(QMouseEvent *e)
 		}
 
 		updateAll();
+		emit geometryChanged();
 		}
 		break;
 	}
@@ -435,10 +439,27 @@ int HeaderView::indexAt(const QPoint &pos, bool *isResize) const
 
 int HeaderView::indexAt(Krw::SortFlag flag) const
 {
+#if 0
+	// if there are many HeaderItems that shuold be used this variant
+	if (flag == Krw::Sort_All || flag == Krw::Sort_None)
+		return -1;
+
+	quint32 value = (quint32) f;
+	int result = 31;
+
+	if (value & 0x0000ffff) result -= 16;
+	if (value & 0x00ff00ff) result -= 8;
+	if (value & 0x0f0f0f0f) result -= 4;
+	if (value & 0x33333333) result -= 2;
+	if (value & 0x55555555) result -= 1;
+
+	return result;
+#else
 	for (int i = 0; i < s_itemCount; i++)
 		if (s_items[i].type == flag)
 			return i;
 	return -1;
+#endif
 }
 
 
