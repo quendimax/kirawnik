@@ -1,7 +1,10 @@
+#include <QDir>
+#include <QIcon>
 #include <QPainter>
 #include <QSettings>
 #include <QScrollBar>
 #include <QResizeEvent>
+#include <QFileIconProvider>
 
 #include "Application.h"
 #include "FileView.h"
@@ -18,6 +21,9 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 	m_current = 0;
 
 	readSettings();
+
+	QDir dir("/");
+	setFileInfoList(dir.entryInfoList());
 }
 
 
@@ -32,6 +38,9 @@ void FileView::paintEvent(QPaintEvent *)
 	QPainter painter(this);
 
 	paintBackground(painter);
+	for (int i = m_start; i < m_fileList.size(); i++) {
+		paintItem(i, painter);
+	}
 }
 
 
@@ -43,7 +52,19 @@ void FileView::resizeEvent(QResizeEvent *e)
 
 void FileView::keyPressEvent(QKeyEvent *)
 {
+}
 
+
+inline void FileView::paintItem(int index, QPainter &painter)
+{
+	const QFileInfo &info = m_fileList[index];
+	QRect rect(0, (index - m_start) * m_itemHeight, width(), m_itemHeight);
+	QFileIconProvider p;
+
+	QIcon icon = p.icon(info);
+	icon.paint(&painter, rect.x(), rect.y(), m_itemHeight, m_itemHeight);
+	rect.setLeft(rect.left() + m_itemHeight);
+	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, info.fileName());
 }
 
 
@@ -52,7 +73,7 @@ inline void FileView::paintBackground(QPainter &painter)
 	painter.fillRect(rect(), m_baseColor[0]);
 
 	// if m_start odd then start from alternate color
-	int y = (m_start & 1) ? m_itemHeight : 0;
+	int y = (m_start & 1) ? 0 : m_itemHeight;
 	int i = (m_start & 1) ? m_start : m_start + 1;
 
 	while (i < m_fileList.size() && y < height()) {

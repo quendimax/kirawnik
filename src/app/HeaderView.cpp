@@ -444,7 +444,7 @@ int HeaderView::indexAt(Krw::SortFlag flag) const
 	if (flag == Krw::Sort_All || flag == Krw::Sort_None)
 		return -1;
 
-	quint32 value = (quint32) f;
+	quint32 value = (quint32) flag;
 	int result = 31;
 
 	if (value & 0x0000ffff) result -= 16;

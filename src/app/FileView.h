@@ -18,12 +18,15 @@ public:
 
 	int current() const;
 
+	void setFileInfoList(const QFileInfoList &list);
+
 protected:
 	void paintEvent(QPaintEvent *);
 	void resizeEvent(QResizeEvent *);
 	void keyPressEvent(QKeyEvent *);
 
 private:
+	void paintItem(int index, QPainter &);
 	void paintBackground(QPainter &);
 
 	void readSettings();
@@ -50,6 +53,7 @@ private:
 
 
 inline int FileView::current() const { return m_current; }
+inline void FileView::setFileInfoList(const QFileInfoList &list) { m_fileList = list; }
 
 
 #endif //__FILEVIEW_H__
