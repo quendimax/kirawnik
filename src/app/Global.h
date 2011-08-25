@@ -10,6 +10,7 @@ KRW_NAMESPACE_BEGIN
 
 enum SortingType {
 	Sort_Begin = 0,
+
 	Sort_Name = Sort_Begin,
 	Sort_Suffix,
 	Sort_Size,
@@ -18,7 +19,9 @@ enum SortingType {
 	Sort_Owner,
 	Sort_Group,
 	Sort_Modified,
-	Sort_End
+
+	Sort_End,
+	Sort_None = Sort_End
 };
 
 

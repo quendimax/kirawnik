@@ -13,20 +13,19 @@
 int HeaderView::s_showItemCount;
 int HeaderView::s_itemCount;
 int HeaderView::s_objectCount = 0;
-HeaderView::HeaderItem HeaderView::s_movableItem = { 0, 0, Krw::Sort_None, QString() };
+HeaderView::HeaderItem HeaderView::s_movableItem = { 0, 0, Krw::Sort_None, QString(), false };
 QList<HeaderView *> HeaderView::s_headerViews;
 QMenu *HeaderView::s_menu = 0;
 
-Krw::SortFlags HeaderView::s_showItems;
 HeaderView::HeaderItem HeaderView::s_items[] = {
-	{ 0, 0, Krw::Sort_Name, tr("Name") },
-	{ 0, 0, Krw::Sort_Suffix, tr("Ext") },
-	{ 0, 0, Krw::Sort_Size, tr("Size") },
-	{ 0, 0, Krw::Sort_TextPerms, tr("Perms (rwx)") },
-	{ 0, 0, Krw::Sort_DigitPerms, tr("Perms") },
-	{ 0, 0, Krw::Sort_Owner, tr("Owner") },
-	{ 0, 0, Krw::Sort_Group, tr("Group") },
-	{ 0, 0, Krw::Sort_Modified, tr("Modified") }
+	{ 0, 0, Krw::Sort_Name, tr("Name"), false },
+	{ 0, 0, Krw::Sort_Suffix, tr("Ext"), false },
+	{ 0, 0, Krw::Sort_Size, tr("Size"), false },
+	{ 0, 0, Krw::Sort_TextPerms, tr("Perms (rwx)"), false },
+	{ 0, 0, Krw::Sort_DigitPerms, tr("Perms"), false },
+	{ 0, 0, Krw::Sort_Owner, tr("Owner"), false },
+	{ 0, 0, Krw::Sort_Group, tr("Group"), false },
+	{ 0, 0, Krw::Sort_Modified, tr("Modified"), false }
 };
 
 
@@ -80,7 +79,7 @@ void HeaderView::contextMenuEvent(QContextMenuEvent *e)
 	QAction *action = s_menu->exec(e->globalPos());
 	if (action) {
 		bool ok;
-		Krw::SortFlag flag = (Krw::SortFlag) action->data().toUInt(&ok);
+		Krw::SortingType flag = (Krw::SortingType) action->data().toUInt(&ok);
 		Q_ASSERT(ok);
 
 		if (s_showItemCount == 1 && flag == m_sortingItem) {
@@ -88,15 +87,11 @@ void HeaderView::contextMenuEvent(QContextMenuEvent *e)
 			return;
 		}
 
-		int index;
-		for (index = 0; index < s_itemCount; index++) {
-			if (s_items[index].type == flag)
-				break;
-		}
-		Q_ASSERT(index < s_itemCount);
+		int index = indexAt(flag);
+		Q_ASSERT(-1 < index && index < s_itemCount);
 
 		if (action->isChecked()) {
-			s_showItems |= flag;
+			s_items[index].isShowing = true;
 			s_items[index].offset = 0;
 			for (int i = s_itemCount - s_showItemCount; i < s_itemCount; i++)
 				s_items[i].offset += s_items[index].width;
@@ -104,7 +99,7 @@ void HeaderView::contextMenuEvent(QContextMenuEvent *e)
 			s_showItemCount++;
 		}
 		else {
-			s_showItems &= ~flag;
+			s_items[index].isShowing = false;
 			s_items[index].offset = -1;
 			for (int i = index + 1; i < s_itemCount; i++)
 				s_items[i].offset -= s_items[index].width;
@@ -171,7 +166,7 @@ void HeaderView::mouseReleaseEvent(QMouseEvent *e)
 		int index = indexAt(e->pos());
 
 		if (s_items[index].type == m_pressedItem) {
-			Krw::SortFlag newSortingItem = s_items[index].type;
+			Krw::SortingType newSortingItem = s_items[index].type;
 			if (newSortingItem == m_sortingItem) {
 				m_reverseSorting = !m_reverseSorting;
 			}
@@ -271,7 +266,7 @@ void HeaderView::paintEvent(QPaintEvent *)
 	for (int i = 0; i < s_itemCount; i++) {
 		if (s_items[i].offset < 0)
 			continue;
-		if (s_items[i].type & s_showItems)
+		if (s_items[i].isShowing)
 			paintSection(i, painter);
 	}
 
@@ -296,7 +291,7 @@ void HeaderView::initMenu()
 		QAction *action = s_menu->addAction(s_items[i].name);
 		action->setData((uint) s_items[i].type);
 		action->setCheckable(true);
-		if (s_items[i].type & s_showItems)
+		if (s_items[i].isShowing)
 			action->setChecked(true);
 	}
 }
@@ -437,29 +432,12 @@ int HeaderView::indexAt(const QPoint &pos, bool *isResize) const
 }
 
 
-int HeaderView::indexAt(Krw::SortFlag flag) const
+int HeaderView::indexAt(Krw::SortingType flag) const
 {
-#if 0
-	// if there are many HeaderItems that shuold be used this variant
-	if (flag == Krw::Sort_All || flag == Krw::Sort_None)
-		return -1;
-
-	quint32 value = (quint32) flag;
-	int result = 31;
-
-	if (value & 0x0000ffff) result -= 16;
-	if (value & 0x00ff00ff) result -= 8;
-	if (value & 0x0f0f0f0f) result -= 4;
-	if (value & 0x33333333) result -= 2;
-	if (value & 0x55555555) result -= 1;
-
-	return result;
-#else
 	for (int i = 0; i < s_itemCount; i++)
 		if (s_items[i].type == flag)
 			return i;
 	return -1;
-#endif
 }
 
 
@@ -469,14 +447,12 @@ void HeaderView::readSettings()
 	sets->beginGroup("HeaderView");
 
 	bool ok;
-	m_sortingItem = (Krw::SortFlag) sets->value("SortingItem." + QString::number(m_objectNumber), Krw::Sort_Name).toUInt(&ok);
+	m_sortingItem = (Krw::SortingType) sets->value("SortingItem." + QString::number(m_objectNumber), Krw::Sort_Name).toUInt(&ok);
 	Q_ASSERT(ok);
 	m_reverseSorting = sets->value("ReverseSorting." + QString::number(m_objectNumber), false).toBool();
 
 	if (s_objectCount == 1) {
 		bool ok;
-		s_showItems = (Krw::SortFlag) sets->value("ShowItems", Krw::Sort_All).toUInt(&ok);
-		Q_ASSERT(ok);
 		s_showItemCount = sets->value("ShowItemCount", s_itemCount).toInt(&ok);
 		Q_ASSERT(ok);
 
@@ -486,6 +462,7 @@ void HeaderView::readSettings()
 			Q_ASSERT(ok);
 			s_items[i].width = sets->value(QString::number(s_items[i].type, 16) + ".Width", width).toInt();
 			Q_ASSERT(ok);
+			s_items[i].isShowing = sets->value(QString::number(s_items[i].type, 16) + ".Showing", true).toBool();
 			offset += width;
 		}
 	}
@@ -503,12 +480,12 @@ void HeaderView::writeSettings()
 	sets->setValue("ReverseSorting." + QString::number(m_objectNumber), m_reverseSorting);
 
 	if (s_objectCount == 1) {
-		sets->setValue("ShowItems", (uint) s_showItems);
 		sets->setValue("ShowItemCount", s_showItemCount);
 
 		for (int i = 0; i < s_itemCount; i++) {
 			sets->setValue(QString::number(s_items[i].type, 16) + ".Offset", s_items[i].offset);
 			sets->setValue(QString::number(s_items[i].type, 16) + ".Width", s_items[i].width);
+			sets->setValue(QString::number(s_items[i].type, 16) + ".Showing", s_items[i].isShowing);
 		}
 	}
 
