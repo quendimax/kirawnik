@@ -76,6 +76,9 @@ inline void FileView::paintBackground(QPainter &painter)
 {
 	painter.fillRect(rect(), m_baseColor[0]);
 
+	if (m_baseColor[0] == m_baseColor[1])
+		return;
+
 	// if m_start odd then start from alternate color
 	int y = (m_start & 1) ? 0 : m_itemHeight;
 	int i = (m_start & 1) ? m_start : m_start + 1;
@@ -204,10 +207,9 @@ void FileView::drawDigitPermsPart(QPainter &painter)
 		rect.setWidth(e_header->sectionSize(sectionIndex) - 2);
 		rect.setHeight(m_itemHeight);
 
-		QIcon icon = m_iconProvider.icon(m_fileList[i]);
-		icon.paint(&painter, 1, y, m_itemHeight, m_itemHeight);
-
-		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(m_fileList[i].permissions() & 0777, 8));
+		uint perms = m_fileList[i].permissions();
+		perms = (perms & 0x00f)  |  ((perms & 0x0f0) >> 1)  |  ((perms & 0xf00) >> 2);
+		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(perms, 8));
 
 		y += m_itemHeight;
 		i++;
