@@ -13,6 +13,8 @@ FilePanel::FilePanel(QWidget *parent)
 	m_header = new HeaderView;
 	m_fileView = new FileView(m_header);
 
+	connect(m_header, SIGNAL(geometryChanged()), m_fileView, SLOT(update()));
+
 	QVBoxLayout *layout = new QVBoxLayout;
 	layout->setMargin(0);
 	layout->setSpacing(0);

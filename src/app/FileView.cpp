@@ -2,11 +2,13 @@
 #include <QIcon>
 #include <QPainter>
 #include <QSettings>
+#include <QDateTime>
 #include <QScrollBar>
 #include <QResizeEvent>
 #include <QFileIconProvider>
 
 #include "Application.h"
+#include "HeaderView.h"
 #include "FileView.h"
 
 
@@ -22,7 +24,7 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 
 	readSettings();
 
-	QDir dir("/");
+	QDir dir("/usr/bin");
 	setFileInfoList(dir.entryInfoList());
 }
 
@@ -38,8 +40,23 @@ void FileView::paintEvent(QPaintEvent *)
 	QPainter painter(this);
 
 	paintBackground(painter);
-	for (int i = m_start; i < m_fileList.size(); i++) {
-		paintItem(i, painter);
+
+	static void (FileView::*drawPart[Krw::Sort_End])(QPainter &) = {
+		&FileView::drawNamePart,
+		&FileView::drawSuffixPart,
+		&FileView::drawSizePart,
+		&FileView::drawTextPermsPart,
+		&FileView::drawDigitPermsPart,
+		&FileView::drawOwnerPart,
+		&FileView::drawGroupPart,
+		&FileView::drawModifiedPart
+	};
+
+	for (int i = 0; i < e_header->count(); i++) {
+		if (e_header->sectionIsShowing(i)) {
+			void (FileView::*drawMethod)(QPainter &) = drawPart[e_header->sectionType(i)];
+			(this->*drawMethod)(painter);
+		}
 	}
 }
 
@@ -52,19 +69,6 @@ void FileView::resizeEvent(QResizeEvent *e)
 
 void FileView::keyPressEvent(QKeyEvent *)
 {
-}
-
-
-inline void FileView::paintItem(int index, QPainter &painter)
-{
-	const QFileInfo &info = m_fileList[index];
-	QRect rect(0, (index - m_start) * m_itemHeight, width(), m_itemHeight);
-	QFileIconProvider p;
-
-	QIcon icon = p.icon(info);
-	icon.paint(&painter, rect.x(), rect.y(), m_itemHeight, m_itemHeight);
-	rect.setLeft(rect.left() + m_itemHeight);
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, info.fileName());
 }
 
 
@@ -84,6 +88,199 @@ inline void FileView::paintBackground(QPainter &painter)
 		i += 2;
 	}
 }
+
+
+void FileView::drawNamePart(QPainter &painter)
+{
+	int y = 0;
+	int i = m_start;
+	int sectionIndex = e_header->logicalIndex(Krw::Sort_Name);
+
+	while (i < m_fileList.size() && y < height()) {
+		QRect rect;
+		rect.setTop(y);
+		rect.setLeft(e_header->sectionOffset(sectionIndex) + m_itemHeight + 4);
+		rect.setWidth(e_header->sectionSize(sectionIndex) - (m_itemHeight + 4));
+		rect.setHeight(m_itemHeight);
+
+		QIcon icon = m_iconProvider.icon(m_fileList[i]);
+		icon.paint(&painter, 1, y, m_itemHeight, m_itemHeight);
+
+		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].baseName());
+
+		y += m_itemHeight;
+		i++;
+	}
+}
+
+
+void FileView::drawSuffixPart(QPainter &painter)
+{
+	int y = 0;
+	int i = m_start;
+	int sectionIndex = e_header->logicalIndex(Krw::Sort_Suffix);
+
+	while (i < m_fileList.size() && y < height()) {
+		QRect rect;
+		rect.setTop(y);
+		rect.setLeft(e_header->sectionOffset(sectionIndex));
+		rect.setWidth(e_header->sectionSize(sectionIndex));
+		rect.setHeight(m_itemHeight);
+
+		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].suffix());
+
+		y += m_itemHeight;
+		i++;
+	}
+}
+
+
+void FileView::drawSizePart(QPainter &painter)
+{
+	int y = 0;
+	int i = m_start;
+	int sectionIndex = e_header->logicalIndex(Krw::Sort_Size);
+
+	while (i < m_fileList.size() && y < height()) {
+		QRect rect;
+		rect.setTop(y);
+		rect.setLeft(e_header->sectionOffset(sectionIndex));
+		rect.setWidth(e_header->sectionSize(sectionIndex));
+		rect.setHeight(m_itemHeight);
+
+		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(m_fileList[i].size()));
+
+		y += m_itemHeight;
+		i++;
+	}
+}
+
+
+void FileView::drawTextPermsPart(QPainter &painter)
+{
+	int y = 0;
+	int i = m_start;
+	int sectionIndex = e_header->logicalIndex(Krw::Sort_TextPerms);
+
+	while (i < m_fileList.size() && y < height()) {
+		QRect rect;
+		rect.setTop(y);
+		rect.setLeft(e_header->sectionOffset(sectionIndex));
+		rect.setWidth(e_header->sectionSize(sectionIndex));
+		rect.setHeight(m_itemHeight);
+
+		QIcon icon = m_iconProvider.icon(m_fileList[i]);
+		icon.paint(&painter, 1, y, m_itemHeight, m_itemHeight);
+
+		QFile::Permissions p = m_fileList[i].permissions();
+		QString perms("");
+		perms += p.testFlag(QFile::ReadUser) ? "r" : "-";
+		perms += p.testFlag(QFile::WriteUser) ? "w" : "-";
+		perms += p.testFlag(QFile::ExeUser) ? "x" : "-";
+		perms += p.testFlag(QFile::ReadGroup) ? "r" : "-";
+		perms += p.testFlag(QFile::WriteGroup) ? "w" : "-";
+		perms += p.testFlag(QFile::ExeGroup) ? "x" : "-";
+		perms += p.testFlag(QFile::ReadOther) ? "r" : "-";
+		perms += p.testFlag(QFile::WriteOther) ? "w" : "-";
+		perms += p.testFlag(QFile::ExeOther) ? "x" : "-";
+		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, perms);
+
+		y += m_itemHeight;
+		i++;
+	}
+}
+
+
+void FileView::drawDigitPermsPart(QPainter &painter)
+{
+	int y = 0;
+	int i = m_start;
+	int sectionIndex = e_header->logicalIndex(Krw::Sort_DigitPerms);
+
+	while (i < m_fileList.size() && y < height()) {
+		QRect rect;
+		rect.setTop(y);
+		rect.setLeft(e_header->sectionOffset(sectionIndex));
+		rect.setWidth(e_header->sectionSize(sectionIndex) - 2);
+		rect.setHeight(m_itemHeight);
+
+		QIcon icon = m_iconProvider.icon(m_fileList[i]);
+		icon.paint(&painter, 1, y, m_itemHeight, m_itemHeight);
+
+		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(m_fileList[i].permissions() & 0777, 8));
+
+		y += m_itemHeight;
+		i++;
+	}
+}
+
+
+void FileView::drawOwnerPart(QPainter &painter)
+{
+	int y = 0;
+	int i = m_start;
+	int sectionIndex = e_header->logicalIndex(Krw::Sort_Owner);
+
+	while (i < m_fileList.size() && y < height()) {
+		QRect rect;
+		rect.setTop(y);
+		rect.setLeft(e_header->sectionOffset(sectionIndex) + 2);
+		rect.setWidth(e_header->sectionSize(sectionIndex));
+		rect.setHeight(m_itemHeight);
+
+		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].owner());
+
+		y += m_itemHeight;
+		i++;
+	}
+}
+
+
+void FileView::drawGroupPart(QPainter &painter)
+{
+	int y = 0;
+	int i = m_start;
+	int sectionIndex = e_header->logicalIndex(Krw::Sort_Group);
+
+	while (i < m_fileList.size() && y < height()) {
+		QRect rect;
+		rect.setTop(y);
+		rect.setLeft(e_header->sectionOffset(sectionIndex) + 2);
+		rect.setWidth(e_header->sectionSize(sectionIndex));
+		rect.setHeight(m_itemHeight);
+
+		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].group());
+
+		y += m_itemHeight;
+		i++;
+	}
+}
+
+
+void FileView::drawModifiedPart(QPainter &painter)
+{
+	int y = 0;
+	int i = m_start;
+	int sectionIndex = e_header->logicalIndex(Krw::Sort_Modified);
+
+	while (i < m_fileList.size() && y < height()) {
+		QRect rect;
+		rect.setTop(y);
+		rect.setLeft(e_header->sectionOffset(sectionIndex) + 2);
+		rect.setWidth(e_header->sectionSize(sectionIndex));
+		rect.setHeight(m_itemHeight);
+
+		QIcon icon = m_iconProvider.icon(m_fileList[i]);
+		icon.paint(&painter, 1, y, m_itemHeight, m_itemHeight);
+
+		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].lastModified().toString());
+
+		y += m_itemHeight;
+		i++;
+	}
+}
+
+
 
 
 void FileView::readSettings()

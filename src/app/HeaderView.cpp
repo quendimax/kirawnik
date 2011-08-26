@@ -442,7 +442,7 @@ int HeaderView::indexAt(Krw::SortingType flag) const
 	return -1;
 }
 
-
+#include <QtDebug>
 void HeaderView::readSettings()
 {
 	QSettings *sets = kApp->settings();

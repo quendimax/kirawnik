@@ -2,6 +2,7 @@
 #define __FILEVIEW_H__
 
 #include <QFileInfoList>
+#include <QFileIconProvider>
 #include <QWidget>
 
 class QScrollBar;
@@ -29,6 +30,15 @@ private:
 	void paintItem(int index, QPainter &);
 	void paintBackground(QPainter &);
 
+	void drawNamePart(QPainter &);
+	void drawSuffixPart(QPainter &);
+	void drawSizePart(QPainter &);
+	void drawTextPermsPart(QPainter &);
+	void drawDigitPermsPart(QPainter &);
+	void drawOwnerPart(QPainter &);
+	void drawGroupPart(QPainter &);
+	void drawModifiedPart(QPainter &);
+
 	void readSettings();
 	void writeSettings();
 
@@ -36,6 +46,7 @@ private:
 	HeaderView *e_header;
 	QScrollBar *m_scroll;
 	QFileInfoList m_fileList;
+	QFileIconProvider m_iconProvider;
 
 	int m_current;
 	int m_start;             //!< start item index for painting
