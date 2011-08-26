@@ -13,19 +13,20 @@
 int HeaderView::s_showItemCount;
 int HeaderView::s_itemCount;
 int HeaderView::s_objectCount = 0;
-HeaderView::HeaderItem HeaderView::s_movableItem = { 0, 0, Krw::Sort_None, QString(), false };
+QBitArray HeaderView::s_showItems;
+HeaderView::HeaderItem HeaderView::s_movableItem = { QString(), Krw::Sort_None, 0, 0 };
 QList<HeaderView *> HeaderView::s_headerViews;
 QMenu *HeaderView::s_menu = 0;
 
 HeaderView::HeaderItem HeaderView::s_items[] = {
-	{ 0, 0, Krw::Sort_Name, tr("Name"), false },
-	{ 0, 0, Krw::Sort_Suffix, tr("Ext"), false },
-	{ 0, 0, Krw::Sort_Size, tr("Size"), false },
-	{ 0, 0, Krw::Sort_TextPerms, tr("Perms (rwx)"), false },
-	{ 0, 0, Krw::Sort_DigitPerms, tr("Perms"), false },
-	{ 0, 0, Krw::Sort_Owner, tr("Owner"), false },
-	{ 0, 0, Krw::Sort_Group, tr("Group"), false },
-	{ 0, 0, Krw::Sort_Modified, tr("Modified"), false }
+	{ tr("Name"), Krw::Sort_Name, 0, 0 },
+	{ tr("Ext"), Krw::Sort_Suffix, 0, 0 },
+	{ tr("Size"), Krw::Sort_Size, 0, 0 },
+	{ tr("Perms (rwx)"), Krw::Sort_TextPerms, 0, 0 },
+	{ tr("Perms"), Krw::Sort_DigitPerms, 0, 0 },
+	{ tr("Owner"), Krw::Sort_Owner, 0, 0 },
+	{ tr("Group"), Krw::Sort_Group, 0, 0 },
+	{ tr("Modified"), Krw::Sort_Modified, 0, 0 }
 };
 
 
@@ -38,6 +39,7 @@ HeaderView::HeaderView(QWidget *parent)
 	s_objectCount++;
 	Q_ASSERT(0 < s_objectCount && s_objectCount <= 2);
 
+	s_showItems = QBitArray(Krw::Sort_End, true);
 	s_itemCount = sizeof s_items / sizeof s_items[0];
 	s_headerViews.append(this);
 
@@ -91,7 +93,7 @@ void HeaderView::contextMenuEvent(QContextMenuEvent *e)
 		Q_ASSERT(-1 < index && index < s_itemCount);
 
 		if (action->isChecked()) {
-			s_items[index].isShowing = true;
+			s_showItems.setBit(flag);
 			s_items[index].offset = 0;
 			for (int i = s_itemCount - s_showItemCount; i < s_itemCount; i++)
 				s_items[i].offset += s_items[index].width;
@@ -99,7 +101,7 @@ void HeaderView::contextMenuEvent(QContextMenuEvent *e)
 			s_showItemCount++;
 		}
 		else {
-			s_items[index].isShowing = false;
+			s_showItems.clearBit(flag);
 			s_items[index].offset = -1;
 			for (int i = index + 1; i < s_itemCount; i++)
 				s_items[i].offset -= s_items[index].width;
@@ -266,7 +268,7 @@ void HeaderView::paintEvent(QPaintEvent *)
 	for (int i = 0; i < s_itemCount; i++) {
 		if (s_items[i].offset < 0)
 			continue;
-		if (s_items[i].isShowing)
+		if (s_showItems.at(s_items[i].type))
 			paintSection(i, painter);
 	}
 
@@ -291,7 +293,7 @@ void HeaderView::initMenu()
 		QAction *action = s_menu->addAction(s_items[i].name);
 		action->setData((uint) s_items[i].type);
 		action->setCheckable(true);
-		if (s_items[i].isShowing)
+		if (s_showItems.at(s_items[i].type))
 			action->setChecked(true);
 	}
 }
@@ -455,6 +457,7 @@ void HeaderView::readSettings()
 		bool ok;
 		s_showItemCount = sets->value("ShowItemCount", s_itemCount).toInt(&ok);
 		Q_ASSERT(ok);
+		s_showItems = sets->value("ShowItems", QBitArray(Krw::Sort_End, true)).toBitArray();
 
 		int offset = 0, width = 60;
 		for (int i = 0; i < s_itemCount; i++) {
@@ -462,7 +465,6 @@ void HeaderView::readSettings()
 			Q_ASSERT(ok);
 			s_items[i].width = sets->value(QString::number(s_items[i].type, 16) + ".Width", width).toInt();
 			Q_ASSERT(ok);
-			s_items[i].isShowing = sets->value(QString::number(s_items[i].type, 16) + ".Showing", true).toBool();
 			offset += width;
 		}
 	}
@@ -481,11 +483,11 @@ void HeaderView::writeSettings()
 
 	if (s_objectCount == 1) {
 		sets->setValue("ShowItemCount", s_showItemCount);
+		sets->setValue("ShowItems", s_showItems);
 
 		for (int i = 0; i < s_itemCount; i++) {
 			sets->setValue(QString::number(s_items[i].type, 16) + ".Offset", s_items[i].offset);
 			sets->setValue(QString::number(s_items[i].type, 16) + ".Width", s_items[i].width);
-			sets->setValue(QString::number(s_items[i].type, 16) + ".Showing", s_items[i].isShowing);
 		}
 	}
 
