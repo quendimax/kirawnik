@@ -25,17 +25,17 @@ public:
 	int sectionOffset(int index) const;
 	int sectionSize(int index) const;
 	QString sectionName(int index) const;
-	Krw::SortFlag sectionSort(int index) const;
-	Krw::SortFlags showSections() const;
+	Krw::SortingType sectionSort(int index) const;
+	bool sectionIsShowing(int index) const;
 	bool isReverseSorting() const;
 
-	int logicalIndex(Krw::SortFlag f) const;
+	int logicalIndex(Krw::SortingType f) const;
 	int count() const;
 	int hiddenCount() const;
 
 signals:
 	void geometryChanged();
-	void sortingChanged(Krw::SortFlag flag, bool reverse);
+	void sortingChanged(Krw::SortingType flag, bool reverse);
 
 protected:
 	void contextMenuEvent(QContextMenuEvent *);
@@ -57,8 +57,9 @@ private:
 	{
 		int offset;
 		int width;
-		Krw::SortFlag type;
+		Krw::SortingType type;
 		QString name;
+		bool isShowing;
 
 		inline bool operator < (const HeaderItem &item) const { return offset < item.offset; }
 	};
@@ -73,7 +74,8 @@ private:
 	void paintMovableSection(QPainter &painter);
 
 	int indexAt(const QPoint &pos, bool *isResize = 0) const;
-	int indexAt(Krw::SortFlag flag) const;
+	int indexAt(Krw::SortingType flag) const;
+	int realyIndex(int logicalIndex) const;
 
 	void readSettings();
 	void writeSettings();
@@ -81,7 +83,6 @@ private:
 private:
 	static QList<HeaderView *> s_headerViews;
 	static HeaderItem s_items[];
-	static Krw::SortFlags s_showItems;
 	static int s_showItemCount;
 	static int s_itemCount;
 	static int s_objectCount;
@@ -91,21 +92,22 @@ private:
 	int m_objectNumber;
 	QPoint m_oldPos;
 	HeaderState m_headerState;
-	Krw::SortFlag m_sortingItem;
-	Krw::SortFlag m_pressedItem;
+	Krw::SortingType m_sortingItem;
+	Krw::SortingType m_pressedItem;
 	int m_resizeItem;
 	bool m_reverseSorting;
 };
 
 
-inline int HeaderView::sectionOffset(int index) const { return s_items[s_itemCount - s_showItems + index].offset; }
-inline int HeaderView::sectionSize(int index) const { return s_items[s_itemCount - s_showItems + index].width; }
-inline QString HeaderView::sectionName(int index) const { return s_items[s_itemCount - s_showItems + index].name; }
-inline Krw::SortFlag HeaderView::sectionSort(int index) const { return s_items[s_itemCount - s_showItems + index].type; }
-inline Krw::SortFlags HeaderView::showSections() const { return s_showItems; }
+inline int HeaderView::sectionOffset(int index) const { return s_items[realyIndex(index)].offset; }
+inline int HeaderView::sectionSize(int index) const { return s_items[realyIndex(index)].width; }
+inline QString HeaderView::sectionName(int index) const { return s_items[realyIndex(index)].name; }
+inline Krw::SortingType HeaderView::sectionSort(int index) const { return s_items[realyIndex(index)].type; }
+inline bool HeaderView::sectionIsShowing(int index) const { return s_items[realyIndex(index)].isShowing; }
 inline bool HeaderView::isReverseSorting() const { return m_reverseSorting; }
 
-inline int HeaderView::logicalIndex(Krw::SortFlag f) const { return indexAt(f) - (s_itemCount - s_showItemCount); }
+inline int HeaderView::realyIndex(int logicalIndex) const { return s_itemCount - s_showItemCount + logicalIndex; }
+inline int HeaderView::logicalIndex(Krw::SortingType f) const { return indexAt(f) - (s_itemCount - s_showItemCount); }
 inline int HeaderView::count() const { return s_showItemCount; }
 inline int HeaderView::hiddenCount() const { return s_itemCount - s_showItemCount; }
 
