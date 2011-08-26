@@ -2,6 +2,7 @@
 #define __HEADERVIEW_H__
 
 #include <QStyleOptionHeader>
+#include <QBitArray>
 #include <QList>
 #include <QWidget>
 
@@ -24,10 +25,12 @@ public:
 
 	int sectionOffset(int index) const;
 	int sectionSize(int index) const;
+	Krw::SortingType sectionType(int index) const;
 	QString sectionName(int index) const;
-	Krw::SortingType sectionSort(int index) const;
 	bool sectionIsShowing(int index) const;
+
 	bool isReverseSorting() const;
+	Krw::SortingType sortingType() const;
 
 	int logicalIndex(Krw::SortingType f) const;
 	int count() const;
@@ -55,11 +58,10 @@ private:
 
 	struct HeaderItem
 	{
+		QString name;
+		Krw::SortingType type;
 		int offset;
 		int width;
-		Krw::SortingType type;
-		QString name;
-		bool isShowing;
 
 		inline bool operator < (const HeaderItem &item) const { return offset < item.offset; }
 	};
@@ -83,6 +85,7 @@ private:
 private:
 	static QList<HeaderView *> s_headerViews;
 	static HeaderItem s_items[];
+	static QBitArray s_showItems;
 	static int s_showItemCount;
 	static int s_itemCount;
 	static int s_objectCount;
@@ -101,15 +104,18 @@ private:
 
 inline int HeaderView::sectionOffset(int index) const { return s_items[realyIndex(index)].offset; }
 inline int HeaderView::sectionSize(int index) const { return s_items[realyIndex(index)].width; }
+inline Krw::SortingType HeaderView::sectionType(int index) const { return s_items[realyIndex(index)].type; }
 inline QString HeaderView::sectionName(int index) const { return s_items[realyIndex(index)].name; }
-inline Krw::SortingType HeaderView::sectionSort(int index) const { return s_items[realyIndex(index)].type; }
-inline bool HeaderView::sectionIsShowing(int index) const { return s_items[realyIndex(index)].isShowing; }
-inline bool HeaderView::isReverseSorting() const { return m_reverseSorting; }
+inline bool HeaderView::sectionIsShowing(int index) const { return s_showItems.at(s_items[realyIndex(index)].type); }
 
-inline int HeaderView::realyIndex(int logicalIndex) const { return s_itemCount - s_showItemCount + logicalIndex; }
+inline bool HeaderView::isReverseSorting() const { return m_reverseSorting; }
+inline Krw::SortingType HeaderView::sortingType() const { return m_sortingItem; }
+
 inline int HeaderView::logicalIndex(Krw::SortingType f) const { return indexAt(f) - (s_itemCount - s_showItemCount); }
 inline int HeaderView::count() const { return s_showItemCount; }
 inline int HeaderView::hiddenCount() const { return s_itemCount - s_showItemCount; }
+
+inline int HeaderView::realyIndex(int logicalIndex) const { return s_itemCount - s_showItemCount + logicalIndex; }
 
 
 #endif //__HEADERVIEW_H__
