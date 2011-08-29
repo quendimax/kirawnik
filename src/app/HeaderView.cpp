@@ -39,7 +39,6 @@ HeaderView::HeaderView(QWidget *parent)
 	s_objectCount++;
 	Q_ASSERT(0 < s_objectCount && s_objectCount <= 2);
 
-	s_showItems = QBitArray(Krw::Sort_End, true);
 	s_itemCount = sizeof s_items / sizeof s_items[0];
 	s_headerViews.append(this);
 
@@ -284,9 +283,6 @@ void HeaderView::paintEvent(QPaintEvent *)
   */
 void HeaderView::initMenu()
 {
-	if (s_objectCount != 1)
-		return;
-
 	s_menu = new QMenu;
 
 	for (int i = 0; i < s_itemCount; i++) {
@@ -295,15 +291,14 @@ void HeaderView::initMenu()
 		action->setCheckable(true);
 		if (s_showItems.at(s_items[i].type))
 			action->setChecked(true);
+		else
+			action->setChecked(false);
 	}
 }
 
 
 void HeaderView::destroyMenu()
 {
-	if (s_objectCount != 1)
-		return;
-
 	delete s_menu;
 }
 
@@ -457,6 +452,7 @@ void HeaderView::readSettings()
 		bool ok;
 		s_showItemCount = sets->value("ShowItemCount", s_itemCount).toInt(&ok);
 		Q_ASSERT(ok);
+		s_showItems = QBitArray(Krw::Sort_End, true);
 		s_showItems = sets->value("ShowItems", QBitArray(Krw::Sort_End, true)).toBitArray();
 
 		int offset = 0, width = 60;
