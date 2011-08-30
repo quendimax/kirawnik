@@ -26,6 +26,8 @@ protected:
 	void paintEvent(QPaintEvent *);
 	void resizeEvent(QResizeEvent *);
 	void keyPressEvent(QKeyEvent *);
+	void mousePressEvent(QMouseEvent *);
+	void wheelEvent(QWheelEvent *);
 
 private:
 	void paintItem(int index, QPainter &);
@@ -55,8 +57,8 @@ private:
 	QFileIconProvider m_iconProvider;
 	QBitArray m_selectItems;
 
+	int m_width;             //!< fileview width without scrollbar width
 	int m_current;
-	int m_start;             //!< start item index for painting
 
 	QColor m_cursorColor;
 	QColor m_textColor;

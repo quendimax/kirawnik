@@ -217,7 +217,7 @@ void HeaderView::mouseMoveEvent(QMouseEvent *e)
 		break;
 
 	case HS_Pressing:
-		if ((e->pos() - m_oldPos).manhattanLength() > 3) {
+		if ((e->pos() - m_oldPos).manhattanLength() > QApplication::startDragDistance()) {
 			int index = indexAt(m_oldPos);
 			Q_ASSERT(index > -1);
 			s_movableItem = s_items[index];
