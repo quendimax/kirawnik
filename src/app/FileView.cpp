@@ -15,6 +15,7 @@
 FileView::FileView(HeaderView *header, QWidget *parent)
     : QWidget(parent), e_header(header)
 {
+	setFocusPolicy(Qt::StrongFocus);
 	m_scroll = new QScrollBar(Qt::Vertical, this);
 	m_scroll->setFixedWidth(16);
 	m_scroll->hide();
@@ -35,6 +36,14 @@ FileView::~FileView()
 }
 
 
+void FileView::setFileInfoList(const QFileInfoList &list)
+{
+	m_fileList = list;
+	m_selectItems.resize(list.size());
+	m_selectItems.fill(false);
+}
+
+
 void FileView::paintEvent(QPaintEvent *)
 {
 	QPainter painter(this);
@@ -52,12 +61,16 @@ void FileView::paintEvent(QPaintEvent *)
 		&FileView::drawModifiedPart
 	};
 
+	painter.setPen(m_textColor);
 	for (int i = 0; i < e_header->count(); i++) {
 		if (e_header->sectionIsShowing(i)) {
 			void (FileView::*drawMethod)(QPainter &) = drawPart[e_header->sectionType(i)];
 			(this->*drawMethod)(painter);
 		}
 	}
+
+	if (hasFocus())
+		paintCursor(painter);
 }
 
 
@@ -76,20 +89,47 @@ inline void FileView::paintBackground(QPainter &painter)
 {
 	painter.fillRect(rect(), m_baseColor[0]);
 
-	if (m_baseColor[0] == m_baseColor[1])
+	if (m_baseColor[0] != m_baseColor[1]) {
+		// if m_start odd then start from alternate color
+		int y = (m_start & 1) ? 0 : m_itemHeight;
+		int i = (m_start & 1) ? m_start : m_start + 1;
+
+		while (i < m_fileList.size() && y < height()) {
+			QRect rect(0, y, width(), m_itemHeight);
+			painter.fillRect(rect, m_baseColor[1]);
+
+			y += 2*m_itemHeight;
+			i += 2;
+		}
+	}
+
+	if (!(m_baseColor[0] == m_baseColor[1] && m_baseColor[0] == m_selectBaseColor)) {
+		for (int i = m_start, y = 0; i < m_fileList.size() && y < height(); i++, y += m_itemHeight) {
+			if (m_selectItems.at(i)) {
+				QRect rect(0, y, width(), m_itemHeight);
+				painter.fillRect(rect, m_selectBaseColor);
+			}
+		}
+	}
+
+	if (hasFocus() && m_cursorIsFull) {
+		int y = (m_current - m_start) * m_itemHeight;
+		QRect rect(0, y, width()-1, m_itemHeight);
+		painter.fillRect(rect, m_cursorColor);
+	}
+}
+
+
+inline void FileView::paintCursor(QPainter &painter)
+{
+	painter.setPen(m_cursorColor);
+
+	if (m_current < m_start || height() / m_itemHeight + 1 < m_start)
 		return;
 
-	// if m_start odd then start from alternate color
-	int y = (m_start & 1) ? 0 : m_itemHeight;
-	int i = (m_start & 1) ? m_start : m_start + 1;
-
-	while (i < m_fileList.size() && y < height()) {
-		QRect rect(0, y, width(), m_itemHeight);
-		painter.fillRect(rect, m_baseColor[1]);
-
-		y += 2*m_itemHeight;
-		i += 2;
-	}
+	int y = (m_current - m_start) * m_itemHeight;
+	QRect rect(0, y, width()-1, m_itemHeight);
+	painter.drawRect(rect);
 }
 
 
@@ -99,7 +139,8 @@ void FileView::drawNamePart(QPainter &painter)
 	int i = m_start;
 	int sectionIndex = e_header->logicalIndex(Krw::Sort_Name);
 
-	while (i < m_fileList.size() && y < height()) {
+	while (i < m_fileList.size() && y < height())
+	{
 		QRect rect = makeRectForSection(sectionIndex, y);
 		rect.setLeft(rect.left() + m_itemHeight + 2*Margin);
 
@@ -124,6 +165,10 @@ void FileView::drawNamePart(QPainter &painter)
 		else if (addName.length() == 2)
 			name += "..";
 
+		if (m_selectItems.at(i))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
 		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, name);
 
 		QIcon icon = m_iconProvider.icon(m_fileList[i]);
@@ -143,6 +188,11 @@ void FileView::drawSuffixPart(QPainter &painter)
 
 	while (i < m_fileList.size() && y < height()) {
 		QRect rect = makeRectForSection(sectionIndex, y);
+
+		if (m_selectItems.at(i))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
 		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].suffix());
 
 		y += m_itemHeight;
@@ -168,6 +218,11 @@ void FileView::drawSizePart(QPainter &painter)
 			size /= 1000;
 		}
 		rect.setLeft(0 + Margin);
+
+		if (m_selectItems.at(i))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
 		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, strSize);
 
 		y += m_itemHeight;
@@ -196,6 +251,11 @@ void FileView::drawTextPermsPart(QPainter &painter)
 		perms += p.testFlag(QFile::ReadOther) ? "r" : "-";
 		perms += p.testFlag(QFile::WriteOther) ? "w" : "-";
 		perms += p.testFlag(QFile::ExeOther) ? "x" : "-";
+
+		if (m_selectItems.at(i))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
 		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, perms);
 
 		y += m_itemHeight;
@@ -215,6 +275,11 @@ void FileView::drawDigitPermsPart(QPainter &painter)
 		uint perms = m_fileList[i].permissions();
 
 		perms = (perms & 0x00f)  |  ((perms & 0x0f0) >> 1)  |  ((perms & 0xf00) >> 2);
+
+		if (m_selectItems.at(i))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
 		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, "0" + QString::number(perms, 8));
 
 		y += m_itemHeight;
@@ -231,6 +296,11 @@ void FileView::drawOwnerPart(QPainter &painter)
 
 	while (i < m_fileList.size() && y < height()) {
 		QRect rect = makeRectForSection(sectionIndex, y);
+
+		if (m_selectItems.at(i))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
 		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].owner());
 
 		y += m_itemHeight;
@@ -247,6 +317,11 @@ void FileView::drawGroupPart(QPainter &painter)
 
 	while (i < m_fileList.size() && y < height()) {
 		QRect rect = makeRectForSection(sectionIndex, y);
+
+		if (m_selectItems.at(i))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
 		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].group());
 
 		y += m_itemHeight;
@@ -263,6 +338,11 @@ void FileView::drawModifiedPart(QPainter &painter)
 
 	while (i < m_fileList.size() && y < height()) {
 		QRect rect = makeRectForSection(sectionIndex, y);
+
+		if (m_selectItems.at(i))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
 		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[i].lastModified().toString());
 
 		y += m_itemHeight;
@@ -293,8 +373,6 @@ void FileView::readSettings()
 	m_cursorIsFull = sets->value("CursorIsFull", false).toBool();
 	m_cursorColor.setRgb((QRgb) sets->value("CursorColor", (uint) QColor(Qt::green).rgb()).toUInt(&ok));
 	Q_ASSERT(ok);
-	m_curentTextColor.setRgb((QRgb) sets->value("CurentTextColor", (uint) palette().color(QPalette::Text).rgb()).toUInt(&ok));
-	Q_ASSERT(ok);
 	m_textColor.setRgb((QRgb) sets->value("TextColor", (uint) palette().color(QPalette::Text).rgb()).toUInt(&ok));
 	Q_ASSERT(ok);
 	m_baseColor[0].setRgb((QRgb) sets->value("BaseColor.0", (uint) palette().color(QPalette::Base).rgb()).toUInt(&ok));
@@ -322,7 +400,6 @@ void FileView::writeSettings()
 	sets->setValue("Font", font().family());
 	sets->setValue("CursorIsFull", m_cursorIsFull);
 	sets->setValue("CursorColor", (uint) m_cursorColor.rgb());
-	sets->setValue("CurentTextColor", (uint) m_curentTextColor.rgb());
 	sets->setValue("TextColor", (uint) m_textColor.rgb());
 	sets->setValue("BaseColor.0", (uint) m_baseColor[0].rgb());
 	sets->setValue("BaseColor.1", (uint) m_baseColor[1].rgb());

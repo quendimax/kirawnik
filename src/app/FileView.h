@@ -1,6 +1,7 @@
 #ifndef __FILEVIEW_H__
 #define __FILEVIEW_H__
 
+#include <QBitArray>
 #include <QFileInfoList>
 #include <QFileIconProvider>
 #include <QWidget>
@@ -29,6 +30,7 @@ protected:
 private:
 	void paintItem(int index, QPainter &);
 	void paintBackground(QPainter &);
+	void paintCursor(QPainter &);
 
 	void drawNamePart(QPainter &);
 	void drawSuffixPart(QPainter &);
@@ -51,15 +53,15 @@ private:
 	QScrollBar *m_scroll;
 	QFileInfoList m_fileList;
 	QFileIconProvider m_iconProvider;
+	QBitArray m_selectItems;
 
 	int m_current;
 	int m_start;             //!< start item index for painting
 
 	QColor m_cursorColor;
 	QColor m_textColor;
-	QColor m_curentTextColor;
 	QColor m_selectTextColor;
-	QColor m_baseColor[2];  // main and alternate
+	QColor m_baseColor[2];   // main and alternate
 	QColor m_selectBaseColor;
 	int m_itemHeight;
 	bool m_cursorIsFull;
@@ -67,7 +69,6 @@ private:
 
 
 inline int FileView::current() const { return m_current; }
-inline void FileView::setFileInfoList(const QFileInfoList &list) { m_fileList = list; }
 
 
 #endif //__FILEVIEW_H__

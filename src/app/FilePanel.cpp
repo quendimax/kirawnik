@@ -8,8 +8,6 @@
 FilePanel::FilePanel(QWidget *parent)
     : QWidget(parent)
 {
-	setFocusPolicy(Qt::StrongFocus);
-
 	m_header = new HeaderView;
 	m_fileView = new FileView(m_header);
 
