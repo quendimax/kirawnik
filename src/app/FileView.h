@@ -39,10 +39,14 @@ private:
 	void drawGroupPart(QPainter &);
 	void drawModifiedPart(QPainter &);
 
+	QRect makeRectForSection(int index, int top) const;
+
 	void readSettings();
 	void writeSettings();
 
 private:
+	static const int Margin = 2;
+
 	HeaderView *e_header;
 	QScrollBar *m_scroll;
 	QFileInfoList m_fileList;
@@ -51,7 +55,6 @@ private:
 	int m_current;
 	int m_start;             //!< start item index for painting
 
-	QFont m_font;
 	QColor m_cursorColor;
 	QColor m_textColor;
 	QColor m_curentTextColor;
