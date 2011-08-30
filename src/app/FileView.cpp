@@ -80,8 +80,52 @@ void FileView::resizeEvent(QResizeEvent *e)
 }
 
 
-void FileView::keyPressEvent(QKeyEvent *)
+void FileView::keyPressEvent(QKeyEvent *e)
 {
+	if (e->modifiers() == Qt::ShiftModifier) {
+		switch (e->key()) {
+		case Qt::Key_Down:
+			m_selectItems.setBit(m_current, !m_selectItems.at(m_current));
+			m_current++;
+			break;
+		case Qt::Key_Up:
+			m_selectItems.setBit(m_current, !m_selectItems.at(m_current));
+			m_current--;
+			break;
+		}
+	}
+	else {
+		switch (e->key()) {
+		case Qt::Key_Down:
+			m_current++;
+			break;
+		case Qt::Key_Up:
+			m_current--;
+			break;
+		case Qt::Key_Home:
+			m_current = 0;
+			break;
+		case Qt::Key_End:
+			m_current = m_fileList.size() - 1;
+			break;
+		case Qt::Key_PageDown:
+			m_current += height() / m_itemHeight;
+			break;
+		case Qt::Key_PageUp:
+			m_current -= height() / m_itemHeight;
+			break;
+		case Qt::Key_Space:
+			m_selectItems.setBit(m_current, !m_selectItems.at(m_current));
+			break;
+		}
+	}
+
+	if (m_current < 0)
+		m_current = 0;
+	if (m_fileList.size() <= m_current)
+		m_current = m_fileList.size() - 1;
+
+	update();
 }
 
 
@@ -145,10 +189,16 @@ void FileView::drawNamePart(QPainter &painter)
 		rect.setLeft(rect.left() + m_itemHeight + 2*Margin);
 
 		QFontMetrics metrics(font());
-		QString name = m_fileList[i].baseName();
-		QString addName("");
-		if (m_fileList[i].isDir())
+		QString name;
+		QString addName;
+		if (m_fileList[i].isDir()) {
+			name = m_fileList[i].fileName();
 			addName += "[]";	// len == 2
+		}
+		else {
+			name = m_fileList[i].baseName();
+			addName = "";
+		}
 
 		if (metrics.width(name) + metrics.width(addName) > rect.width())
 			addName += "..";	// len == 4
@@ -209,14 +259,17 @@ void FileView::drawSizePart(QPainter &painter)
 
 	while (i < m_fileList.size() && y < height()) {
 		QRect rect = makeRectForSection(sectionIndex, y);
-		QString strSize;
+		QString strSize("");
 		int size = m_fileList[i].size();
 
-		strSize = QString::number(size % 1000);
-		while (size) {
-			strSize = QString::number(size % 1000) + " " + strSize;
+		do {
+			if (size >= 1000)
+				strSize = QString(" %1").arg(size % 1000, 3, 10, QLatin1Char('0')) + strSize;
+			else
+				strSize = QString("%1").arg(size % 1000) + strSize;
 			size /= 1000;
 		}
+		while (size);
 		rect.setLeft(0 + Margin);
 
 		if (m_selectItems.at(i))
@@ -280,7 +333,7 @@ void FileView::drawDigitPermsPart(QPainter &painter)
 			painter.setPen(m_selectTextColor);
 		else
 			painter.setPen(m_textColor);
-		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, "0" + QString::number(perms, 8));
+		painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString("0%1").arg(perms, 3, 8, QLatin1Char('0')));
 
 		y += m_itemHeight;
 		i++;
