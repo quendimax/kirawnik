@@ -151,6 +151,10 @@ void FileView::keyPressEvent(QKeyEvent *e)
 		case Qt::Key_Space:
 			m_selectItems.setBit(m_current, !m_selectItems.at(m_current));
 			break;
+		case Qt::Key_Insert:
+			m_selectItems.setBit(m_current, !m_selectItems.at(m_current));
+			m_current++;
+			break;
 		}
 	}
 
