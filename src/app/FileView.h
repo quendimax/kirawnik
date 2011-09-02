@@ -64,6 +64,7 @@ private:
 	QFileInfoList m_fileList;
 	QFileIconProvider m_iconProvider;
 	QBitArray m_selectItems;
+	QPixmap m_pixmap;
 
 	int m_width;             //!< fileview width without scrollbar width
 	int m_current;

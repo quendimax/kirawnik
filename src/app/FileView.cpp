@@ -27,6 +27,9 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 
 	readSettings();
 
+	m_width = width() - m_scroll->width();
+	m_pixmap = QPixmap(m_width, height());
+
 	QDir dir("/usr/bin/");
 	setFileInfoList(dir.entryInfoList());
 }
@@ -58,7 +61,8 @@ void FileView::setFileInfoList(const QFileInfoList &list)
 
 void FileView::paintEvent(QPaintEvent *)
 {
-	QPainter painter(this);
+	QPainter painter;
+	painter.begin(&m_pixmap);
 
 	paintBackground(painter);
 
@@ -74,14 +78,19 @@ void FileView::paintEvent(QPaintEvent *)
 	};
 	painter.setPen(m_textColor);
 	for (int i = 0; i < e_header->count(); i++) {
-		if (e_header->sectionIsShowing(i)) {
-			void (FileView::*drawMethod)(QPainter &) = drawPart[e_header->sectionType(i)];
-			(this->*drawMethod)(painter);
-		}
+		void (FileView::*drawMethod)(QPainter &) = drawPart[e_header->sectionType(i)];
+		(this->*drawMethod)(painter);
 	}
 
-	if (hasFocus())
-		paintCursor(painter);
+	painter.end();
+
+	painter.begin(this);
+	painter.drawPixmap(0, 0, m_pixmap);
+	if (hasFocus()) {
+		if (m_scroll->value() <= m_current && m_current < m_scroll->value() + m_scroll->pageStep() + 1)
+			paintCursor(painter);
+	}
+	painter.end();
 }
 
 
@@ -100,6 +109,8 @@ void FileView::resizeEvent(QResizeEvent *e)
 	m_width = width();
 	if (!m_scroll->isHidden())
 		m_width -= m_scroll->width();
+
+	m_pixmap = QPixmap(m_width, height());
 }
 
 
@@ -171,7 +182,7 @@ void FileView::wheelEvent(QWheelEvent *e)
 }
 
 
-inline void FileView::paintBackground(QPainter &painter)
+void FileView::paintBackground(QPainter &painter)
 {
 	QRect backgroundRect = rect();
 	backgroundRect.setWidth(m_width);
@@ -199,27 +210,63 @@ inline void FileView::paintBackground(QPainter &painter)
 			}
 		}
 	}
+}
 
-	if (hasFocus() && m_cursorIsFull) {
+
+void FileView::paintCursor(QPainter &painter)
+{
+	painter.setPen(m_cursorColor);
+
+	if (m_cursorIsFull) {
 		int y = (m_current - m_scroll->value()) * m_itemHeight;
 		QRect rect(0, y, m_width-1, m_itemHeight);
 		painter.fillRect(rect, m_cursorColor);
+
+		for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
+			switch (e_header->sectionType(sectionIndex)) {
+			case Krw::Sort_Name:
+				drawName(m_current, makeRectForSection(sectionIndex, y), painter);
+				break;
+			case Krw::Sort_Suffix:
+				drawSuffix(m_current, makeRectForSection(sectionIndex, y), painter);
+				break;
+			case Krw::Sort_Size:
+				drawSize(m_current, makeRectForSection(sectionIndex, y), painter);
+				break;
+			case Krw::Sort_TextPerms:
+				drawTextPerms(m_current, makeRectForSection(sectionIndex, y), painter);
+				break;
+			case Krw::Sort_DigitPerms:
+				drawDigitPerms(m_current, makeRectForSection(sectionIndex, y), painter);
+				break;
+			case Krw::Sort_Owner:
+				drawOwner(m_current, makeRectForSection(sectionIndex, y), painter);
+				break;
+			case Krw::Sort_Group:
+				drawGroup(m_current, makeRectForSection(sectionIndex, y), painter);
+				break;
+			case Krw::Sort_Modified:
+				drawModified(m_current, makeRectForSection(sectionIndex, y), painter);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	else {
+		int y = (m_current - m_scroll->value()) * m_itemHeight;
+		QRect rect(0, y, m_width-1, m_itemHeight-1);
+		painter.drawRect(rect);
 	}
 }
 
 
-inline void FileView::paintCursor(QPainter &painter)
+void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 {
-	painter.setPen(m_cursorColor);
+	QRect rect = rectangle;
+	QIcon icon = m_iconProvider.icon(m_fileList[index]);
+	icon.paint(&painter, rect.left(), rect.top(), m_itemHeight, m_itemHeight);
 
-	int y = (m_current - m_scroll->value()) * m_itemHeight;
-	QRect rect(0, y, m_width-1, m_itemHeight-1);
-	painter.drawRect(rect);
-}
-
-
-void FileView::drawName(int index, const QRect &rect, QPainter &painter)
-{
 	QFontMetrics metrics(font());
 	QString name;
 	QString addName;
@@ -251,10 +298,9 @@ void FileView::drawName(int index, const QRect &rect, QPainter &painter)
 		painter.setPen(m_selectTextColor);
 	else
 		painter.setPen(m_textColor);
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, name);
 
-	QIcon icon = m_iconProvider.icon(m_fileList[index]);
-	icon.paint(&painter, rect.left() - m_itemHeight - Margin, rect.top(), m_itemHeight, m_itemHeight);
+	rect.setLeft(rect.left() + 2*Margin + m_itemHeight);
+	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, name);
 }
 
 
@@ -267,7 +313,6 @@ void FileView::drawNameColumn(QPainter &painter)
 	while (i < m_fileList.size() && y < height())
 	{
 		QRect rect = makeRectForSection(sectionIndex, y);
-		rect.setLeft(rect.left() + m_itemHeight + 2*Margin);
 
 		drawName(i, rect, painter);
 
