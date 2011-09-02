@@ -34,14 +34,22 @@ private:
 	void paintBackground(QPainter &);
 	void paintCursor(QPainter &);
 
-	void drawNamePart(QPainter &);
-	void drawSuffixPart(QPainter &);
-	void drawSizePart(QPainter &);
-	void drawTextPermsPart(QPainter &);
-	void drawDigitPermsPart(QPainter &);
-	void drawOwnerPart(QPainter &);
-	void drawGroupPart(QPainter &);
-	void drawModifiedPart(QPainter &);
+	void drawName(int index, const QRect &, QPainter &);
+	void drawNameColumn(QPainter &);
+	void drawSuffix(int index, const QRect &, QPainter &);
+	void drawSuffixColumn(QPainter &);
+	void drawSize(int index, const QRect &, QPainter &);
+	void drawSizeColumn(QPainter &);
+	void drawTextPerms(int index, const QRect &, QPainter &);
+	void drawTextPermsColumn(QPainter &);
+	void drawDigitPerms(int index, const QRect &, QPainter &);
+	void drawDigitPermsColumn(QPainter &);
+	void drawOwner(int index, const QRect &, QPainter &);
+	void drawOwnerColumn(QPainter &);
+	void drawGroup(int index, const QRect &, QPainter &);
+	void drawGroupColumn(QPainter &);
+	void drawModified(int index, const QRect &, QPainter &);
+	void drawModifiedColumn(QPainter &);
 
 	QRect makeRectForSection(int index, int top) const;
 
@@ -49,7 +57,7 @@ private:
 	void writeSettings();
 
 private:
-	static const int Margin = 2;
+	static const int Margin = 3;
 
 	HeaderView *e_header;
 	QScrollBar *m_scroll;
