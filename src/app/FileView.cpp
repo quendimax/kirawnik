@@ -17,10 +17,11 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 {
 	setFocusPolicy(Qt::StrongFocus);
 
+	m_prevScrollValue = 0;
 	m_scroll = new QScrollBar(Qt::Vertical, this);
 	m_scroll->setFixedWidth(16);
 	m_scroll->hide();
-	m_scroll->setValue(0);
+	m_scroll->setValue(m_prevScrollValue);
 	connect(m_scroll, SIGNAL(valueChanged(int)), this, SLOT(update()));
 
 	m_current = 0;
@@ -30,7 +31,7 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 	m_width = width() - m_scroll->width();
 	m_pixmap = QPixmap(m_width, height());
 
-	QDir dir("/usr/bin/");
+	QDir dir("/usr/");
 	setFileInfoList(dir.entryInfoList());
 }
 
@@ -62,26 +63,10 @@ void FileView::setFileInfoList(const QFileInfoList &list)
 void FileView::paintEvent(QPaintEvent *)
 {
 	QPainter painter;
+
 	painter.begin(&m_pixmap);
-
-	paintBackground(painter);
-
-	static void (FileView::*drawPart[Krw::Sort_End])(QPainter &) = {
-		&FileView::drawNameColumn,
-		&FileView::drawSuffixColumn,
-		&FileView::drawSizeColumn,
-		&FileView::drawTextPermsColumn,
-		&FileView::drawDigitPermsColumn,
-		&FileView::drawOwnerColumn,
-		&FileView::drawGroupColumn,
-		&FileView::drawModifiedColumn
-	};
-	painter.setPen(m_textColor);
-	for (int i = 0; i < e_header->count(); i++) {
-		void (FileView::*drawMethod)(QPainter &) = drawPart[e_header->sectionType(i)];
-		(this->*drawMethod)(painter);
-	}
-
+	paintBackground(m_scroll->value(), m_scroll->value() + m_scroll->pageStep(), painter);
+	paintForeground(m_scroll->value(), m_scroll->value() + m_scroll->pageStep(), painter);
 	painter.end();
 
 	painter.begin(this);
@@ -91,6 +76,8 @@ void FileView::paintEvent(QPaintEvent *)
 			paintCursor(painter);
 	}
 	painter.end();
+
+	m_prevScrollValue = m_scroll->value();
 }
 
 
@@ -104,7 +91,6 @@ void FileView::resizeEvent(QResizeEvent *e)
 	m_scroll->setPageStep(height() / m_itemHeight);
 	m_scroll->setMaximum(qMax(m_fileList.size(), m_scroll->pageStep()) - m_scroll->pageStep());
 	m_scroll->setGeometry(width() - m_scroll->width(), 0, m_scroll->width(), e->size().height());
-	m_scroll->setValue(0);
 
 	m_width = width();
 	if (!m_scroll->isHidden())
@@ -174,8 +160,10 @@ void FileView::keyPressEvent(QKeyEvent *e)
 
 void FileView::mousePressEvent(QMouseEvent *e)
 {
-	m_current = e->pos().y() / m_itemHeight;
-	m_current += m_scroll->value();
+	int newCurrent = e->pos().y() / m_itemHeight;
+	newCurrent += m_scroll->value();
+	if (newCurrent < m_fileList.size())
+		m_current = newCurrent;
 	update();
 }
 
@@ -186,18 +174,23 @@ void FileView::wheelEvent(QWheelEvent *e)
 }
 
 
-void FileView::paintBackground(QPainter &painter)
+void FileView::paintBackground(int start, int finish, QPainter &painter)
 {
-	QRect backgroundRect = rect();
-	backgroundRect.setWidth(m_width);
-	painter.fillRect(backgroundRect, m_baseColor[0]);
+	Q_ASSERT(start >= m_scroll->value());
+	Q_ASSERT(start <= finish);
+
+	QRect baseRect;
+	baseRect.setWidth(m_width);
+	baseRect.setTop((start - m_scroll->value()) * m_itemHeight);
+	baseRect.setHeight((finish - start + 1) * m_itemHeight);
+	painter.fillRect(baseRect, m_baseColor[0]);
 
 	if (m_baseColor[0] != m_baseColor[1]) {
 		// if m_scroll->value() odd then start from alternate color
-		int y = (m_scroll->value() & 1) ? 0 : m_itemHeight;
-		int i = (m_scroll->value() & 1) ? m_scroll->value() : m_scroll->value() + 1;
+		int y = (start & 1) ? baseRect.top() : baseRect.top() + m_itemHeight;
+		int i = (start & 1) ? start : start + 1;
 
-		while (i < m_fileList.size() && y < height()) {
+		while (i < m_fileList.size() && y <= baseRect.bottom()) {
 			QRect rect(0, y, m_width, m_itemHeight);
 			painter.fillRect(rect, m_baseColor[1]);
 
@@ -207,11 +200,36 @@ void FileView::paintBackground(QPainter &painter)
 	}
 
 	if (!(m_baseColor[0] == m_baseColor[1] && m_baseColor[0] == m_selectBaseColor)) {
-		for (int i = m_scroll->value(), y = 0; i < m_fileList.size() && y < height(); i++, y += m_itemHeight) {
+		for (int i = start, y = 0; i < m_fileList.size() && y < baseRect.bottom(); i++, y += m_itemHeight) {
 			if (m_selectItems.at(i)) {
 				QRect rect(0, y, m_width, m_itemHeight);
 				painter.fillRect(rect, m_selectBaseColor);
 			}
+		}
+	}
+}
+
+
+void FileView::paintForeground(int start, int finish, QPainter &painter)
+{
+	static void (FileView::*drawPart[Krw::Sort_End])(int, const QRect &, QPainter &) = {
+		&FileView::drawName,
+		&FileView::drawSuffix,
+		&FileView::drawSize,
+		&FileView::drawTextPerms,
+		&FileView::drawDigitPerms,
+		&FileView::drawOwner,
+		&FileView::drawGroup,
+		&FileView::drawModified
+	};
+
+	painter.setPen(m_textColor);
+	for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
+		for (int y = 0, i = start; i < m_fileList.size() && y < (finish - start + 1) * m_itemHeight; y += m_itemHeight, i++) {
+			QRect rect = makeRectForSection(sectionIndex, y);
+
+			void (FileView::*drawMethod)(int, const QRect &, QPainter &) = drawPart[e_header->sectionType(sectionIndex)];
+			(this->*drawMethod)(i, rect, painter);
 		}
 	}
 }
@@ -308,24 +326,6 @@ void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 }
 
 
-void FileView::drawNameColumn(QPainter &painter)
-{
-	int y = 0;
-	int i = m_scroll->value();
-	int sectionIndex = e_header->logicalIndex(Krw::Sort_Name);
-
-	while (i < m_fileList.size() && y < height())
-	{
-		QRect rect = makeRectForSection(sectionIndex, y);
-
-		drawName(i, rect, painter);
-
-		y += m_itemHeight;
-		i++;
-	}
-}
-
-
 void FileView::drawSuffix(int index, const QRect &rect, QPainter &painter)
 {
 	if (m_selectItems.at(index))
@@ -333,23 +333,6 @@ void FileView::drawSuffix(int index, const QRect &rect, QPainter &painter)
 	else
 		painter.setPen(m_textColor);
 	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].suffix());
-}
-
-
-void FileView::drawSuffixColumn(QPainter &painter)
-{
-	int y = 0;
-	int i = m_scroll->value();
-	int sectionIndex = e_header->logicalIndex(Krw::Sort_Suffix);
-
-	while (i < m_fileList.size() && y < height()) {
-		QRect rect = makeRectForSection(sectionIndex, y);
-
-		drawSuffix(i, rect, painter);
-
-		y += m_itemHeight;
-		i++;
-	}
 }
 
 
@@ -372,24 +355,6 @@ void FileView::drawSize(int index, const QRect &rect, QPainter &painter)
 	else
 		painter.setPen(m_textColor);
 	painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, strSize);
-}
-
-
-void FileView::drawSizeColumn(QPainter &painter)
-{
-	int y = 0;
-	int i = m_scroll->value();
-	int sectionIndex = e_header->logicalIndex(Krw::Sort_Size);
-
-	while (i < m_fileList.size() && y < height()) {
-		QRect rect = makeRectForSection(sectionIndex, y);
-		rect.setLeft(0 + Margin);
-
-		drawSize(i, rect, painter);
-
-		y += m_itemHeight;
-		i++;
-	}
 }
 
 
@@ -416,23 +381,6 @@ void FileView::drawTextPerms(int index, const QRect &rect, QPainter &painter)
 }
 
 
-void FileView::drawTextPermsColumn(QPainter &painter)
-{
-	int y = 0;
-	int i = m_scroll->value();
-	int sectionIndex = e_header->logicalIndex(Krw::Sort_TextPerms);
-
-	while (i < m_fileList.size() && y < height()) {
-		QRect rect = makeRectForSection(sectionIndex, y);
-
-		drawTextPerms(i, rect, painter);
-
-		y += m_itemHeight;
-		i++;
-	}
-}
-
-
 void FileView::drawDigitPerms(int index, const QRect &rect, QPainter &painter)
 {
 	uint perms = m_fileList[index].permissions();
@@ -447,23 +395,6 @@ void FileView::drawDigitPerms(int index, const QRect &rect, QPainter &painter)
 }
 
 
-void FileView::drawDigitPermsColumn(QPainter &painter)
-{
-	int y = 0;
-	int i = m_scroll->value();
-	int sectionIndex = e_header->logicalIndex(Krw::Sort_DigitPerms);
-
-	while (i < m_fileList.size() && y < height()) {
-		QRect rect = makeRectForSection(sectionIndex, y);
-
-		drawDigitPerms(i, rect, painter);
-
-		y += m_itemHeight;
-		i++;
-	}
-}
-
-
 void FileView::drawOwner(int index, const QRect &rect, QPainter &painter)
 {
 	if (m_selectItems.at(index))
@@ -471,23 +402,6 @@ void FileView::drawOwner(int index, const QRect &rect, QPainter &painter)
 	else
 		painter.setPen(m_textColor);
 	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].owner());
-}
-
-
-void FileView::drawOwnerColumn(QPainter &painter)
-{
-	int y = 0;
-	int i = m_scroll->value();
-	int sectionIndex = e_header->logicalIndex(Krw::Sort_Owner);
-
-	while (i < m_fileList.size() && y < height()) {
-		QRect rect = makeRectForSection(sectionIndex, y);
-
-		drawOwner(i, rect, painter);
-
-		y += m_itemHeight;
-		i++;
-	}
 }
 
 
@@ -501,23 +415,6 @@ void FileView::drawGroup(int index, const QRect &rect, QPainter &painter)
 }
 
 
-void FileView::drawGroupColumn(QPainter &painter)
-{
-	int y = 0;
-	int i = m_scroll->value();
-	int sectionIndex = e_header->logicalIndex(Krw::Sort_Group);
-
-	while (i < m_fileList.size() && y < height()) {
-		QRect rect = makeRectForSection(sectionIndex, y);
-
-		drawGroup(i, rect, painter);
-
-		y += m_itemHeight;
-		i++;
-	}
-}
-
-
 void FileView::drawModified(int index, const QRect &rect, QPainter &painter)
 {
 	if (m_selectItems.at(index))
@@ -528,24 +425,7 @@ void FileView::drawModified(int index, const QRect &rect, QPainter &painter)
 }
 
 
-void FileView::drawModifiedColumn(QPainter &painter)
-{
-	int y = 0;
-	int i = m_scroll->value();
-	int sectionIndex = e_header->logicalIndex(Krw::Sort_Modified);
-
-	while (i < m_fileList.size() && y < height()) {
-		QRect rect = makeRectForSection(sectionIndex, y);
-
-		drawModified(i, rect, painter);
-
-		y += m_itemHeight;
-		i++;
-	}
-}
-
-
-QRect FileView::makeRectForSection(int index, int top) const
+inline QRect FileView::makeRectForSection(int index, int top) const
 {
 	QRect rect;
 	rect.setTop(top);
@@ -569,9 +449,9 @@ void FileView::readSettings()
 	Q_ASSERT(ok);
 	m_textColor.setRgb((QRgb) sets->value("TextColor", (uint) palette().color(QPalette::Text).rgb()).toUInt(&ok));
 	Q_ASSERT(ok);
-	m_baseColor[0].setRgb((QRgb) sets->value("BaseColor.0", (uint) palette().color(QPalette::Base).rgb()).toUInt(&ok));
+	m_baseColor[0].setRgb((QRgb) sets->value("BaseColor.0", (uint)palette().color(QPalette::Base).rgb()).toUInt(&ok));
 	Q_ASSERT(ok);
-	m_baseColor[1].setRgb((QRgb) sets->value("BaseColor.1", (uint) palette().color(QPalette::AlternateBase).rgb()).toUInt(&ok));
+	m_baseColor[1].setRgb((QRgb) sets->value("BaseColor.1", (uint)palette().color(QPalette::AlternateBase).rgb()).toUInt(&ok));
 	Q_ASSERT(ok);
 	m_selectTextColor.setRgb((QRgb) sets->value("SelectTextColor",
 	                                            (uint) palette().color(QPalette::HighlightedText).rgb()).toUInt(&ok));

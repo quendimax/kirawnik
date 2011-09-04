@@ -31,25 +31,18 @@ protected:
 
 private:
 	void paintItem(int index, QPainter &);
-	void paintBackground(QPainter &);
+	void paintBackground(int start, int finish, QPainter &);
+	void paintForeground(int start, int finish, QPainter &);
 	void paintCursor(QPainter &);
 
 	void drawName(int index, const QRect &, QPainter &);
-	void drawNameColumn(QPainter &);
 	void drawSuffix(int index, const QRect &, QPainter &);
-	void drawSuffixColumn(QPainter &);
 	void drawSize(int index, const QRect &, QPainter &);
-	void drawSizeColumn(QPainter &);
 	void drawTextPerms(int index, const QRect &, QPainter &);
-	void drawTextPermsColumn(QPainter &);
 	void drawDigitPerms(int index, const QRect &, QPainter &);
-	void drawDigitPermsColumn(QPainter &);
 	void drawOwner(int index, const QRect &, QPainter &);
-	void drawOwnerColumn(QPainter &);
 	void drawGroup(int index, const QRect &, QPainter &);
-	void drawGroupColumn(QPainter &);
 	void drawModified(int index, const QRect &, QPainter &);
-	void drawModifiedColumn(QPainter &);
 
 	QRect makeRectForSection(int index, int top) const;
 
@@ -68,6 +61,7 @@ private:
 
 	int m_width;             //!< fileview width without scrollbar width
 	int m_current;
+	int m_prevScrollValue;
 
 	QColor m_cursorColor;
 	QColor m_textColor;
