@@ -72,7 +72,7 @@ void FileView::paintEvent(QPaintEvent *)
 	painter.begin(this);
 	painter.drawPixmap(0, 0, m_pixmap);
 	if (hasFocus()) {
-		if (m_scroll->value() <= m_current && m_current < m_scroll->value() + m_scroll->pageStep() + 1)
+		if (m_scroll->value() <= m_current && m_current <= m_scroll->value() + m_scroll->pageStep())
 			paintCursor(painter);
 	}
 	painter.end();
@@ -212,6 +212,9 @@ void FileView::paintBackground(int start, int finish, QPainter &painter)
 
 void FileView::paintForeground(int start, int finish, QPainter &painter)
 {
+	Q_ASSERT(start >= m_scroll->value());
+	Q_ASSERT(start <= finish);
+
 	static void (FileView::*drawPart[Krw::Sort_End])(int, const QRect &, QPainter &) = {
 		&FileView::drawName,
 		&FileView::drawSuffix,
@@ -224,8 +227,9 @@ void FileView::paintForeground(int start, int finish, QPainter &painter)
 	};
 
 	painter.setPen(m_textColor);
+	int height = (finish - start + 1) * m_itemHeight;
 	for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
-		for (int y = 0, i = start; i < m_fileList.size() && y < (finish - start + 1) * m_itemHeight; y += m_itemHeight, i++) {
+		for (int y = 0, i = start; i < m_fileList.size() && y < height; y += m_itemHeight, i++) {
 			QRect rect = makeRectForSection(sectionIndex, y);
 
 			void (FileView::*drawMethod)(int, const QRect &, QPainter &) = drawPart[e_header->sectionType(sectionIndex)];
