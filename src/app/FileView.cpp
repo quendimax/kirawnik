@@ -29,7 +29,7 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 	readSettings();
 
 	m_width = width() - m_scroll->width();
-	m_pixmap = QPixmap(m_width, height());
+	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
 
 	QDir dir("/usr/");
 	setFileInfoList(dir.entryInfoList());
@@ -96,7 +96,7 @@ void FileView::resizeEvent(QResizeEvent *e)
 	if (!m_scroll->isHidden())
 		m_width -= m_scroll->width();
 
-	m_pixmap = QPixmap(m_width, height());
+	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
 }
 
 
@@ -164,6 +164,10 @@ void FileView::mousePressEvent(QMouseEvent *e)
 	newCurrent += m_scroll->value();
 	if (newCurrent < m_fileList.size())
 		m_current = newCurrent;
+
+	if (m_current - m_scroll->value() >= m_scroll->pageStep())
+		m_scroll->setValue(m_current - m_scroll->pageStep() + 1);
+
 	update();
 }
 
