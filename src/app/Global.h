@@ -1,8 +1,6 @@
 #ifndef __GLOBAL_H__
 #define __GLOBAL_H__
 
-#include <QFlags>
-
 #define KRW_NAMESPACE_BEGIN namespace Krw {
 #define KRW_NAMESPACE_END }
 
@@ -10,21 +8,21 @@
 KRW_NAMESPACE_BEGIN
 
 
-enum SortFlag {
-	Sort_Name = 0x01,
-	Sort_Suffix = 0x02,
-	Sort_Size = 0x04,
-	Sort_TextPerms = 0x08,
-	Sort_DigitPerms = 0x10,
-	Sort_Owner = 0x20,
-	Sort_Group = 0x40,
-	Sort_Modified = 0x80,
+enum SortingType {
+	Sort_Begin = 0,
 
-	Sort_None = 0,
-	Sort_All = 0xFF
+	Sort_Name = Sort_Begin,
+	Sort_Suffix,
+	Sort_Size,
+	Sort_TextPerms,
+	Sort_DigitPerms,
+	Sort_Owner,
+	Sort_Group,
+	Sort_Modified,
+
+	Sort_End,
+	Sort_None = Sort_End
 };
-
-typedef QFlags<SortFlag> SortFlags;
 
 
 KRW_NAMESPACE_END

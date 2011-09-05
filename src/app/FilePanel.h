@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+class HeaderView;
+class FileView;
+
 
 /*!
   The FilePanel object shows information about curent disk part,
@@ -14,6 +17,10 @@ class FilePanel : public QWidget
 
 public:
 	explicit FilePanel(QWidget *parent = 0);
+
+private:
+	HeaderView *m_header;
+	FileView *m_fileView;
 };
 
 

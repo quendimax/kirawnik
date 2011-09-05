@@ -10,15 +10,14 @@ CONFIG += warn_on
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) {
 	TARGET = $${TARGET}d
-	DEFINES += __DEBUG__
 	win32:CONFIG += console
 }
 #QMAKE_CXXFLAGS_DEBUG += -O1
 
 INCLUDEPATH = .
 
-unix:TMP_BUILD_PATH = /tmp/kirawnik/$$TARGET
-win32:TMP_BUILD_PATH = c:/Windows/Temp/kirawnik/$$TARGET
+unix:TMP_BUILD_PATH = /tmp/$$TARGET
+win32:TMP_BUILD_PATH = c:/Windows/Temp/$$TARGET
 
 MOC_DIR = $$TMP_BUILD_PATH
 RCC_DIR = $$TMP_BUILD_PATH
@@ -33,7 +32,8 @@ HEADERS = \
 		Application.h \
 		FileSystemView.h \
 		FilePanel.h \
-		HeaderView.h
+		HeaderView.h \
+		FileView.h
 
 SOURCES = \
 		main.cpp \
@@ -41,4 +41,5 @@ SOURCES = \
 		Application.cpp \
 		FileSystemView.cpp \
 		FilePanel.cpp \
-		HeaderView.cpp
+		HeaderView.cpp \
+		FileView.cpp
