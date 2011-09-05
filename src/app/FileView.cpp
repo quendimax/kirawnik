@@ -81,6 +81,7 @@ void FileView::paintEvent(QPaintEvent *)
 {
 	QPainter painter;
 	painter.begin(&m_pixmap);
+	painter.setFont(font());
 
 	int start = m_scroll->value();
 	int finish = qMin(m_scroll->value() + m_scroll->pageStep(), m_fileList.size() - 1);
@@ -396,7 +397,9 @@ void FileView::drawSize(int index, const QRect &rect, QPainter &painter)
 		painter.setPen(m_selectTextColor);
 	else
 		painter.setPen(m_textColor);
-	painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, strSize);
+	QRect r = rect;
+	r.setLeft(Margin);
+	painter.drawText(r, Qt::AlignRight | Qt::AlignVCenter, strSize);
 }
 
 
@@ -463,7 +466,8 @@ void FileView::drawModified(int index, const QRect &rect, QPainter &painter)
 		painter.setPen(m_selectTextColor);
 	else
 		painter.setPen(m_textColor);
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].lastModified().toString());
+	QDateTime dt = m_fileList[index].lastModified();
+	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, dt.toString("yyyy.MM.dd hh:mm:ss"));
 }
 
 
@@ -473,6 +477,7 @@ void FileView::drawModified(int index, const QRect &rect, QPainter &painter)
 void FileView::initPixmap()
 {
 	QPainter painter(&m_pixmap);
+	painter.setFont(font());
 
 	int start = m_scroll->value();
 	int finish = qMin(m_scroll->value() + m_scroll->pageStep(), m_fileList.size() - 1);
@@ -486,6 +491,7 @@ void FileView::initPixmap()
 void FileView::updateItem(int index)
 {
 	QPainter painter(&m_pixmap);
+	painter.setFont(font());
 
 	paintBackground(index, index, painter);
 	paintForeground(index, index, painter);
@@ -510,7 +516,11 @@ void FileView::readSettings()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("FileView");
 
-	setFont(sets->value("Font", font().family()).toString());
+	QFont nfont;
+	nfont.setFamily(sets->value("Font", font().family()).toString());
+	nfont.setPointSize(sets->value("FontSize", font().pointSize()).toInt(&ok));
+	Q_ASSERT(ok);
+	setFont(nfont);
 	m_cursorIsFull = sets->value("CursorIsFull", false).toBool();
 	m_cursorColor.setRgb((QRgb) sets->value("CursorColor", (uint) QColor(Qt::green).rgb()).toUInt(&ok));
 	Q_ASSERT(ok);
@@ -539,6 +549,7 @@ void FileView::writeSettings()
 	sets->beginGroup("FileView");
 
 	sets->setValue("Font", font().family());
+	sets->setValue("FontSize", font().pointSize());
 	sets->setValue("CursorIsFull", m_cursorIsFull);
 	sets->setValue("CursorColor", (uint) m_cursorColor.rgb());
 	sets->setValue("TextColor", (uint) m_textColor.rgb());
