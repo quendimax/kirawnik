@@ -12,9 +12,13 @@
 #include "FileView.h"
 
 
+QList<FileView *> FileView::s_fileViewes;
+
+
 FileView::FileView(HeaderView *header, QWidget *parent)
 	: QWidget(parent), e_header(header)
 {
+	s_fileViewes.append(this);
 	setFocusPolicy(Qt::StrongFocus);
 
 	m_prevScrollValue = 0;
@@ -30,8 +34,9 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 
 	m_width = width() - m_scroll->width();
 	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
+	initPixmap();
 
-	QDir dir("/usr/");
+	QDir dir("/usr/bin");
 	setFileInfoList(dir.entryInfoList());
 }
 
@@ -39,6 +44,7 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 FileView::~FileView()
 {
 	writeSettings();
+	s_fileViewes.removeAll(this);
 }
 
 
@@ -57,16 +63,52 @@ void FileView::setFileInfoList(const QFileInfoList &list)
 	m_scroll->setMinimum(0);
 	m_scroll->setMaximum(qMax(m_fileList.size(), m_scroll->pageStep()) - m_scroll->pageStep());
 	m_scroll->setValue(0);
+
+	initPixmap();
+}
+
+
+void FileView::updateAll()
+{
+	foreach (FileView *view, s_fileViewes) {
+		view->initPixmap();
+		view->update();
+	}
 }
 
 
 void FileView::paintEvent(QPaintEvent *)
 {
 	QPainter painter;
-
 	painter.begin(&m_pixmap);
-	paintBackground(m_scroll->value(), m_scroll->value() + m_scroll->pageStep(), painter);
-	paintForeground(m_scroll->value(), m_scroll->value() + m_scroll->pageStep(), painter);
+
+	int start = m_scroll->value();
+	int finish = qMin(m_scroll->value() + m_scroll->pageStep(), m_fileList.size() - 1);
+	int sub = m_scroll->value() - m_prevScrollValue;
+
+	if (0 <= qAbs(sub) && qAbs(sub) < m_scroll->pageStep()) {
+		QRect targetRect = m_pixmap.rect();
+		QRect sourceRect = m_pixmap.rect();
+
+		if (sub > 0) {
+			sourceRect.setTop(sourceRect.top() + sub*m_itemHeight);
+			targetRect.setBottom(targetRect.bottom() - sub*m_itemHeight);
+			start = finish - sub + 1;
+		}
+		else if (sub < 0){
+			targetRect.setTop(targetRect.top() - sub*m_itemHeight);
+			sourceRect.setBottom(sourceRect.bottom() + sub*m_itemHeight);
+			finish = start - sub - 1;
+		}
+		else {
+			finish = start - 1;
+		}
+		painter.drawPixmap(targetRect, m_pixmap, sourceRect);
+	}
+
+	paintBackground(start, finish, painter);
+	paintForeground(start, finish, painter);
+
 	painter.end();
 
 	painter.begin(this);
@@ -97,6 +139,7 @@ void FileView::resizeEvent(QResizeEvent *e)
 		m_width -= m_scroll->width();
 
 	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
+	initPixmap();
 }
 
 
@@ -136,9 +179,11 @@ void FileView::keyPressEvent(QKeyEvent *e)
 			break;
 		case Qt::Key_Space:
 			m_selectItems.setBit(m_current, !m_selectItems.at(m_current));
+			updateItem(m_current);
 			break;
 		case Qt::Key_Insert:
 			m_selectItems.setBit(m_current, !m_selectItems.at(m_current));
+			updateItem(m_current);
 			m_current++;
 			break;
 		}
@@ -181,35 +226,21 @@ void FileView::wheelEvent(QWheelEvent *e)
 void FileView::paintBackground(int start, int finish, QPainter &painter)
 {
 	Q_ASSERT(start >= m_scroll->value());
-	Q_ASSERT(start <= finish);
 
-	QRect baseRect;
-	baseRect.setWidth(m_width);
-	baseRect.setTop((start - m_scroll->value()) * m_itemHeight);
-	baseRect.setHeight((finish - start + 1) * m_itemHeight);
-	painter.fillRect(baseRect, m_baseColor[0]);
+	if (finish < start ) return;
 
-	if (m_baseColor[0] != m_baseColor[1]) {
-		// if m_scroll->value() odd then start from alternate color
-		int y = (start & 1) ? baseRect.top() : baseRect.top() + m_itemHeight;
-		int i = (start & 1) ? start : start + 1;
+	int top = (start - m_scroll->value()) * m_itemHeight;
+	QRect rect(0, top, m_width, m_itemHeight);
 
-		while (i < m_fileList.size() && y <= baseRect.bottom()) {
-			QRect rect(0, y, m_width, m_itemHeight);
+	for (int i = start; i <= finish; i++) {
+		if (m_selectItems.at(i))
+			painter.fillRect(rect, m_selectBaseColor);
+		else if (i & 1)
 			painter.fillRect(rect, m_baseColor[1]);
+		else
+			painter.fillRect(rect, m_baseColor[0]);
 
-			y += 2*m_itemHeight;
-			i += 2;
-		}
-	}
-
-	if (!(m_baseColor[0] == m_baseColor[1] && m_baseColor[0] == m_selectBaseColor)) {
-		for (int i = start, y = 0; i < m_fileList.size() && y < baseRect.bottom(); i++, y += m_itemHeight) {
-			if (m_selectItems.at(i)) {
-				QRect rect(0, y, m_width, m_itemHeight);
-				painter.fillRect(rect, m_selectBaseColor);
-			}
-		}
+		rect.moveTop(rect.top() + m_itemHeight);
 	}
 }
 
@@ -217,7 +248,8 @@ void FileView::paintBackground(int start, int finish, QPainter &painter)
 void FileView::paintForeground(int start, int finish, QPainter &painter)
 {
 	Q_ASSERT(start >= m_scroll->value());
-	Q_ASSERT(start <= finish);
+
+	if (finish < start) return;
 
 	static void (FileView::*drawPart[Krw::Sort_End])(int, const QRect &, QPainter &) = {
 		&FileView::drawName,
@@ -231,13 +263,15 @@ void FileView::paintForeground(int start, int finish, QPainter &painter)
 	};
 
 	painter.setPen(m_textColor);
-	int height = (finish - start + 1) * m_itemHeight;
 	for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
-		for (int y = 0, i = start; i < m_fileList.size() && y < height; y += m_itemHeight, i++) {
-			QRect rect = makeRectForSection(sectionIndex, y);
+		int y = (start - m_scroll->value()) * m_itemHeight;
+		QRect rect = makeRectForSection(sectionIndex, y);
 
+		for (int i = start; i <= finish; i++) {
 			void (FileView::*drawMethod)(int, const QRect &, QPainter &) = drawPart[e_header->sectionType(sectionIndex)];
 			(this->*drawMethod)(i, rect, painter);
+
+			rect.moveTop(rect.top() + m_itemHeight);
 		}
 	}
 }
@@ -297,6 +331,7 @@ void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 	QIcon icon = m_iconProvider.icon(m_fileList[index]);
 	icon.paint(&painter, rect.left(), rect.top(), m_itemHeight, m_itemHeight);
 
+	rect.setLeft(rect.left() + 2*Margin + m_itemHeight);
 	QFontMetrics metrics(font());
 	QString name;
 	QString addName;
@@ -329,7 +364,6 @@ void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 	else
 		painter.setPen(m_textColor);
 
-	rect.setLeft(rect.left() + 2*Margin + m_itemHeight);
 	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, name);
 }
 
@@ -430,6 +464,31 @@ void FileView::drawModified(int index, const QRect &rect, QPainter &painter)
 	else
 		painter.setPen(m_textColor);
 	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].lastModified().toString());
+}
+
+
+/*!
+  Paints full pixmap. Must be called at the moment when recreate the m_pixmap variable
+  */
+void FileView::initPixmap()
+{
+	QPainter painter(&m_pixmap);
+
+	int start = m_scroll->value();
+	int finish = qMin(m_scroll->value() + m_scroll->pageStep(), m_fileList.size() - 1);
+
+	painter.fillRect(m_pixmap.rect(), m_baseColor[0]);
+	paintBackground(start, finish, painter);
+	paintForeground(start, finish, painter);
+}
+
+
+void FileView::updateItem(int index)
+{
+	QPainter painter(&m_pixmap);
+
+	paintBackground(index, index, painter);
+	paintForeground(index, index, painter);
 }
 
 

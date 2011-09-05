@@ -22,6 +22,9 @@ public:
 
 	void setFileInfoList(const QFileInfoList &list);
 
+public slots:
+	void updateAll();
+
 protected:
 	void paintEvent(QPaintEvent *);
 	void resizeEvent(QResizeEvent *);
@@ -30,7 +33,6 @@ protected:
 	void wheelEvent(QWheelEvent *);
 
 private:
-	void paintItem(int index, QPainter &);
 	void paintBackground(int start, int finish, QPainter &);
 	void paintForeground(int start, int finish, QPainter &);
 	void paintCursor(QPainter &);
@@ -44,6 +46,8 @@ private:
 	void drawGroup(int index, const QRect &, QPainter &);
 	void drawModified(int index, const QRect &, QPainter &);
 
+	void initPixmap();
+	void updateItem(int index);
 	QRect makeRectForSection(int index, int top) const;
 
 	void readSettings();
@@ -51,6 +55,7 @@ private:
 
 private:
 	static const int Margin = 3;
+	static QList<FileView *> s_fileViewes;
 
 	HeaderView *e_header;
 	QScrollBar *m_scroll;
