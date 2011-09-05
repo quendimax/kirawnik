@@ -242,12 +242,11 @@ void HeaderView::mouseMoveEvent(QMouseEvent *e)
 				else
 					s_items[index].offset = s_items[i].offset + s_items[i].width;
 				qSort(s_items, s_items + s_itemCount);
+				emit geometryChanged();
 				break;
 			}
 		}
-
 		updateAll();
-		emit geometryChanged();
 		}
 		break;
 	}
