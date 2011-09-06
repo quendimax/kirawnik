@@ -1,16 +1,19 @@
+#include <QSettings>
 #include <QVBoxLayout>
 
-#include "HeaderView.h"
 #include "FileView.h"
+#include "HeaderView.h"
+#include "Application.h"
 #include "FilePanel.h"
 
 
-FilePanel::FilePanel(QWidget *parent)
+FilePanel::FilePanel(const QString &name, QWidget *parent)
     : QWidget(parent)
 {
+	setObjectName(name);
+
 	m_header = new HeaderView;
 	m_fileView = new FileView(m_header);
-
 	connect(m_header, SIGNAL(geometryChanged()), m_fileView, SLOT(updateAll()));
 
 	QVBoxLayout *layout = new QVBoxLayout;
@@ -20,4 +23,44 @@ FilePanel::FilePanel(QWidget *parent)
 	layout->addWidget(m_fileView);
 
 	setLayout(layout);
+
+	m_currentDir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase | QDir::LocaleAware);
+
+	readSettings();
+
+	m_fileView->setFileInfoList(m_currentDir.entryInfoList());
+}
+
+
+FilePanel::~FilePanel()
+{
+	writeSettings();
+}
+
+
+void FilePanel::keyPressEvent(QKeyEvent *)
+{
+	qDebug("Key was pressed");
+}
+
+
+void FilePanel::readSettings()
+{
+	QSettings *sets = kApp->settings();
+	sets->beginGroup("FilePanel." + objectName());
+
+	m_currentDir.setPath(sets->value("CurrentDir", QDir::homePath()).toString());
+
+	sets->endGroup();
+}
+
+
+void FilePanel::writeSettings()
+{
+	QSettings *sets = kApp->settings();
+	sets->beginGroup("FilePanel." + objectName());
+
+	sets->setValue("CurrentDir", m_currentDir.absolutePath());
+
+	sets->endGroup();
 }

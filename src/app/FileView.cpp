@@ -35,9 +35,6 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 	m_width = width() - m_scroll->width();
 	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
 	initPixmap();
-
-	QDir dir("/usr/bin");
-	setFileInfoList(dir.entryInfoList());
 }
 
 
@@ -201,6 +198,8 @@ void FileView::keyPressEvent(QKeyEvent *e)
 		m_scroll->setValue(m_current);
 	else if (m_current - m_scroll->value() >= m_scroll->pageStep())
 		m_scroll->setValue(m_current - m_scroll->pageStep() + 1);
+
+	e->ignore();
 }
 
 
@@ -371,11 +370,13 @@ void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 
 void FileView::drawSuffix(int index, const QRect &rect, QPainter &painter)
 {
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].suffix());
+	if (!m_fileList[index].isDir()) {
+		if (m_selectItems.at(index))
+			painter.setPen(m_selectTextColor);
+		else
+			painter.setPen(m_textColor);
+		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].suffix());
+	}
 }
 
 

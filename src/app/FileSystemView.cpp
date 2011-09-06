@@ -33,8 +33,8 @@ FileSystemView::FileSystemView(QWidget *parent)
 	m_functionalBar->adjustSize();
 	m_functionalBar->setFixedHeight(m_functionalBar->height());
 
-	m_leftPanel = new FilePanel;
-	m_rightPanel = new FilePanel;
+	m_leftPanel = new FilePanel("Left");
+	m_rightPanel = new FilePanel("Right");
 
 	QSplitter *splitter = new QSplitter(Qt::Horizontal);
 	splitter->setContentsMargins(0, 0, 0, 0);
