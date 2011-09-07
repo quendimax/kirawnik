@@ -60,6 +60,7 @@ void FileView::setFileInfoList(const QFileInfoList &list)
 	m_scroll->setMinimum(0);
 	m_scroll->setMaximum(qMax(m_fileList.size(), m_scroll->pageStep()) - m_scroll->pageStep());
 	m_scroll->setValue(0);
+	m_current = 0;
 
 	initPixmap();
 }
@@ -214,6 +215,8 @@ void FileView::mousePressEvent(QMouseEvent *e)
 		m_scroll->setValue(m_current - m_scroll->pageStep() + 1);
 
 	update();
+
+	e->ignore();
 }
 
 

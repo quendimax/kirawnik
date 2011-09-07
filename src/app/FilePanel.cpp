@@ -1,5 +1,9 @@
+#include <QUrl>
+#include <QProcess>
 #include <QSettings>
+#include <QKeyEvent>
 #include <QVBoxLayout>
+#include <QDesktopServices>
 
 #include "FileView.h"
 #include "HeaderView.h"
@@ -28,7 +32,9 @@ FilePanel::FilePanel(const QString &name, QWidget *parent)
 
 	readSettings();
 
-	m_fileView->setFileInfoList(m_currentDir.entryInfoList());
+	m_fileList = m_currentDir.entryInfoList();
+	m_fileList.pop_front();
+	m_fileView->setFileInfoList(m_fileList);
 }
 
 
@@ -38,9 +44,48 @@ FilePanel::~FilePanel()
 }
 
 
-void FilePanel::keyPressEvent(QKeyEvent *)
+void FilePanel::keyPressEvent(QKeyEvent *e)
 {
-	qDebug("Key was pressed");
+	switch (e->key()) {
+	case Qt::Key_Return: {
+		const QFileInfo &fi = m_fileList[m_fileView->current()];
+		if (fi.isDir()) {
+			m_currentDir = QDir(fi.canonicalFilePath());
+			m_currentDir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase | QDir::LocaleAware);
+			m_fileList = m_currentDir.entryInfoList();
+			m_fileList.pop_front();
+			if (fi.isRoot()) m_fileList.pop_front();
+			m_fileView->setFileInfoList(m_fileList);
+		}
+		else {
+			if (fi.isExecutable())
+				QProcess::startDetached(fi.canonicalFilePath());
+			else
+				QProcess::startDetached(QString("xdg-open"), QStringList() << fi.canonicalFilePath());
+		}
+		}
+		break;
+	}
+}
+
+
+void FilePanel::mouseDoubleClickEvent(QMouseEvent *)
+{
+	const QFileInfo &fi = m_fileList[m_fileView->current()];
+	if (fi.isDir()) {
+		m_currentDir = QDir(fi.canonicalFilePath());
+		m_currentDir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase | QDir::LocaleAware);
+		m_fileList = m_currentDir.entryInfoList();
+		m_fileList.pop_front();
+		if (fi.isRoot()) m_fileList.pop_front();
+		m_fileView->setFileInfoList(m_fileList);
+	}
+	else {
+		if (fi.isExecutable())
+			QProcess::startDetached(fi.canonicalFilePath());
+		else
+			QProcess::startDetached(QString("xdg-open"), QStringList() << fi.canonicalFilePath());
+	}
 }
 
 

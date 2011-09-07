@@ -22,6 +22,7 @@ public:
 
 protected:
 	void keyPressEvent(QKeyEvent *);
+	void mouseDoubleClickEvent(QMouseEvent *);
 
 private:
 	void readSettings();
@@ -31,6 +32,7 @@ private:
 	HeaderView *m_header;
 	FileView *m_fileView;
 	QDir m_currentDir;
+	QFileInfoList m_fileList;
 };
 
 
