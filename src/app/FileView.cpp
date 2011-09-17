@@ -32,7 +32,7 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 
 	readSettings();
 
-	m_width = width() - m_scroll->width();
+	initScroll();
 	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
 	initPixmap();
 }
@@ -51,17 +51,9 @@ void FileView::setFileInfoList(const QFileInfoList &list)
 	m_selectItems.resize(list.size());
 	m_selectItems.fill(false);
 
-	if (list.size() * m_itemHeight > height())
-		m_scroll->show();
-	else
-		m_scroll->hide();
-	m_scroll->setSingleStep(1);
-	m_scroll->setPageStep(height() / m_itemHeight);
-	m_scroll->setMinimum(0);
-	m_scroll->setMaximum(qMax(m_fileList.size(), m_scroll->pageStep()) - m_scroll->pageStep());
-	m_scroll->setValue(0);
 	m_current = 0;
 
+	initScroll();
 	initPixmap();
 }
 
@@ -82,7 +74,10 @@ void FileView::paintEvent(QPaintEvent *)
 	painter.setFont(font());
 
 	int start = m_scroll->value();
-	int finish = qMin(m_scroll->value() + m_scroll->pageStep(), m_fileList.size() - 1);
+	int tmpFinish = m_scroll->value() + m_scroll->pageStep();
+	if (!(height() % m_itemHeight))
+		tmpFinish--;
+	int finish = qMin(tmpFinish, m_fileList.size() - 1);
 	int sub = m_scroll->value() - m_prevScrollValue;
 
 	if (0 <= qAbs(sub) && qAbs(sub) < m_scroll->pageStep()) {
@@ -122,22 +117,9 @@ void FileView::paintEvent(QPaintEvent *)
 }
 
 
-void FileView::resizeEvent(QResizeEvent *e)
+void FileView::resizeEvent(QResizeEvent *)
 {
-	if (m_fileList.size()*m_itemHeight > height())
-		m_scroll->show();
-	else
-		m_scroll->hide();
-
-	m_scroll->setPageStep(height() / m_itemHeight);
-	m_scroll->setMaximum(qMax(m_fileList.size(), m_scroll->pageStep()) - m_scroll->pageStep());
-	m_scroll->setGeometry(width() - m_scroll->width(), 0, m_scroll->width(), e->size().height());
-
-	m_width = width();
-	if (!m_scroll->isHidden())
-		m_width -= m_scroll->width();
-
-	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
+	initScroll();
 	initPixmap();
 }
 
@@ -245,6 +227,9 @@ void FileView::paintBackground(int start, int finish, QPainter &painter)
 
 		rect.moveTop(rect.top() + m_itemHeight);
 	}
+
+	if (finish == m_fileList.size()-1)
+		painter.fillRect(rect, m_baseColor[0]);
 }
 
 
@@ -471,7 +456,7 @@ void FileView::drawModified(int index, const QRect &rect, QPainter &painter)
 	else
 		painter.setPen(m_textColor);
 	QDateTime dt = m_fileList[index].lastModified();
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, dt.toString("yyyy.MM.dd hh:mm:ss"));
+	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, dt.toString("yyyy/MM/dd  hh:mm:ss"));
 }
 
 
@@ -480,6 +465,8 @@ void FileView::drawModified(int index, const QRect &rect, QPainter &painter)
   */
 void FileView::initPixmap()
 {
+	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
+
 	QPainter painter(&m_pixmap);
 	painter.setFont(font());
 
@@ -489,6 +476,26 @@ void FileView::initPixmap()
 	painter.fillRect(m_pixmap.rect(), m_baseColor[0]);
 	paintBackground(start, finish, painter);
 	paintForeground(start, finish, painter);
+}
+
+
+void FileView::initScroll()
+{
+	if (m_fileList.size()*m_itemHeight > height())
+		m_scroll->show();
+	else
+		m_scroll->hide();
+
+	m_scroll->setMinimum(0);
+	m_scroll->setValue(0);
+	m_scroll->setSingleStep(1);
+	m_scroll->setPageStep(height() / m_itemHeight);
+	m_scroll->setMaximum(qMax(m_fileList.size(), m_scroll->pageStep()) - m_scroll->pageStep());
+	m_scroll->setGeometry(width() - m_scroll->width(), 0, m_scroll->width(), height());
+
+	m_width = width();
+	if (!m_scroll->isHidden())
+		m_width -= m_scroll->width();
 }
 
 

@@ -49,20 +49,18 @@ void FilePanel::keyPressEvent(QKeyEvent *e)
 	switch (e->key()) {
 	case Qt::Key_Return: {
 		const QFileInfo &fi = m_fileList[m_fileView->current()];
-		if (fi.isDir()) {
-			m_currentDir = QDir(fi.canonicalFilePath());
-			m_currentDir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase | QDir::LocaleAware);
+		if (fi.isDir())
+			changeDir(fi.canonicalFilePath());
+		else
+			execFile(fi);
+		}
+		break;
+
+	case Qt::Key_Backspace:
+		if (m_currentDir.cdUp()) {
 			m_fileList = m_currentDir.entryInfoList();
 			m_fileList.pop_front();
-			if (fi.isRoot()) m_fileList.pop_front();
 			m_fileView->setFileInfoList(m_fileList);
-		}
-		else {
-			if (fi.isExecutable())
-				QProcess::startDetached(fi.canonicalFilePath());
-			else
-				QProcess::startDetached(QString("xdg-open"), QStringList() << fi.canonicalFilePath());
-		}
 		}
 		break;
 	}
@@ -72,20 +70,33 @@ void FilePanel::keyPressEvent(QKeyEvent *e)
 void FilePanel::mouseDoubleClickEvent(QMouseEvent *)
 {
 	const QFileInfo &fi = m_fileList[m_fileView->current()];
-	if (fi.isDir()) {
-		m_currentDir = QDir(fi.canonicalFilePath());
-		m_currentDir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase | QDir::LocaleAware);
-		m_fileList = m_currentDir.entryInfoList();
-		m_fileList.pop_front();
-		if (fi.isRoot()) m_fileList.pop_front();
-		m_fileView->setFileInfoList(m_fileList);
-	}
-	else {
-		if (fi.isExecutable())
-			QProcess::startDetached(fi.canonicalFilePath());
-		else
-			QProcess::startDetached(QString("xdg-open"), QStringList() << fi.canonicalFilePath());
-	}
+	if (fi.isDir())
+		changeDir(fi.canonicalFilePath());
+	else
+		execFile(fi);
+}
+
+
+void FilePanel::changeDir(const QString &dirName)
+{
+	QDir newDir(dirName);
+	if (!newDir.exists() || !newDir.isReadable())
+		return;
+
+	m_currentDir = newDir;
+	m_currentDir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase | QDir::LocaleAware);
+	m_fileList = m_currentDir.entryInfoList();
+	m_fileList.pop_front();
+	m_fileView->setFileInfoList(m_fileList);
+}
+
+
+void FilePanel::execFile(const QFileInfo &fi)
+{
+	if (fi.isExecutable())
+		QProcess::startDetached(fi.canonicalFilePath());
+	else
+		QProcess::startDetached(QString("xdg-open"), QStringList() << fi.canonicalFilePath());
 }
 
 

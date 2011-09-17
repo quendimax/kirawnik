@@ -25,6 +25,9 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *);
 
 private:
+	void changeDir(const QString &dirName);
+	void execFile(const QFileInfo &fileInfo);
+
 	void readSettings();
 	void writeSettings();
 

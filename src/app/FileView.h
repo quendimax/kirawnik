@@ -47,6 +47,7 @@ private:
 	void drawModified(int index, const QRect &, QPainter &);
 
 	void initPixmap();
+	void initScroll();
 	void updateItem(int index);
 	QRect makeRectForSection(int index, int top) const;
 
