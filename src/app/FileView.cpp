@@ -486,6 +486,7 @@ void FileView::initScroll()
 	else
 		m_scroll->hide();
 
+	m_prevScrollValue = 0;
 	m_scroll->setMinimum(0);
 	m_scroll->setValue(0);
 	m_scroll->setSingleStep(1);
