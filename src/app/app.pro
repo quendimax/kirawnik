@@ -33,7 +33,8 @@ HEADERS = \
 		FileSystemView.h \
 		FilePanel.h \
 		HeaderView.h \
-		FileView.h
+		FileView.h \
+		PluginManager.h
 
 SOURCES = \
 		main.cpp \
@@ -42,4 +43,5 @@ SOURCES = \
 		FileSystemView.cpp \
 		FilePanel.cpp \
 		HeaderView.cpp \
-		FileView.cpp
+		FileView.cpp \
+		PluginManager.cpp
