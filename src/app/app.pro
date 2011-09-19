@@ -14,7 +14,7 @@ CONFIG(debug, debug|release) {
 }
 #QMAKE_CXXFLAGS_DEBUG += -O1
 
-INCLUDEPATH = .
+INCLUDEPATH = . ..
 
 unix:TMP_BUILD_PATH = /tmp/$$TARGET
 win32:TMP_BUILD_PATH = c:/Windows/Temp/$$TARGET

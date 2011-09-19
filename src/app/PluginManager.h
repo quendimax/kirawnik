@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QStringList>
 
+#include "plugins/interfaces/PluginInterface.h"
+
 
 class PluginManager : public QObject
 {
@@ -13,7 +15,7 @@ public:
 	PluginManager(QObject *parent = 0);
 
 	void addPluginPath(const QString &path);
-	void *loadPlugin(const QString &pluginName);
+	PluginInterface *loadPlugin(const QString &pluginName);
 
 private:
 	QStringList m_paths;
