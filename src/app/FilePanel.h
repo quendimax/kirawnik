@@ -1,5 +1,5 @@
-#ifndef __FILEPANEL_H__
-#define __FILEPANEL_H__
+#ifndef __APP_FILEPANEL_H__
+#define __APP_FILEPANEL_H__
 
 #include <QDir>
 #include <QWidget>
@@ -39,4 +39,4 @@ private:
 };
 
 
-#endif //__FILEPANEL_H__
+#endif //__APP_FILEPANEL_H__

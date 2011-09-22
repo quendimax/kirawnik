@@ -32,6 +32,7 @@ HEADERS = \
 		Application.h \
 		FileSystemView.h \
 		FilePanel.h \
+		HeaderItem.h \
 		HeaderView.h \
 		FileView.h \
 		PluginManager.h

@@ -1,5 +1,5 @@
-#ifndef __FILESYSTEMVIEW_H__
-#define __FILESYSTEMVIEW_H__
+#ifndef __APP_FILESYSTEMVIEW_H__
+#define __APP_FILESYSTEMVIEW_H__
 
 #include <QWidget>
 
@@ -45,4 +45,4 @@ inline FilePanel *FileSystemView::rightPanel() { return m_rightPanel; }
 inline FilePanel *FileSystemView::activePanel() { return m_activePanel; }
 inline FilePanel *FileSystemView::inactivePanel() { return m_inactivePanel; }
 
-#endif //__FILESYSTEMVIEW_H__
+#endif //__APP_FILESYSTEMVIEW_H__

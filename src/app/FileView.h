@@ -1,5 +1,5 @@
-#ifndef __FILEVIEW_H__
-#define __FILEVIEW_H__
+#ifndef __APP_FILEVIEW_H__
+#define __APP_FILEVIEW_H__
 
 #include <QBitArray>
 #include <QFileInfoList>
@@ -82,4 +82,4 @@ private:
 inline int FileView::current() const { return m_current; }
 
 
-#endif //__FILEVIEW_H__
+#endif //__APP_FILEVIEW_H__

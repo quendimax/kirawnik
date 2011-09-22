@@ -1,12 +1,12 @@
-#ifndef __HEADERVIEW_H__
-#define __HEADERVIEW_H__
+#ifndef __APP_HEADERVIEW_H__
+#define __APP_HEADERVIEW_H__
 
 #include <QStyleOptionHeader>
 #include <QBitArray>
 #include <QList>
 #include <QWidget>
 
-#include "Global.h"
+#include "HeaderItem.h"
 
 class QMenu;
 class QPainter;
@@ -25,7 +25,7 @@ public:
 
 	int sectionOffset(int index) const;
 	int sectionSize(int index) const;
-	Krw::SortingType sectionType(int index) const;
+	QString sectionType(int index) const;
 	QString sectionName(int index) const;
 	bool sectionIsShowing(int index) const;
 
@@ -54,16 +54,6 @@ private:
 		HS_OutPressing,    //!< mouse left button is pressing out of headers
 		HS_Resizing,       //!< mouse left button is pressing on resize item
 		HS_Moving          //!< mouse left button is pressing and moving header item
-	};
-
-	struct HeaderItem
-	{
-		QString name;
-		Krw::SortingType type;
-		int offset;
-		int width;
-
-		inline bool operator < (const HeaderItem &item) const { return offset < item.offset; }
 	};
 
 private:
@@ -118,4 +108,4 @@ inline int HeaderView::hiddenCount() const { return s_itemCount - s_showItemCoun
 inline int HeaderView::realyIndex(int logicalIndex) const { return s_itemCount - s_showItemCount + logicalIndex; }
 
 
-#endif //__HEADERVIEW_H__
+#endif //__APP_HEADERVIEW_H__

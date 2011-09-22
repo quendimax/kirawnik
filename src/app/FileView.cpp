@@ -256,6 +256,11 @@ void FileView::paintForeground(int start, int finish, QPainter &painter)
 		QRect rect = makeRectForSection(sectionIndex, y);
 
 		for (int i = start; i <= finish; i++) {
+			if (m_selectItems.at(index))
+				painter.setPen(m_selectTextColor);
+			else
+				painter.setPen(m_textColor);
+
 			void (FileView::*drawMethod)(int, const QRect &, QPainter &) = drawPart[e_header->sectionType(sectionIndex)];
 			(this->*drawMethod)(i, rect, painter);
 
@@ -313,22 +318,22 @@ void FileView::paintCursor(QPainter &painter)
 }
 
 
-void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
+void FileView::drawName(const QFileInfo &fi, const QRect &rectangle, QPainter &painter)
 {
 	QRect rect = rectangle;
-	QIcon icon = m_iconProvider.icon(m_fileList[index]);
+	QIcon icon = m_iconProvider.icon(fi);
 	icon.paint(&painter, rect.left(), rect.top(), m_itemHeight, m_itemHeight);
 
 	rect.setLeft(rect.left() + 2*Margin + m_itemHeight);
 	QFontMetrics metrics(font());
 	QString name;
 	QString addName;
-	if (m_fileList[index].isDir()) {
-		name = m_fileList[index].fileName();
+	if (fi.isDir()) {
+		name = fi.fileName();
 		addName += "[]";	// len == 2
 	}
 	else {
-		name = m_fileList[index].baseName();
+		name = fi.baseName();
 		addName = "";
 	}
 
@@ -338,7 +343,7 @@ void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 	while (metrics.width(name) + metrics.width(addName) > rect.width() && name.length() > 0)
 		name.remove(name.length() - 1, 1);
 
-	if (m_fileList[index].isDir()) {
+	if (fi.isDir()) {
 		if (addName.length() == 2)
 			name = "[" + name + "]";
 		else
@@ -347,10 +352,6 @@ void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 	else if (addName.length() == 2)
 		name += "..";
 
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
 
 	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, name);
 }

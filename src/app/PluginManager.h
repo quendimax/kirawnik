@@ -1,5 +1,5 @@
-#ifndef __PLUGINMANAGER__
-#define __PLUGINMANAGER__
+#ifndef __APP_PLUGINMANAGER__
+#define __APP_PLUGINMANAGER__
 
 #include <QObject>
 #include <QStringList>
@@ -22,4 +22,4 @@ private:
 };
 
 
-#endif //__PLUGINMANAGER__
+#endif //__APP_PLUGINMANAGER__
