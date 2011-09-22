@@ -52,7 +52,7 @@ void FilePanel::keyPressEvent(QKeyEvent *e)
 		if (fi.isDir())
 			changeDir(fi.canonicalFilePath());
 		else
-			execFile(fi);
+			openFile(fi);
 		}
 		break;
 
@@ -73,7 +73,7 @@ void FilePanel::mouseDoubleClickEvent(QMouseEvent *)
 	if (fi.isDir())
 		changeDir(fi.canonicalFilePath());
 	else
-		execFile(fi);
+		openFile(fi);
 }
 
 
@@ -91,12 +91,12 @@ void FilePanel::changeDir(const QString &dirName)
 }
 
 
-void FilePanel::execFile(const QFileInfo &fi)
+void FilePanel::openFile(const QFileInfo &fi)
 {
 	if (fi.isExecutable())
 		QProcess::startDetached(fi.canonicalFilePath());
 	else
-		QProcess::startDetached(QString("xdg-open"), QStringList() << fi.canonicalFilePath());
+		QDesktopServices::openUrl(QUrl::fromLocalFile(fi.canonicalFilePath()));
 }
 
 

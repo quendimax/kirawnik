@@ -26,7 +26,7 @@ protected:
 
 private:
 	void changeDir(const QString &dirName);
-	void execFile(const QFileInfo &fileInfo);
+	void openFile(const QFileInfo &fileInfo);
 
 	void readSettings();
 	void writeSettings();
