@@ -5,7 +5,7 @@
 class PluginInterface
 {
 public:
-	virtual ~PluginInterface() {};
+	virtual ~PluginInterface() = 0;
 
 	virtual void initialize() = 0;
 };
