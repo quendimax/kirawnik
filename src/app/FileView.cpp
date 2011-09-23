@@ -261,7 +261,7 @@ void FileView::paintForeground(int start, int finish, QPainter &painter)
 			else
 				painter.setPen(m_textColor);
 
-			void (FileView::*drawMethod)(int, const QRect &, QPainter &) = drawPart[e_header->sectionType(sectionIndex)];
+			void (FileView::*drawMethod)(int, const QRect &, QPainter &) = drawPart[e_header->sectionId(sectionIndex)];
 			(this->*drawMethod)(i, rect, painter);
 
 			rect.moveTop(rect.top() + m_itemHeight);
@@ -280,7 +280,7 @@ void FileView::paintCursor(QPainter &painter)
 		painter.fillRect(rect, m_cursorColor);
 
 		for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
-			switch (e_header->sectionType(sectionIndex)) {
+			switch (e_header->sectionId(sectionIndex)) {
 			case Krw::Sort_Name:
 				drawName(m_current, makeRectForSection(sectionIndex, y), painter);
 				break;
