@@ -21,10 +21,7 @@ public:
 	explicit HeaderView(QWidget *parent = 0);
 	virtual ~HeaderView();
 
-	int sectionOffset(int index) const;
-	int sectionSize(int index) const;
-	int sectionId(int index) const;
-	QString sectionName(int index) const;
+	AbstractHeaderItem *headerItem(int index) const;
 	bool sectionIsShowing(int index) const;
 
 	bool isReverseSorting() const;
@@ -89,11 +86,8 @@ private:
 };
 
 
-inline int     HeaderView::sectionOffset(int index) const { return s_items[realyIndex(index)]->offset(); }
-inline int     HeaderView::sectionSize(int index) const { return s_items[realyIndex(index)]->width(); }
-inline int HeaderView::sectionId(int index) const { return s_items[realyIndex(index)]->id(); }
-inline QString HeaderView::sectionName(int index) const { return s_items[realyIndex(index)]->name(); }
-inline bool    HeaderView::sectionIsShowing(int index) const { return s_showItems.at(s_items[realyIndex(index)]->id()); }
+inline AbstractHeaderItem *HeaderView::headerItem(int index) const { return s_items[realyIndex(index)]; }
+inline bool HeaderView::sectionIsShowing(int index) const { return s_showItems.at(s_items[realyIndex(index)]->id()); }
 
 inline int HeaderView::sortingId() const { return m_sortingItemId; }
 inline bool HeaderView::isReverseSorting() const { return m_reverseSorting; }

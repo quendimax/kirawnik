@@ -250,8 +250,7 @@ void FileView::paintForeground(int start, int finish, QPainter &painter)
 			else
 				painter.setPen(m_textColor);
 
-//			void (FileView::*drawMethod)(int, const QRect &, QPainter &) = drawPart[e_header->sectionId(sectionIndex)];
-//			(this->*drawMethod)(i, rect, painter);
+			e_header->headerItem(sectionIndex)->drawFileItem(m_fileList[i], rect, painter);
 
 			rect.moveTop(rect.top() + m_itemHeight);
 		}
@@ -269,35 +268,9 @@ void FileView::paintCursor(QPainter &painter)
 		painter.fillRect(rect, m_cursorColor);
 
 		for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
-/*			switch (e_header->sectionId(sectionIndex)) {
-			case Krw::Sort_Name:
-				drawName(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Suffix:
-				drawSuffix(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Size:
-				drawSize(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_TextPerms:
-				drawTextPerms(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_DigitPerms:
-				drawDigitPerms(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Owner:
-				drawOwner(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Group:
-				drawGroup(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Modified:
-				drawModified(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			default:
-				break;
-			}
-*/		}
+			QRect rect = makeRectForSection(sectionIndex, y);
+			e_header->headerItem(sectionIndex)->drawFileItem(m_fileList[m_current], rect, painter);
+		}
 	}
 	else {
 		int y = (m_current - m_scroll->value()) * m_itemHeight;
@@ -504,8 +477,8 @@ inline QRect FileView::makeRectForSection(int index, int top) const
 {
 	QRect rect;
 	rect.setTop(top);
-	rect.setLeft(e_header->sectionOffset(index) + Margin);
-	rect.setWidth(e_header->sectionSize(index) - 2*Margin);
+	rect.setLeft(e_header->headerItem(index)->offset() + Margin);
+	rect.setWidth(e_header->headerItem(index)->width() - 2*Margin);
 	rect.setHeight(m_itemHeight);
 
 	return rect;
