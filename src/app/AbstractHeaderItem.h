@@ -1,5 +1,5 @@
-#ifndef __APP_HEADERITEM_H__
-#define __APP_HEADERITEM_H__
+#ifndef __APP_ABSTRACTHEADERITEM_H__
+#define __APP_ABSTRACTHEADERITEM_H__
 
 #include <QString>
 
@@ -15,7 +15,6 @@ class AbstractHeaderItem
 public:
 	AbstractHeaderItem(const QString &name, int id, int offset = -1, int width = 10);
 
-	inline void setName(const QString &name) { m_name = name; }
 	inline QString name() const { return m_name; }
 	inline int id() const { return m_id; }
 	inline int offset() const { return m_offset; }
@@ -26,11 +25,6 @@ public:
 	virtual void drawFileItem(const QFileInfo &, const QRect &, QPainter &) {};
 
 private:
-	inline void setOffset(int offset) { m_offset = offset; }
-	inline void setWidth(int width) { m_width = width; }
-	inline void setId(int id) { m_id = id; }
-
-private:
 	QString m_name;
 	int m_id;
 	int m_offset;
@@ -38,4 +32,4 @@ private:
 };
 
 
-#endif //__APP_HEADERITEM_H__
+#endif //__APP_ABSTRACTHEADERITEM_H__
