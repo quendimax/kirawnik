@@ -242,7 +242,9 @@ void FileView::paintForeground(int start, int finish, QPainter &painter)
 	painter.setPen(m_textColor);
 	for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
 		int y = (start - m_scroll->value()) * m_itemHeight;
-		QRect rect = makeRectForSection(sectionIndex, y);
+		AbstractHeaderItem::PaintOption op;
+		op.margin = Margin;
+		op.rect = makeRectForSection(sectionIndex, y);
 
 		for (int i = start; i <= finish; i++) {
 			if (m_selectItems.at(i))
@@ -250,9 +252,9 @@ void FileView::paintForeground(int start, int finish, QPainter &painter)
 			else
 				painter.setPen(m_textColor);
 
-			e_header->headerItem(sectionIndex)->drawFileItem(m_fileList[i], rect, painter);
+			e_header->headerItem(sectionIndex)->drawFileItem(m_fileList[i], op, painter);
 
-			rect.moveTop(rect.top() + m_itemHeight);
+			op.rect.moveTop(op.rect.top() + m_itemHeight);
 		}
 	}
 }
@@ -268,8 +270,10 @@ void FileView::paintCursor(QPainter &painter)
 		painter.fillRect(rect, m_cursorColor);
 
 		for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
-			QRect rect = makeRectForSection(sectionIndex, y);
-			e_header->headerItem(sectionIndex)->drawFileItem(m_fileList[m_current], rect, painter);
+			AbstractHeaderItem::PaintOption op;
+			op.margin = Margin;
+			op.rect = makeRectForSection(sectionIndex, y);
+			e_header->headerItem(sectionIndex)->drawFileItem(m_fileList[m_current], op, painter);
 		}
 	}
 	else {
@@ -292,7 +296,7 @@ void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 	QString addName;
 	if (m_fileList[index].isDir()) {
 		name = m_fileList[index].fileName();
-		addName += "[]";	// len == 2
+		addName += "[]";	// addName.length == 2
 	}
 	else {
 		name = m_fileList[index].baseName();
@@ -300,7 +304,7 @@ void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
 	}
 
 	if (metrics.width(name) + metrics.width(addName) > rect.width())
-		addName += "..";	// len == 4
+		addName += "..";	// addName.length == 4
 
 	while (metrics.width(name) + metrics.width(addName) > rect.width() && name.length() > 0)
 		name.remove(name.length() - 1, 1);

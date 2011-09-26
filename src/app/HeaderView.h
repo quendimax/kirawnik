@@ -67,6 +67,9 @@ private:
 	void readSettings();
 	void writeSettings();
 
+	void sortItems();
+	void sortItems(int left, int right);
+
 private:
 	static QList<HeaderView *> s_headerViews;
 	static QList<AbstractHeaderItem *> s_items;
@@ -81,7 +84,7 @@ private:
 	HeaderState m_headerState;
 	int m_sortingItemId;
 	int m_pressedItemId;
-	int m_resizeItemId;
+	int m_resizeItemIndex;
 	bool m_reverseSorting;
 };
 

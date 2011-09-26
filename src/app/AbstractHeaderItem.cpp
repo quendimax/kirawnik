@@ -1,10 +1,12 @@
 #include "AbstractHeaderItem.h"
 
 
-AbstractHeaderItem::AbstractHeaderItem(const QString &name, int id, int offset, int width)
-    : m_name(name),
-      m_id(id),
-      m_offset(offset),
-      m_width(width)
+AbstractHeaderItem::AbstractHeaderItem()
 {
+	m_name = QObject::tr("Unknown");
+	m_description = QObject::tr("I don't know :(");
+	m_lessThan = 0;
+	m_id = 0;
+	m_offset = 0;
+	m_width = 0;
 }
