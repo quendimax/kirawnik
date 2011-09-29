@@ -32,6 +32,7 @@ HEADERS = \
 		Application.h \
 		FileSystemView.h \
 		FilePanel.h \
+		AbstractHeaderItem.h \
 		HeaderView.h \
 		FileView.h \
 		PluginManager.h
@@ -42,6 +43,7 @@ SOURCES = \
 		Application.cpp \
 		FileSystemView.cpp \
 		FilePanel.cpp \
+		AbstractHeaderItem.cpp \
 		HeaderView.cpp \
 		FileView.cpp \
 		PluginManager.cpp

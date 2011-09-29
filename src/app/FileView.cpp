@@ -239,27 +239,22 @@ void FileView::paintForeground(int start, int finish, QPainter &painter)
 
 	if (finish < start) return;
 
-	static void (FileView::*drawPart[Krw::Sort_End])(int, const QRect &, QPainter &) = {
-		&FileView::drawName,
-		&FileView::drawSuffix,
-		&FileView::drawSize,
-		&FileView::drawTextPerms,
-		&FileView::drawDigitPerms,
-		&FileView::drawOwner,
-		&FileView::drawGroup,
-		&FileView::drawModified
-	};
-
 	painter.setPen(m_textColor);
 	for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
 		int y = (start - m_scroll->value()) * m_itemHeight;
-		QRect rect = makeRectForSection(sectionIndex, y);
+		AbstractHeaderItem::PaintOption op;
+		op.margin = Margin;
+		op.rect = makeRectForSection(sectionIndex, y);
 
 		for (int i = start; i <= finish; i++) {
-			void (FileView::*drawMethod)(int, const QRect &, QPainter &) = drawPart[e_header->sectionType(sectionIndex)];
-			(this->*drawMethod)(i, rect, painter);
+			if (m_selectItems.at(i))
+				painter.setPen(m_selectTextColor);
+			else
+				painter.setPen(m_textColor);
 
-			rect.moveTop(rect.top() + m_itemHeight);
+			e_header->headerItem(sectionIndex)->drawFileItem(m_fileList[i], op, painter);
+
+			op.rect.moveTop(op.rect.top() + m_itemHeight);
 		}
 	}
 }
@@ -275,34 +270,10 @@ void FileView::paintCursor(QPainter &painter)
 		painter.fillRect(rect, m_cursorColor);
 
 		for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
-			switch (e_header->sectionType(sectionIndex)) {
-			case Krw::Sort_Name:
-				drawName(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Suffix:
-				drawSuffix(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Size:
-				drawSize(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_TextPerms:
-				drawTextPerms(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_DigitPerms:
-				drawDigitPerms(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Owner:
-				drawOwner(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Group:
-				drawGroup(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			case Krw::Sort_Modified:
-				drawModified(m_current, makeRectForSection(sectionIndex, y), painter);
-				break;
-			default:
-				break;
-			}
+			AbstractHeaderItem::PaintOption op;
+			op.margin = Margin;
+			op.rect = makeRectForSection(sectionIndex, y);
+			e_header->headerItem(sectionIndex)->drawFileItem(m_fileList[m_current], op, painter);
 		}
 	}
 	else {
@@ -310,153 +281,6 @@ void FileView::paintCursor(QPainter &painter)
 		QRect rect(0, y, m_width-1, m_itemHeight-1);
 		painter.drawRect(rect);
 	}
-}
-
-
-void FileView::drawName(int index, const QRect &rectangle, QPainter &painter)
-{
-	QRect rect = rectangle;
-	QIcon icon = m_iconProvider.icon(m_fileList[index]);
-	icon.paint(&painter, rect.left(), rect.top(), m_itemHeight, m_itemHeight);
-
-	rect.setLeft(rect.left() + 2*Margin + m_itemHeight);
-	QFontMetrics metrics(font());
-	QString name;
-	QString addName;
-	if (m_fileList[index].isDir()) {
-		name = m_fileList[index].fileName();
-		addName += "[]";	// len == 2
-	}
-	else {
-		name = m_fileList[index].baseName();
-		addName = "";
-	}
-
-	if (metrics.width(name) + metrics.width(addName) > rect.width())
-		addName += "..";	// len == 4
-
-	while (metrics.width(name) + metrics.width(addName) > rect.width() && name.length() > 0)
-		name.remove(name.length() - 1, 1);
-
-	if (m_fileList[index].isDir()) {
-		if (addName.length() == 2)
-			name = "[" + name + "]";
-		else
-			name = "[" + name + "..]";
-	}
-	else if (addName.length() == 2)
-		name += "..";
-
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
-
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, name);
-}
-
-
-void FileView::drawSuffix(int index, const QRect &rect, QPainter &painter)
-{
-	if (!m_fileList[index].isDir()) {
-		if (m_selectItems.at(index))
-			painter.setPen(m_selectTextColor);
-		else
-			painter.setPen(m_textColor);
-		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].suffix());
-	}
-}
-
-
-void FileView::drawSize(int index, const QRect &rect, QPainter &painter)
-{
-	QString strSize("");
-	int size = m_fileList[index].size();
-
-	do {
-		if (size >= 1000)
-			strSize = QString(" %1").arg(size % 1000, 3, 10, QLatin1Char('0')) + strSize;
-		else
-			strSize = QString("%1").arg(size % 1000) + strSize;
-		size /= 1000;
-	}
-	while (size);
-
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
-	QRect r = rect;
-	r.setLeft(Margin);
-	painter.drawText(r, Qt::AlignRight | Qt::AlignVCenter, strSize);
-}
-
-
-void FileView::drawTextPerms(int index, const QRect &rect, QPainter &painter)
-{
-	QFile::Permissions p = m_fileList[index].permissions();
-	QString perms("");
-
-	perms += p.testFlag(QFile::ReadUser) ? "r" : "-";
-	perms += p.testFlag(QFile::WriteUser) ? "w" : "-";
-	perms += p.testFlag(QFile::ExeUser) ? "x" : "-";
-	perms += p.testFlag(QFile::ReadGroup) ? "r" : "-";
-	perms += p.testFlag(QFile::WriteGroup) ? "w" : "-";
-	perms += p.testFlag(QFile::ExeGroup) ? "x" : "-";
-	perms += p.testFlag(QFile::ReadOther) ? "r" : "-";
-	perms += p.testFlag(QFile::WriteOther) ? "w" : "-";
-	perms += p.testFlag(QFile::ExeOther) ? "x" : "-";
-
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
-	painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, perms);
-}
-
-
-void FileView::drawDigitPerms(int index, const QRect &rect, QPainter &painter)
-{
-	uint perms = m_fileList[index].permissions();
-
-	perms = (perms & 0x00f)  |  ((perms & 0x0f0) >> 1)  |  ((perms & 0xf00) >> 2);
-
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
-	painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString("0%1").arg(perms, 3, 8, QLatin1Char('0')));
-}
-
-
-void FileView::drawOwner(int index, const QRect &rect, QPainter &painter)
-{
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].owner());
-}
-
-
-void FileView::drawGroup(int index, const QRect &rect, QPainter &painter)
-{
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, m_fileList[index].group());
-}
-
-
-void FileView::drawModified(int index, const QRect &rect, QPainter &painter)
-{
-	if (m_selectItems.at(index))
-		painter.setPen(m_selectTextColor);
-	else
-		painter.setPen(m_textColor);
-	QDateTime dt = m_fileList[index].lastModified();
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, dt.toString("yyyy/MM/dd  hh:mm:ss"));
 }
 
 
@@ -514,8 +338,8 @@ inline QRect FileView::makeRectForSection(int index, int top) const
 {
 	QRect rect;
 	rect.setTop(top);
-	rect.setLeft(e_header->sectionOffset(index) + Margin);
-	rect.setWidth(e_header->sectionSize(index) - 2*Margin);
+	rect.setLeft(e_header->headerItem(index)->offset() + Margin);
+	rect.setWidth(e_header->headerItem(index)->width() - 2*Margin);
 	rect.setHeight(m_itemHeight);
 
 	return rect;

@@ -1,5 +1,5 @@
-#ifndef __APPLICATION_H__
-#define __APPLICATION_H__
+#ifndef __APP_APPLICATION_H__
+#define __APP_APPLICATION_H__
 
 #include <QApplication>
 
@@ -35,4 +35,4 @@ inline QSettings *Application::settings() const { return m_settings; }
 #define kApp static_cast<Application *>(QCoreApplication::instance())
 
 
-#endif //__APPLICATION_H__
+#endif //__APP_APPLICATION_H__
