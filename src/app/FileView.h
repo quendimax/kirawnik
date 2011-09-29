@@ -37,15 +37,6 @@ private:
 	void paintForeground(int start, int finish, QPainter &);
 	void paintCursor(QPainter &);
 
-	void drawName(int index, const QRect &, QPainter &);
-	void drawSuffix(int index, const QRect &, QPainter &);
-	void drawSize(int index, const QRect &, QPainter &);
-	void drawTextPerms(int index, const QRect &, QPainter &);
-	void drawDigitPerms(int index, const QRect &, QPainter &);
-	void drawOwner(int index, const QRect &, QPainter &);
-	void drawGroup(int index, const QRect &, QPainter &);
-	void drawModified(int index, const QRect &, QPainter &);
-
 	void initPixmap();
 	void initScroll();
 	void updateItem(int index);

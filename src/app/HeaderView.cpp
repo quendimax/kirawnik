@@ -431,6 +431,10 @@ int HeaderView::indexAt(int id) const
 }
 
 
+#include "plugins/interfaces/HeaderPluginInterface.h"
+#include <QPluginLoader>
+
+
 void HeaderView::readSettings()
 {
 	QSettings *sets = kApp->settings();
@@ -442,6 +446,16 @@ void HeaderView::readSettings()
 	m_reverseSorting = sets->value("ReverseSorting." + QString::number(m_objectNumber), false).toBool();
 
 	if (s_objectCount == 1) {
+		QPluginLoader pluginLoader("../share/kirawnik/plugins/libkplugin_standartheaders.so");
+		static int idcount = 0;
+		if (HeaderPluginInterface *plugin = qobject_cast<HeaderPluginInterface *>(pluginLoader.instance())) {
+			QList<AbstractHeaderItem *> list = plugin->getHeaderItems();
+			for (int i = 0; i < list.size(); i++) {
+				s_items.append(list[i]);
+				s_items.back()->m_id = idcount++;
+			}
+		}
+
 		s_showItems = sets->value("ShowItems", QBitArray(s_items.size(), true)).toBitArray();
 
 		s_showItemCount = 0;
