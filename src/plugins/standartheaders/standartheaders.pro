@@ -5,7 +5,6 @@
 
 TEMPLATE = lib
 CONFIG += plugin
-#QT -= gui
 TARGET = kplugin_standartheaders
 DESTDIR = ../../../share/kirawnik/plugins/
 CONFIG += warn_on
@@ -26,5 +25,4 @@ HEADERS = StandartHeadersPlugin.h \
           StandartHeaders.h
 
 SOURCES = StandartHeadersPlugin.cpp \
-          StandartHeaders.cpp \
-          ../../app/AbstractHeaderItem.cpp
+          StandartHeaders.cpp
