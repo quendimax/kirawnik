@@ -41,7 +41,7 @@ void MainWindow::about()
 	                            "It uses Qt4-library.</p>"
 	                            "<p>You may find the source code at "
 	                            "<a href=\"https://github.com/QuendiMax/kirawnik\">"
-	                            "https://github.com/QuendiMax/kirawnik</a>. </p>"));
+	                            "https://github.com/QuendiMax/kirawnik</a>.</p>"));
 }
 
 
