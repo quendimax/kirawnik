@@ -1,8 +1,11 @@
 #ifndef __APP_PLUGINMANAGER__
 #define __APP_PLUGINMANAGER__
 
+#include <QMap>
+#include <QList>
 #include <QObject>
 #include <QStringList>
+#include <QPluginLoader>
 
 #include "plugins/interfaces/PluginInterface.h"
 
@@ -19,6 +22,7 @@ public:
 
 private:
 	QStringList m_paths;
+	QList<QPluginLoader> m_pluginLoaders;
 };
 
 

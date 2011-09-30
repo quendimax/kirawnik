@@ -17,7 +17,13 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	virtual ~MainWindow();
 
+private slots:
+	void showSettings();
+	void about();
+
 private:
+	void initMenuBar();
+
 	void readSettings();
 	void writeSettings();
 
