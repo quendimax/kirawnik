@@ -43,7 +43,6 @@ SOURCES = \
 		Application.cpp \
 		FileSystemView.cpp \
 		FilePanel.cpp \
-		AbstractHeaderItem.cpp \
 		HeaderView.cpp \
 		FileView.cpp \
 		PluginManager.cpp

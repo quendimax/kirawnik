@@ -22,7 +22,15 @@ public:
 	typedef bool (*LessThan)(const QFileInfo &, const QFileInfo &);
 
 public:
-	AbstractHeaderItem();
+	AbstractHeaderItem()
+	{
+		m_name = QObject::tr("Unknown");
+		m_description = QObject::tr("I don't know :(");
+		m_lessThan = 0;
+		m_id = -1;
+		m_offset = 0;
+		m_width = 0;
+	}
 
 	inline QString name() const { return m_name; }
 	inline QString description() const { return m_description; }
