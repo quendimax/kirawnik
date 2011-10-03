@@ -81,7 +81,7 @@ SizeHeaderItem::SizeHeaderItem()
 void SizeHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QPainter &painter)
 {
 	QString strSize("");
-	int size = fi.size();
+	qint64 size = fi.size();
 
 	do {
 		if (size >= 1000)
