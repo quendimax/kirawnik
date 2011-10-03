@@ -10,7 +10,7 @@ public:
 };
 
 
-Q_DECLARE_INTERFACE(PluginInterface, "org.violatorsoftware.kirawnik.PluginInterface/0.1")
+Q_DECLARE_INTERFACE(PluginInterface, "org.violatorsoftware.kirawnik.PluginInterface/1.0")
 
 
 #endif //__PLUGINS_PLUGININTERFACE_H__

@@ -35,7 +35,8 @@ HEADERS = \
 		AbstractHeaderItem.h \
 		HeaderView.h \
 		FileView.h \
-		PluginManager.h
+		PluginManager.h \
+		options/OptionDialog.h
 
 SOURCES = \
 		main.cpp \
@@ -45,4 +46,5 @@ SOURCES = \
 		FilePanel.cpp \
 		HeaderView.cpp \
 		FileView.cpp \
-		PluginManager.cpp
+		PluginManager.cpp \
+		options/OptionDialog.cpp
