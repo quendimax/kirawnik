@@ -1,3 +1,4 @@
+#include <QSplitter>
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -17,8 +18,15 @@ OptionDialog::OptionDialog(QWidget *parent)
 
 	m_listWidget = new QListWidget;
 
+	m_splitter = new QSplitter;
+	m_splitter->addWidget(m_listWidget);
+	m_splitter->addWidget(new QWidget);
+
 	QVBoxLayout *layout = new QVBoxLayout;
-	layout->addWidget(m_listWidget);
+	layout->addWidget(m_splitter);
 	layout->addWidget(m_buttonBox);
 	setLayout(layout);
+
+	m_splitter->setStretchFactor(0, 0);
+	m_splitter->setStretchFactor(1, 1);
 }

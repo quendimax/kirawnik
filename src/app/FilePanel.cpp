@@ -94,7 +94,7 @@ void FilePanel::changeDir(const QString &dirName)
 void FilePanel::openFile(const QFileInfo &fi)
 {
 	if (fi.isExecutable())
-		QProcess::startDetached(fi.canonicalFilePath());
+		QProcess::startDetached(fi.canonicalFilePath(), QStringList(), fi.canonicalPath());
 	else
 		QDesktopServices::openUrl(QUrl::fromLocalFile(fi.canonicalFilePath()));
 }

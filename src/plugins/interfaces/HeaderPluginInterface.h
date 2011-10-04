@@ -10,7 +10,6 @@
 class HeaderPluginInterface : public PluginInterface
 {
 public:
-	virtual ~HeaderPluginInterface() = 0;
 	virtual QList<AbstractHeaderItem *> getHeaderItems() = 0;
 };
 

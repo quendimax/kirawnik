@@ -3,6 +3,7 @@
 
 #include <QDialog>
 
+class QSplitter;
 class QListWidget;
 class QDialogButtonBox;
 
@@ -17,6 +18,7 @@ public:
 private:
 	QDialogButtonBox *m_buttonBox;
 	QListWidget *m_listWidget;
+	QSplitter *m_splitter;
 };
 
 #endif //__APP_OPTIONS_OPTIONDIALOG_H__

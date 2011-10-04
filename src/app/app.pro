@@ -36,7 +36,8 @@ HEADERS = \
 		HeaderView.h \
 		FileView.h \
 		PluginManager.h \
-		options/OptionDialog.h
+		options/OptionDialog.h \
+		options/OptionWidget.h
 
 SOURCES = \
 		main.cpp \
