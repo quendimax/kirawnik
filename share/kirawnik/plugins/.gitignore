@@ -1,0 +1,3 @@
+kplugin_*.dll
+libkplugin_*.so
+kplugin_*.dylib

@@ -22,6 +22,8 @@ public:
 
 	QSettings *settings() const;
 
+	static QString resourceFile(const QString &shortFileName);
+
 private:
 	QSettings *m_settings;
 };

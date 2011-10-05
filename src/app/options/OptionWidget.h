@@ -13,7 +13,7 @@ class OptionWidget : public QWidget
 public:
 	OptionWidget(QWidget *parent = 0) : QWidget(parent) {}
 
-	QListWidgetItem *listWidgetItem() const = 0;
+	virtual QListWidgetItem *createListWidgetItem() const = 0;
 };
 
 

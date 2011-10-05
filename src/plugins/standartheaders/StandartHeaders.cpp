@@ -22,7 +22,7 @@ void NameHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QP
 	QIcon icon = iconProvider.icon(fi);
 	icon.paint(&painter, rect.left(), rect.top(), rect.height(), rect.height());
 
-	rect.setLeft(rect.left() + 2*op.margin + rect.height());
+	rect.setLeft(rect.left() + op.margin + rect.height());
 	QFontMetrics metrics(painter.font());
 	QString name;
 	QString addName;

@@ -20,3 +20,9 @@ Application::~Application()
 {
 	delete m_settings;
 }
+
+
+QString Application::resourceFile(const QString &shortFileName)
+{
+	return QString("../share/kirawnik/%1").arg(shortFileName);
+}
