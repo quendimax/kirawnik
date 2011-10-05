@@ -3,6 +3,7 @@
 #include <QGroupBox>
 #include <QLayout>
 
+#include "ColorButton.h"
 #include "Application.h"
 #include "ColorOptionWidget.h"
 
@@ -13,6 +14,12 @@ ColorOptionWidget::ColorOptionWidget(QWidget *parent)
 	QGroupBox *leftGroupBox = new QGroupBox(tr("General colors"));
 	QFormLayout *genColorLayout = new QFormLayout;
 	leftGroupBox->setLayout(genColorLayout);
+
+	genColorLayout->addRow(tr("Background:"), new ColorButton);
+	genColorLayout->addRow(tr("Alternate background:"), new ColorButton);
+	genColorLayout->addRow(tr("Select background:"), new ColorButton);
+	genColorLayout->addRow(tr("Text:"), new ColorButton);
+	genColorLayout->addRow(tr("Select text:"), new ColorButton);
 
 	QGridLayout *mainLayout = new QGridLayout;
 	mainLayout->addWidget(leftGroupBox, 0, 0);

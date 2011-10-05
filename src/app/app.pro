@@ -38,7 +38,8 @@ HEADERS = \
 		PluginManager.h \
 		options/OptionDialog.h \
 		options/OptionWidget.h \
-		options/ColorOptionWidget.h
+		options/ColorOptionWidget.h \
+		options/ColorButton.h
 
 SOURCES = \
 		main.cpp \
@@ -50,4 +51,5 @@ SOURCES = \
 		FileView.cpp \
 		PluginManager.cpp \
 		options/OptionDialog.cpp \
-		options/ColorOptionWidget.cpp
+		options/ColorOptionWidget.cpp \
+		options/ColorButton.cpp
