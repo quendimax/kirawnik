@@ -226,7 +226,7 @@ void FileView::paintBackground(int start, int finish, QPainter &painter)
 	QRect rect(0, top, m_width, m_itemHeight);
 
 	for (int i = start; i <= finish; i++) {
-		if (m_selectItems.at(i))
+		if (m_showSelectBackground && m_selectItems.at(i))
 			painter.fillRect(rect, m_selectBaseColor);
 		else if (i & 1)
 			painter.fillRect(rect, m_baseColor[1]);
@@ -366,6 +366,7 @@ void FileView::readSettings()
 	Q_ASSERT(ok);
 	setFont(nfont);
 	m_cursorIsFull = sets->value("CursorIsFull", false).toBool();
+	m_showSelectBackground = sets->value("ShowSelectBackground", true).toBool();
 	m_cursorColor.setRgb((QRgb) sets->value("CursorColor", (uint) QColor(Qt::green).rgb()).toUInt(&ok));
 	Q_ASSERT(ok);
 	m_textColor.setRgb((QRgb) sets->value("TextColor", (uint) palette().color(QPalette::Text).rgb()).toUInt(&ok));

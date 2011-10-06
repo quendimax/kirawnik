@@ -68,6 +68,7 @@ private:
 	QColor m_selectBaseColor;
 	int m_itemHeight;
 	bool m_cursorIsFull;
+	bool m_showSelectBackground;
 };
 
 

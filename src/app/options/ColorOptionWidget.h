@@ -15,9 +15,7 @@ public:
 
 private slots:
 	void setColor(const QString &key, const QColor &color);
-
-private:
-
+	void setShowSelectBackground(bool);
 };
 
 
