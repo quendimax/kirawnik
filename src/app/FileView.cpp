@@ -58,6 +58,14 @@ void FileView::setFileInfoList(const QFileInfoList &list)
 }
 
 
+void FileView::settingsUpdate()
+{
+	readSettings();
+	initPixmap();
+	update();
+}
+
+
 void FileView::updateAll()
 {
 	foreach (FileView *view, s_fileViewes) {
@@ -387,12 +395,6 @@ void FileView::writeSettings()
 	sets->setValue("Font", font().family());
 	sets->setValue("FontSize", font().pointSize());
 	sets->setValue("CursorIsFull", m_cursorIsFull);
-	sets->setValue("CursorColor", (uint) m_cursorColor.rgb());
-	sets->setValue("TextColor", (uint) m_textColor.rgb());
-	sets->setValue("BaseColor.0", (uint) m_baseColor[0].rgb());
-	sets->setValue("BaseColor.1", (uint) m_baseColor[1].rgb());
-	sets->setValue("SelectTextColor", (uint) m_selectTextColor.rgb());
-	sets->setValue("SelectBaseColor", (uint) m_selectBaseColor.rgb());
 	sets->setValue("ItemHeight", m_itemHeight);
 
 	sets->endGroup();

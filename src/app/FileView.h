@@ -23,6 +23,7 @@ public:
 	void setFileInfoList(const QFileInfoList &list);
 
 public slots:
+	void settingsUpdate();
 	void updateAll();
 
 protected:
