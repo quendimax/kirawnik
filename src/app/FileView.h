@@ -47,7 +47,7 @@ private:
 	void writeSettings();
 
 private:
-	static const int Margin = 3;
+	static const int Margin = 2;
 	static QList<FileView *> s_fileViewes;
 
 	HeaderView *e_header;

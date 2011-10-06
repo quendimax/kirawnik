@@ -31,7 +31,7 @@ void NameHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QP
 		addName += "[]";	// addName.length == 2
 	}
 	else {
-		name = fi.baseName();
+		name = fi.completeBaseName();
 		addName = "";
 	}
 
@@ -65,7 +65,10 @@ SuffixHeaderItem::SuffixHeaderItem()
 void SuffixHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QPainter &painter)
 {
 	if (!fi.isDir()) {
-		painter.drawText(op.rect, Qt::AlignLeft | Qt::AlignVCenter, fi.suffix());
+		QRect rect = op.rect;
+		rect.setLeft(rect.left() + op.margin);
+		rect.setRight(rect.right() - op.margin);
+		painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, fi.suffix());
 	}
 }
 
@@ -94,6 +97,7 @@ void SizeHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QP
 
 	QRect r = op.rect;
 	r.setLeft(op.margin);
+	r.setRight(r.right() - op.margin);
 	painter.drawText(r, Qt::AlignRight | Qt::AlignVCenter, strSize);
 }
 
@@ -121,7 +125,10 @@ void TextPermsHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &o
 	perms += p.testFlag(QFile::WriteOther) ? "w" : "-";
 	perms += p.testFlag(QFile::ExeOther)   ? "x" : "-";
 
-	painter.drawText(op.rect, Qt::AlignRight | Qt::AlignVCenter, perms);
+	QRect rect = op.rect;
+	rect.setLeft(rect.left() + op.margin);
+	rect.setRight(rect.right() - op.margin);
+	painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, perms);
 }
 
 
@@ -139,7 +146,10 @@ void DigitPermsHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &
 
 	perms = (perms & 0x00f)  |  ((perms & 0x0f0) >> 1)  |  ((perms & 0xf00) >> 2);
 
-	painter.drawText(op.rect, Qt::AlignRight | Qt::AlignVCenter, QString("0%1").arg(perms, 3, 8, QLatin1Char('0')));
+	QRect rect = op.rect;
+	rect.setLeft(rect.left() + op.margin);
+	rect.setRight(rect.right() - op.margin);
+	painter.drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString("0%1").arg(perms, 3, 8, QLatin1Char('0')));
 }
 
 
@@ -153,7 +163,11 @@ OwnerHeaderItem::OwnerHeaderItem()
 
 void OwnerHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QPainter &painter)
 {
-	painter.drawText(op.rect, Qt::AlignLeft | Qt::AlignVCenter, fi.owner());
+	QRect rect = op.rect;
+	rect.setLeft(rect.left() + op.margin);
+	rect.setRight(rect.right() - op.margin);
+
+	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, fi.owner());
 }
 
 
@@ -167,7 +181,11 @@ GroupHeaderItem::GroupHeaderItem()
 
 void GroupHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QPainter &painter)
 {
-	painter.drawText(op.rect, Qt::AlignLeft | Qt::AlignVCenter, fi.group());
+	QRect rect = op.rect;
+	rect.setLeft(rect.left() + op.margin);
+	rect.setRight(rect.right() - op.margin);
+
+	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, fi.group());
 }
 
 
@@ -182,5 +200,9 @@ ModifiedHeaderItem::ModifiedHeaderItem()
 void ModifiedHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QPainter &painter)
 {
 	QDateTime dt = fi.lastModified();
-	painter.drawText(op.rect, Qt::AlignLeft | Qt::AlignVCenter, dt.toString("yyyy/MM/dd  hh:mm:ss"));
+	QRect rect = op.rect;
+	rect.setLeft(rect.left() + op.margin);
+	rect.setRight(rect.right() - op.margin);
+
+	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, dt.toString("yyyy/MM/dd  hh:mm:ss"));
 }
