@@ -13,6 +13,9 @@ public:
 
 	QListWidgetItem *createListWidgetItem() const;
 
+private slots:
+	void setColor(const QString &key, const QColor &color);
+
 private:
 
 };

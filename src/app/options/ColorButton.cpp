@@ -1,15 +1,21 @@
 #include <QPainter>
+#include <QSettings>
 #include <QColorDialog>
 
+#include "Application.h"
 #include "ColorButton.h"
 
 
-ColorButton::ColorButton(QWidget *parent)
-    : QFrame(parent)
+ColorButton::ColorButton(const QString &settingKey, QWidget *parent)
+    : QFrame(parent), m_settingKey(settingKey)
 {
 	setLineWidth(2);
 	setFrameStyle(QFrame::Panel | QFrame::Raised);
 	setMinimumSize(64, 24);
+
+	bool ok;
+	m_color.setRgb((QRgb) kApp->settings()->value(m_settingKey).toUInt(&ok));
+	Q_ASSERT(ok);
 }
 
 
@@ -44,6 +50,6 @@ void ColorButton::mouseReleaseEvent(QMouseEvent *)
 	if (newColor.isValid())
 		if (m_color != newColor) {
 			m_color = newColor;
-			emit colorChanged(m_color);
+			emit colorChanged(m_settingKey, m_color);
 		}
 }

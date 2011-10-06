@@ -9,13 +9,13 @@ class ColorButton : public QFrame
 	Q_OBJECT
 
 public:
-	ColorButton(QWidget *parent = 0);
+	ColorButton(const QString &settingKey, QWidget *parent = 0);
 
 	inline QColor color() const { return m_color; }
 	inline void setColor(const QColor &color) { m_color = color; }
 
 signals:
-	void colorChanged(const QColor &newColor);
+	void colorChanged(const QString &settingKey, const QColor &newColor);
 
 protected:
 	void paintEvent(QPaintEvent *);
@@ -24,6 +24,7 @@ protected:
 
 private:
 	QColor m_color;
+	QString m_settingKey;
 };
 
 
