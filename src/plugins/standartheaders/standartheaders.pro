@@ -6,7 +6,7 @@
 TEMPLATE = lib
 CONFIG += plugin
 TARGET = kplugin_standartheaders
-DESTDIR = ../../../share/kirawnik/plugins/
+DESTDIR = ../../../lib/kirawnik/
 CONFIG += warn_on
 CONFIG += debug_and_release
 #QMAKE_CXXFLAGS_DEBUG += -O1

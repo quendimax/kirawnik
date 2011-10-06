@@ -446,7 +446,7 @@ void HeaderView::readSettings()
 	m_reverseSorting = sets->value("ReverseSorting." + QString::number(m_objectNumber), false).toBool();
 
 	if (s_objectCount == 1) {
-		QPluginLoader pluginLoader("../share/kirawnik/plugins/libkplugin_standartheaders.so");
+		QPluginLoader pluginLoader("../lib/kirawnik/libkplugin_standartheaders.so");
 		static int idcount = 0;
 		if (HeaderPluginInterface *plugin = qobject_cast<HeaderPluginInterface *>(pluginLoader.instance())) {
 			QList<AbstractHeaderItem *> list = plugin->getHeaderItems();
