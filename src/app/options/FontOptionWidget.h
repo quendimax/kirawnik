@@ -17,6 +17,10 @@ public:
 
 	QListWidgetItem *createListWidgetItem() const;
 
+
+public:
+	void show();
+
 private slots:
 	void changeFilePanelFont();
 

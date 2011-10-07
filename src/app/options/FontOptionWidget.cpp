@@ -45,6 +45,13 @@ QListWidgetItem *FontOptionWidget::createListWidgetItem() const
 }
 
 
+void FontOptionWidget::show()
+{
+	initItems();
+	OptionWidget::show();
+}
+
+
 void FontOptionWidget::changeFilePanelFont()
 {
 	bool ok;
