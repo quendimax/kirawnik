@@ -48,14 +48,14 @@ QListWidgetItem *FontOptionWidget::createListWidgetItem() const
 void FontOptionWidget::changeFilePanelFont()
 {
 	bool ok;
-	QFont oldFont(kApp->settings()->value("FileView/Font").toString(),
+	QFont oldFont(kApp->settings()->value("FileView/FontFamily").toString(),
 	              kApp->settings()->value("FileView/FontSize").toInt(),
 	              kApp->settings()->value("FileView/FontWeight").toInt(),
 	              kApp->settings()->value("FileView/FontItalic").toBool());
 	QFont newFont = QFontDialog::getFont(&ok, oldFont, this);
 
 	if (newFont != oldFont) {
-		kApp->settings()->setValue("FileView/Font", newFont.family());
+		kApp->settings()->setValue("FileView/FontFamily", newFont.family());
 		kApp->settings()->setValue("FileView/FontSize", newFont.pointSizeF());
 		kApp->settings()->setValue("FileView/FontWeight", newFont.weight());
 		kApp->settings()->setValue("FileView/FontItalic", newFont.italic());
@@ -69,11 +69,11 @@ void FontOptionWidget::changeFilePanelFont()
 void FontOptionWidget::initItems()
 {
 	QString labelText = QString("%1, %2")\
-	                    .arg(kApp->settings()->value("FileView/Font").toString())\
+	                    .arg(kApp->settings()->value("FileView/FontFamily").toString())\
 	                    .arg(kApp->settings()->value("FileView/FontSize").toInt());
 	m_filePanelLabel->setText(labelText);
 
-	QFont textFont(kApp->settings()->value("FileView/Font").toString(),
+	QFont textFont(kApp->settings()->value("FileView/FontFamily").toString(),
 	               kApp->settings()->value("FileView/FontSize").toInt(),
 	               kApp->settings()->value("FileView/FontWeight").toInt(),
 	               kApp->settings()->value("FileView/FontItalic").toBool());

@@ -44,10 +44,16 @@ ColorOptionWidget::ColorOptionWidget(QWidget *parent)
 	connect(sbackgroundButton, SIGNAL(colorChanged(QString,QColor)), this, SLOT(setColor(QString,QColor)));
 
 	QCheckBox *sbgCheckBox = new QCheckBox(tr("Use select background"));
+	sbgCheckBox->setCheckState(kApp->settings()->value("FileView/ShowSelectBackground").toBool() ? Qt::Checked : Qt::Unchecked);
 	connect(sbgCheckBox, SIGNAL(toggled(bool)), this, SLOT(setShowSelectBackground(bool)));
+
+	QCheckBox *cursorFullCheckBox = new QCheckBox(tr("Use full cursor"));
+	cursorFullCheckBox->setCheckState(kApp->settings()->value("FileView/CursorIsFull").toBool() ? Qt::Checked : Qt::Unchecked);
+	connect(cursorFullCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFullCursor(bool)));
 
 	generalGroupLayout->addLayout(colorButtonLayout);
 	generalGroupLayout->addWidget(sbgCheckBox);
+	generalGroupLayout->addWidget(cursorFullCheckBox);
 
 	QGridLayout *mainLayout = new QGridLayout;
 	mainLayout->addWidget(leftGroupBox, 0, 0);
@@ -67,17 +73,26 @@ QListWidgetItem *ColorOptionWidget::createListWidgetItem() const
 void ColorOptionWidget::setColor(const QString &key, const QColor &color)
 {
 	kApp->settings()->setValue(key, (uint) color.rgb());
-	foreach (QWidget *w, kApp->allWidgets()) {
-		if (FileView *fv = qobject_cast<FileView *>(w)) {
-			fv->settingsUpdate();
-		}
-	}
+	updateFileView();
 }
 
 
 void ColorOptionWidget::setShowSelectBackground(bool turn)
 {
 	kApp->settings()->setValue("FileView/ShowSelectBackground", turn);
+	updateFileView();
+}
+
+
+void ColorOptionWidget::setFullCursor(bool turn)
+{
+	kApp->settings()->setValue("FileView/CursorIsFull", turn);
+	updateFileView();
+}
+
+
+void ColorOptionWidget::updateFileView()
+{
 	foreach (QWidget *w, kApp->allWidgets()) {
 		if (FileView *fv = qobject_cast<FileView *>(w)) {
 			fv->settingsUpdate();

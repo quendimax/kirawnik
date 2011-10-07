@@ -277,6 +277,7 @@ void FileView::paintCursor(QPainter &painter)
 		QRect rect(0, y, m_width-1, m_itemHeight);
 		painter.fillRect(rect, m_cursorColor);
 
+		painter.setPen(m_textColor);
 		for (int sectionIndex = 0; sectionIndex < e_header->count(); sectionIndex++) {
 			AbstractHeaderItem::PaintOption op;
 			op.margin = Margin;
@@ -361,7 +362,7 @@ void FileView::readSettings()
 	sets->beginGroup("FileView");
 
 	QFont newFont;
-	newFont.setFamily(sets->value("Font", font().family()).toString());
+	newFont.setFamily(sets->value("FontFamily", font().family()).toString());
 	newFont.setPointSize(sets->value("FontSize", font().pointSize()).toInt(&ok));
 	Q_ASSERT(ok);
 	newFont.setWeight(sets->value("FontWeight", font().weight()).toInt(&ok));
@@ -389,6 +390,9 @@ void FileView::readSettings()
 	Q_ASSERT(ok);
 
 	sets->endGroup();
+
+	// This call needs for initializating of the Settings object
+	writeSettings();
 }
 
 
@@ -397,8 +401,19 @@ void FileView::writeSettings()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("FileView");
 
+	sets->setValue("CursorColor", (uint) m_cursorColor.rgb());
+	sets->setValue("TextColor", (uint) m_textColor.rgb());
+	sets->setValue("BaseColor.0", (uint) m_baseColor[0].rgb());
+	sets->setValue("BaseColor.1", (uint) m_baseColor[1].rgb());
+	sets->setValue("SelectTextColor", (uint) m_selectTextColor.rgb());
+	sets->setValue("SelectBaseColor", (uint) m_selectBaseColor.rgb());
+	sets->setValue("FontFamily", font().family());
+	sets->setValue("FontSize", font().pointSizeF());
+	sets->setValue("FontWeight", font().weight());
+	sets->setValue("FontItalic", font().italic());
 	sets->setValue("CursorIsFull", m_cursorIsFull);
 	sets->setValue("ItemHeight", m_itemHeight);
+	sets->setValue("ShowSelectBackground", m_showSelectBackground);
 
 	sets->endGroup();
 }

@@ -16,6 +16,10 @@ public:
 private slots:
 	void setColor(const QString &key, const QColor &color);
 	void setShowSelectBackground(bool);
+	void setFullCursor(bool);
+
+private:
+	void updateFileView();
 };
 
 
