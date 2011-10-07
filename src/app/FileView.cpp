@@ -360,11 +360,15 @@ void FileView::readSettings()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("FileView");
 
-	QFont nfont;
-	nfont.setFamily(sets->value("Font", font().family()).toString());
-	nfont.setPointSize(sets->value("FontSize", font().pointSize()).toInt(&ok));
+	QFont newFont;
+	newFont.setFamily(sets->value("Font", font().family()).toString());
+	newFont.setPointSize(sets->value("FontSize", font().pointSize()).toInt(&ok));
 	Q_ASSERT(ok);
-	setFont(nfont);
+	newFont.setWeight(sets->value("FontWeight", font().weight()).toInt(&ok));
+	Q_ASSERT(ok);
+	newFont.setItalic(sets->value("FontItalic", font().italic()).toBool());
+	setFont(newFont);
+
 	m_cursorIsFull = sets->value("CursorIsFull", false).toBool();
 	m_showSelectBackground = sets->value("ShowSelectBackground", true).toBool();
 	m_cursorColor.setRgb((QRgb) sets->value("CursorColor", (uint) QColor(Qt::green).rgb()).toUInt(&ok));
@@ -393,8 +397,6 @@ void FileView::writeSettings()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("FileView");
 
-	sets->setValue("Font", font().family());
-	sets->setValue("FontSize", font().pointSize());
 	sets->setValue("CursorIsFull", m_cursorIsFull);
 	sets->setValue("ItemHeight", m_itemHeight);
 

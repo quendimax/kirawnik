@@ -58,7 +58,7 @@ ColorOptionWidget::ColorOptionWidget(QWidget *parent)
 
 QListWidgetItem *ColorOptionWidget::createListWidgetItem() const
 {
-	QListWidgetItem *item = new QListWidgetItem(QIcon(kApp->resourceFile("icons/ColorOptions.png")),
+	QListWidgetItem *item = new QListWidgetItem(QIcon(kApp->resourceFile("pixmaps/ColorOptions.png")),
 	                                            tr("Colors", "Title of color option widget"));
 	return item;
 }

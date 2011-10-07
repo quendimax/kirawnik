@@ -7,6 +7,7 @@
 #include <QDialogButtonBox>
 
 #include "ColorOptionWidget.h"
+#include "FontOptionWidget.h"
 
 #include "OptionDialog.h"
 
@@ -52,11 +53,12 @@ OptionDialog::OptionDialog(QWidget *parent)
 
 void OptionDialog::setCurrentOption(int index)
 {
-	m_optionLayout->takeAt(1);
+	m_optionLayout->takeAt(1)->widget()->hide();
 	m_optionLayout->takeAt(1);
 	m_optionLayout->addWidget(m_optionWidgets[index]);
 	m_optionLayout->addStretch();
 	m_optionLabel->setText(QString("<h3>%1</h3>").arg(m_listWidget->item(index)->text()));
+	m_optionWidgets[index]->show();
 }
 
 
@@ -65,6 +67,7 @@ void OptionDialog::createOptionWidgets()
 	m_optionWidgets.clear();
 
 	m_optionWidgets.append(new ColorOptionWidget);
+	m_optionWidgets.append(new FontOptionWidget);
 }
 
 
