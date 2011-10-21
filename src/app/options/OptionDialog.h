@@ -37,4 +37,5 @@ private:
 	QList<OptionWidget *> m_optionWidgets;
 };
 
+
 #endif //__APP_OPTIONS_OPTIONDIALOG_H__

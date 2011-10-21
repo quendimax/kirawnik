@@ -204,5 +204,5 @@ void ModifiedHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op
 	rect.setLeft(rect.left() + op.margin);
 	rect.setRight(rect.right() - op.margin);
 
-	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, dt.toString("yyyy/MM/dd  hh:mm:ss"));
+	painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, dt.toString("yyyy-MM-dd  hh:mm:ss"));
 }
