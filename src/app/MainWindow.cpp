@@ -69,7 +69,7 @@ void MainWindow::initMenuBar()
 
 	optionsMenu->addAction(settingsAction);
 
-	// Hellp menu
+	// Help menu
 	QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
 
 	QAction *aboutAction = new QAction(tr("About..."), this);

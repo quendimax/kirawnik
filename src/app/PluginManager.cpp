@@ -1,3 +1,4 @@
+#include <QDir>
 #include <QSettings>
 
 #include "Application.h"
@@ -8,6 +9,7 @@ PluginManager::PluginManager(QObject *parent)
     : QObject(parent)
 {
 	readPaths();
+	loadPlugins();
 }
 
 
@@ -25,7 +27,44 @@ void PluginManager::addPluginPath(const QString &path)
 
 void PluginManager::loadPlugins()
 {
+	QSettings *sets = kApp->settings();
+	sets->beginGroup("Plugins");
 
+	QStringList filters;
+#ifdef Q_OS_LINUX
+	filters << "libkplugin_*.so";
+#elif Q_OS_WIN32
+	filters << "kplugin_*.dll";
+#endif
+
+	foreach (QString path, m_pluginPaths) {
+		QDir dir(path);
+		dir.setNameFilters(filters);
+		foreach (QFileInfo file, dir.entryInfoList()) {
+			PluginEntry plugin;
+			plugin.loader.setFileName(file.canonicalFilePath());
+			plugin.fileName = file.canonicalFilePath();
+			if (!sets->contains(file.canonicalFilePath())) {
+				if (plugin.loader.load()) {
+					sets->setValue(file.canonicalFilePath(), true);
+					plugin.on = true;
+					m_pluginList.append(plugin);
+				}
+				else
+					qWarning("Plugin \"%s\" cannot load", qPrintable(file.canonicalFilePath()));
+			}
+			else {
+				plugin.on = sets->value(file.canonicalFilePath()).toBool();
+				if (plugin.on) {
+					if (!plugin.loader.load())
+						qWarning("Plugin \"%s\" cannot load", qPrintable(file.canonicalFilePath()));
+				}
+				m_pluginList.append(plugin);
+			}
+		}
+	}
+
+	sets->endGroup();
 }
 
 
@@ -49,7 +88,7 @@ void PluginManager::readPaths()
 }
 
 
-void PluginManager::writePaths()
+void PluginManager::writePaths() const
 {
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("Plugins");

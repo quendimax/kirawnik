@@ -4,6 +4,7 @@
 #include <QApplication>
 
 class QSettings;
+class PluginManager;
 
 
 /*!
@@ -21,16 +22,19 @@ public:
 	virtual ~Application();
 
 	QSettings *settings() const;
+	PluginManager *pluginManager() const;
 
 	static QString resourceFile(const QString &shortFileName);
 
 private:
 	QSettings *m_settings;
+	PluginManager *m_pluginManager;
 };
 
 
 /*! Returns application's the Settings class object */
 inline QSettings *Application::settings() const { return m_settings; }
+inline PluginManager *Application::pluginManager() const { return m_pluginManager; }
 
 
 /*! Returns the global pointer to the object of the Application class */

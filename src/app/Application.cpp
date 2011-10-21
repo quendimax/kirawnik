@@ -1,6 +1,7 @@
 #include <QDir>
 #include <QSettings>
 
+#include "PluginManager.h"
 #include "Application.h"
 
 
@@ -14,11 +15,14 @@ Application::Application(int &argc, char **argv)
 	m_settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
 	                           QApplication::organizationName(),
 	                           QApplication::applicationName().toLower());
+	m_pluginManager = new PluginManager;
 }
 
 
 Application::~Application()
 {
+	// warning: the plugin manager must delete before the settings object!!!
+	delete m_pluginManager;
 	delete m_settings;
 }
 

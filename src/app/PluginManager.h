@@ -23,7 +23,7 @@ public:
 
 private:
 	struct PluginEntry {
-		QPluginLoader pluginLoader;
+		QPluginLoader loader;
 		QString fileName;
 		bool on;
 	};
@@ -32,11 +32,11 @@ private:
 	void loadPlugins();
 	void unloadPlugins();
 	void readPaths();
-	void writePaths();
+	void writePaths() const;
 
 private:
 	QStringList m_pluginPaths;
-	QList<PluginEntry> m_pluginLoaders;
+	QList<PluginEntry> m_pluginList;
 };
 
 
@@ -44,9 +44,9 @@ template<class Interface> QList<Interface *> PluginManager::getPlugins() const
 {
 	QList<Interface *> resultList;
 
-	foreach (PluginEntry &entry, m_pluginLoaders) {
+	foreach (PluginEntry &entry, m_pluginList) {
 		if (entry.on)
-			if (Interface *inf = qobject_cast<Interface *>(entry.pluginLoader.instance()))
+			if (Interface *inf = qobject_cast<Interface *>(entry.loader.instance()))
 				resultList.append(inf);
 	}
 
