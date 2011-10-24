@@ -52,6 +52,7 @@ private:
 	};
 
 private:
+	static void initPlugins();
 	static void initMenu();
 	static void destroyMenu();
 	static void updateAll();

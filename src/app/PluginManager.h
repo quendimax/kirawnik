@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QPluginLoader>
+#include <QSharedPointer>
 
 #include "plugins/interfaces/PluginInterface.h"
 
@@ -23,7 +24,7 @@ public:
 
 private:
 	struct PluginEntry {
-		QPluginLoader loader;
+		QSharedPointer<QPluginLoader> loader;
 		QString fileName;
 		bool on;
 	};
@@ -44,9 +45,9 @@ template<class Interface> QList<Interface *> PluginManager::getPlugins() const
 {
 	QList<Interface *> resultList;
 
-	foreach (PluginEntry &entry, m_pluginList) {
+	foreach (const PluginEntry &entry, m_pluginList) {
 		if (entry.on)
-			if (Interface *inf = qobject_cast<Interface *>(entry.loader.instance()))
+			if (Interface *inf = qobject_cast<Interface *>(entry.loader->instance()))
 				resultList.append(inf);
 	}
 

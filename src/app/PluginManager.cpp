@@ -15,6 +15,7 @@ PluginManager::PluginManager(QObject *parent)
 
 PluginManager::~PluginManager()
 {
+	unloadPlugins();
 	writePaths();
 }
 
@@ -37,15 +38,18 @@ void PluginManager::loadPlugins()
 	filters << "kplugin_*.dll";
 #endif
 
-	foreach (QString path, m_pluginPaths) {
+	foreach (QString path, m_pluginPaths)
+	{
 		QDir dir(path);
 		dir.setNameFilters(filters);
 		foreach (QFileInfo file, dir.entryInfoList()) {
 			PluginEntry plugin;
-			plugin.loader.setFileName(file.canonicalFilePath());
+			plugin.loader = QSharedPointer<QPluginLoader>(new QPluginLoader);
+			plugin.loader->setFileName(file.canonicalFilePath());
 			plugin.fileName = file.canonicalFilePath();
+
 			if (!sets->contains(file.canonicalFilePath())) {
-				if (plugin.loader.load()) {
+				if (plugin.loader->load()) {
 					sets->setValue(file.canonicalFilePath(), true);
 					plugin.on = true;
 					m_pluginList.append(plugin);
@@ -56,7 +60,7 @@ void PluginManager::loadPlugins()
 			else {
 				plugin.on = sets->value(file.canonicalFilePath()).toBool();
 				if (plugin.on) {
-					if (!plugin.loader.load())
+					if (!plugin.loader->load())
 						qWarning("Plugin \"%s\" cannot load", qPrintable(file.canonicalFilePath()));
 				}
 				m_pluginList.append(plugin);
@@ -70,7 +74,8 @@ void PluginManager::loadPlugins()
 
 void PluginManager::unloadPlugins()
 {
-
+	foreach (PluginEntry plugin, m_pluginList)
+		plugin.loader->unload();
 }
 
 

@@ -7,6 +7,9 @@
 #include <QFileIconProvider>
 #include <QAction>
 
+#include "plugins/interfaces/HeaderPluginInterface.h"
+
+#include "PluginManager.h"
 #include "Application.h"
 #include "HeaderView.h"
 
@@ -268,6 +271,22 @@ void HeaderView::paintEvent(QPaintEvent *)
 }
 
 
+void HeaderView::initPlugins()
+{
+	QList<HeaderPluginInterface *> list = kApp->pluginManager()->getPlugins<HeaderPluginInterface>();
+	if (list.isEmpty()) return;
+
+	foreach (HeaderPluginInterface *plugin, list) {
+		QList<AbstractHeaderItem *> list = plugin->getHeaderItems();
+		for (int i = 0; i < list.size(); i++) {
+			static int idcount = 0;
+			s_items.append(list[i]);
+			s_items.back()->m_id = idcount++;
+		}
+	}
+}
+
+
 /*!
   It should be called before first sorting of s_items,
   and after reading s_items' settings.
@@ -431,10 +450,6 @@ int HeaderView::indexAt(int id) const
 }
 
 
-#include "plugins/interfaces/HeaderPluginInterface.h"
-#include <QPluginLoader>
-
-
 void HeaderView::readSettings()
 {
 	QSettings *sets = kApp->settings();
@@ -446,18 +461,9 @@ void HeaderView::readSettings()
 	m_reverseSorting = sets->value("ReverseSorting." + QString::number(m_objectNumber), false).toBool();
 
 	if (s_objectCount == 1) {
-		QPluginLoader pluginLoader("../lib/kirawnik/libkplugin_standartheaders.so");
-		static int idcount = 0;
-		if (HeaderPluginInterface *plugin = qobject_cast<HeaderPluginInterface *>(pluginLoader.instance())) {
-			QList<AbstractHeaderItem *> list = plugin->getHeaderItems();
-			for (int i = 0; i < list.size(); i++) {
-				s_items.append(list[i]);
-				s_items.back()->m_id = idcount++;
-			}
-		}
+		initPlugins();
 
 		s_showItems = sets->value("ShowItems", QBitArray(s_items.size(), true)).toBitArray();
-
 		s_showItemCount = 0;
 		int offset = 0, width = 60;
 		for (int i = 0; i < s_items.size(); i++) {

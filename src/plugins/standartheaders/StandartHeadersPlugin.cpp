@@ -6,7 +6,6 @@
 
 StandartHeadersPlugin::StandartHeadersPlugin()
 {
-	qDebug("Plugin created");
 	m_headers.append(new NameHeaderItem);
 	m_headers.append(new SuffixHeaderItem);
 	m_headers.append(new SizeHeaderItem);
@@ -22,7 +21,6 @@ StandartHeadersPlugin::~StandartHeadersPlugin()
 {
 	foreach (AbstractHeaderItem *item, m_headers)
 		delete item;
-	qDebug("Plugin destroyed");
 }
 
 
