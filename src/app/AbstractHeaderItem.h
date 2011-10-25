@@ -23,14 +23,13 @@ public:
 
 public:
 	AbstractHeaderItem()
-	{
-		m_name = QObject::tr("Unknown");
-		m_description = QObject::tr("I don't know :(");
-		m_lessThan = 0;
-		m_id = -1;
-		m_offset = 0;
-		m_width = 0;
-	}
+	    : m_name(QObject::tr("Unknown")),
+	      m_description(QObject::tr("I don't know :(")),
+	      m_lessThan(0),
+	      m_id(-1),
+	      m_offset(0),
+	      m_width(0)
+	{}
 
 	inline QString name() const { return m_name; }
 	inline QString description() const { return m_description; }
@@ -40,12 +39,12 @@ public:
 
 	inline LessThan lessThanFunction() const { return m_lessThan; }
 
-	virtual void drawFileItem(const QFileInfo &, const PaintOption &, QPainter &) {};
+	virtual void drawFileItem(const QFileInfo &, const PaintOption &, QPainter &) {}
 
 protected:
-	LessThan m_lessThan;
 	QString m_name;
 	QString m_description;
+	LessThan m_lessThan;
 
 private:
 	int m_id;

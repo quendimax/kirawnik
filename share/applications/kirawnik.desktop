@@ -1,8 +1,9 @@
 [Desktop Entry]
 Name=Kirawnik
-Exec=/home/quendi/Develop/Workspace/kirawnik-build-desktop/bin/kirawnik
-#Icon=system-file-manager
+Exec=kirawnik
+Icon=kirawnik
 Type=Application
 Categories=Qt;System;FileManager;
 GenericName=File Manager
+GenericName[be]=Файлавы Кіраўнік
 Terminal=false
