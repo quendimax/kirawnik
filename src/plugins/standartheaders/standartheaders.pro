@@ -9,6 +9,7 @@ TARGET = kplugin_standartheaders
 DESTDIR = ../../../lib/kirawnik/
 CONFIG += warn_on
 CONFIG += debug_and_release
+QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS_DEBUG += -O1
 
 INCLUDEPATH = . ../../

@@ -1,5 +1,8 @@
+#include <QMap>
 #include <QDir>
+#include <QFile>
 #include <QSettings>
+#include <QCryptographicHash>
 
 #include "Application.h"
 #include "PluginManager.h"
@@ -9,7 +12,8 @@ PluginManager::PluginManager(QObject *parent)
     : QObject(parent)
 {
 	readPaths();
-	loadPlugins();
+	QStringList pluginList = getPluginList();
+	loadPlugins(pluginList);
 }
 
 
@@ -26,11 +30,11 @@ void PluginManager::addPluginPath(const QString &path)
 }
 
 
-void PluginManager::loadPlugins()
+/*!
+  To get the list of unique plugins.
+  */
+QStringList PluginManager::getPluginList() const
 {
-	QSettings *sets = kApp->settings();
-	sets->beginGroup("Plugins");
-
 	QStringList filters;
 #ifdef Q_OS_LINUX
 	filters << "libkplugin_*.so";
@@ -38,33 +42,53 @@ void PluginManager::loadPlugins()
 	filters << "kplugin_*.dll";
 #endif
 
-	foreach (QString path, m_pluginPaths)
-	{
+	QMap<QByteArray, QString> originalPlugins;
+	foreach (QString path, m_pluginPaths) {
 		QDir dir(path);
 		dir.setNameFilters(filters);
-		foreach (QFileInfo file, dir.entryInfoList()) {
-			PluginEntry plugin;
-			plugin.loader = QSharedPointer<QPluginLoader>(new QPluginLoader);
-			plugin.loader->setFileName(file.canonicalFilePath());
-			plugin.fileName = file.canonicalFilePath();
 
-			if (!sets->contains(file.canonicalFilePath())) {
-				if (plugin.loader->load()) {
-					sets->setValue(file.canonicalFilePath(), true);
-					plugin.on = true;
-					m_pluginList.append(plugin);
-				}
-				else
-					qWarning("Plugin \"%s\" cannot load", qPrintable(file.canonicalFilePath()));
-			}
-			else {
-				plugin.on = sets->value(file.canonicalFilePath()).toBool();
-				if (plugin.on) {
-					if (!plugin.loader->load())
-						qWarning("Plugin \"%s\" cannot load", qPrintable(file.canonicalFilePath()));
-				}
+		foreach (const QFileInfo &info, dir.entryInfoList()) {
+			QString pluginName = info.canonicalFilePath();
+			QByteArray pluginHash = getPluginHash(pluginName);
+			originalPlugins[pluginHash] = pluginName;
+		}
+	}
+
+	QStringList pluginNameList;
+	foreach (const QByteArray &key, originalPlugins.uniqueKeys())
+		pluginNameList.append(originalPlugins[key]);
+
+	return pluginNameList;
+}
+
+
+void PluginManager::loadPlugins(const QStringList &pluginList)
+{
+	QSettings *sets = kApp->settings();
+	sets->beginGroup("Plugins");
+
+	foreach (const QString &file, pluginList) {
+		PluginEntry plugin;
+		plugin.loader = QSharedPointer<QPluginLoader>(new QPluginLoader);
+		plugin.loader->setFileName(file);
+		plugin.fileName = file;
+
+		if (!sets->contains(file)) {
+			if (plugin.loader->load()) {
+				sets->setValue(file, true);
+				plugin.on = true;
 				m_pluginList.append(plugin);
 			}
+			else
+				qWarning("Plugin \"%s\" cannot load", qPrintable(file));
+		}
+		else {
+			plugin.on = sets->value(file).toBool();
+			if (plugin.on) {
+				if (!plugin.loader->load())
+					qWarning("Plugin \"%s\" cannot load", qPrintable(file));
+			}
+			m_pluginList.append(plugin);
 		}
 	}
 
@@ -76,6 +100,17 @@ void PluginManager::unloadPlugins()
 {
 	foreach (PluginEntry plugin, m_pluginList)
 		plugin.loader->unload();
+}
+
+
+QByteArray PluginManager::getPluginHash(const QString &fileName) const
+{
+	QCryptographicHash hash(QCryptographicHash::Md5);
+	QFile file(fileName);
+	file.open(QIODevice::ReadOnly);
+	hash.addData(file.read(0x7FFFFFFF));
+	file.close();
+	return hash.result();
 }
 
 

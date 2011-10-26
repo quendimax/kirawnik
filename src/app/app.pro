@@ -12,6 +12,7 @@ CONFIG(debug, debug|release) {
 	TARGET = $${TARGET}d
 	win32:CONFIG += console
 }
+QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS_DEBUG += -O1
 
 INCLUDEPATH = . ..

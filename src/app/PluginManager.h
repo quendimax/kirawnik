@@ -30,10 +30,12 @@ private:
 	};
 
 private:
-	void loadPlugins();
+	QStringList getPluginList() const;
+	void loadPlugins(const QStringList &pluginList);
 	void unloadPlugins();
 	void readPaths();
 	void writePaths() const;
+	QByteArray getPluginHash(const QString &fileName) const;
 
 private:
 	QStringList m_pluginPaths;

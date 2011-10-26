@@ -19,7 +19,7 @@ int HeaderView::s_objectCount = 0;
 QBitArray HeaderView::s_showItems;
 AbstractHeaderItem HeaderView::s_movableItem;
 QList<HeaderView *> HeaderView::s_headerViews;
-QMenu *HeaderView::s_menu = 0;
+QMenu *HeaderView::s_menu = nullptr;
 QList<AbstractHeaderItem *> HeaderView::s_items;
 
 
@@ -296,7 +296,7 @@ void HeaderView::initMenu()
 	s_menu = new QMenu;
 
 	for (int i = 0; i < s_items.size(); i++) {
-		QAction *action = s_menu->addAction(s_items[i]->name() + " - " + s_items[i]->description());
+		QAction *action = s_menu->addAction(s_items[i]->title() + " - " + s_items[i]->description());
 		action->setData(s_items[i]->id());
 		action->setCheckable(true);
 		if (s_showItems.at(s_items[i]->id()))
@@ -340,7 +340,7 @@ void HeaderView::paintSection(int index, QPainter &painter)
 		QStyleOptionHeader option;
 		initStyleOption(&option);
 
-		option.text = s_items[index]->name();
+		option.text = s_items[index]->title();
 		option.section = index - (s_items.size() - s_showItemCount);
 		option.selectedPosition = QStyleOptionHeader::NotAdjacent;
 
@@ -388,7 +388,7 @@ void HeaderView::paintMovableSection(QPainter &painter)
 	initStyleOption(&option);
 	option.state |= QStyle::State_Sunken;
 
-	option.text = s_movableItem.name();
+	option.text = s_movableItem.title();
 	option.section = 0;
 	option.selectedPosition = QStyleOptionHeader::NotAdjacent;
 	option.position = QStyleOptionHeader::OnlyOneSection;
@@ -467,9 +467,9 @@ void HeaderView::readSettings()
 		s_showItemCount = 0;
 		int offset = 0, width = 60;
 		for (int i = 0; i < s_items.size(); i++) {
-			s_items[i]->m_offset = sets->value(QString::number(s_items[i]->id(), 16) + ".Offset", offset).toInt(&ok);
+			s_items[i]->m_offset = sets->value(s_items[i]->name() + ".Offset", offset).toInt(&ok);
 			Q_ASSERT(ok);
-			s_items[i]->m_width = sets->value(QString::number(s_items[i]->id(), 16) + ".Width", width).toInt(&ok);
+			s_items[i]->m_width = sets->value(s_items[i]->name() + ".Width", width).toInt(&ok);
 			Q_ASSERT(ok);
 			offset += s_items[i]->m_width;
 
@@ -494,8 +494,8 @@ void HeaderView::writeSettings()
 		sets->setValue("ShowItems", s_showItems);
 
 		for (int i = 0; i < s_items.size(); i++) {
-			sets->setValue(QString::number(s_items[i]->id(), 16) + ".Offset", s_items[i]->offset());
-			sets->setValue(QString::number(s_items[i]->id(), 16) + ".Width", s_items[i]->width());
+			sets->setValue(s_items[i]->name() + ".Offset", s_items[i]->offset());
+			sets->setValue(s_items[i]->name() + ".Width", s_items[i]->width());
 		}
 	}
 
