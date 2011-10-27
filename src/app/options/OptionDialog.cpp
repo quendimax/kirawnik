@@ -8,6 +8,7 @@
 
 #include "ColorOptionWidget.h"
 #include "FontOptionWidget.h"
+#include "PluginOptionWidget.h"
 
 #include "OptionDialog.h"
 
@@ -68,6 +69,7 @@ void OptionDialog::createOptionWidgets()
 
 	m_optionWidgets.append(new ColorOptionWidget);
 	m_optionWidgets.append(new FontOptionWidget);
+	m_optionWidgets.append(new PluginOptionWidget);
 }
 
 

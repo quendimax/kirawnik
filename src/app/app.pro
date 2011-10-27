@@ -41,7 +41,8 @@ HEADERS = \
 		options/OptionWidget.h \
 		options/ColorOptionWidget.h \
 		options/ColorButton.h \
-		options/FontOptionWidget.h
+		options/FontOptionWidget.h \
+		options/PluginOptionWidget.h
 
 SOURCES = \
 		main.cpp \
@@ -55,4 +56,5 @@ SOURCES = \
 		options/OptionDialog.cpp \
 		options/ColorOptionWidget.cpp \
 		options/ColorButton.cpp \
-		options/FontOptionWidget.cpp
+		options/FontOptionWidget.cpp \
+		options/PluginOptionWidget.cpp

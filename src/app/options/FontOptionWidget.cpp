@@ -40,7 +40,7 @@ FontOptionWidget::FontOptionWidget(QWidget *parent)
 QListWidgetItem *FontOptionWidget::createListWidgetItem() const
 {
 	QListWidgetItem *item = new QListWidgetItem(QIcon(kApp->resourceFile("pixmaps/FontOptions.png")),
-	                                            tr("Fonts", "Name of option widget"));
+												tr("Fonts", "Name of font option widget"));
 	return item;
 }
 
