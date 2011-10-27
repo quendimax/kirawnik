@@ -1,7 +1,7 @@
 #ifndef __PLUGINS_STANDARTHEADERS_H__
 #define __PLUGINS_STANDARTHEADERS_H__
 
-#include <app/AbstractHeaderItem.h>
+#include <core/AbstractHeaderItem.h>
 
 
 class NameHeaderItem : public AbstractHeaderItem

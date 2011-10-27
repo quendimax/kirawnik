@@ -4,15 +4,14 @@
 #
 
 TEMPLATE = lib
-CONFIG += plugin
-TARGET = kplugin_standartheaders
+TARGET = core
 DESTDIR = ../../../lib/kirawnik/
 CONFIG += warn_on
 CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS_DEBUG += -O1
 
-INCLUDEPATH = . ../../ ../../libs/
+INCLUDEPATH = . ../../ ../
 
 unix {
 	TMP_BUILD_PATH = /tmp/$$TARGET
@@ -21,8 +20,19 @@ unix {
 	OBJECTS_DIR = $$TMP_BUILD_PATH
 }
 
-HEADERS = StandartHeadersPlugin.h \
-          StandartHeaders.h
+HEADERS = \
+		AbstractHeaderItem.h \
+		Application.h \
+		FilePanel.h \
+		FileSystemView.h \
+		FileView.h \
+		HeaderView.h \
+		MainWindow.h
 
-SOURCES = StandartHeadersPlugin.cpp \
-          StandartHeaders.cpp
+SOURCES = \
+		Application.cpp \
+		FilePanel.cpp \
+		FileSystemView.cpp \
+		FileView.cpp \
+		HeaderView.cpp \
+		MainWindow.cpp

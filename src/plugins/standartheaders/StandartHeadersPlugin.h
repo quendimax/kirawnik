@@ -1,8 +1,8 @@
 #ifndef __PLUGINS_STANDARTHEADERSPLUGIN_H__
 #define __PLUGINS_STANDARTHEADERSPLUGIN_H__
 
-#include "app/AbstractHeaderItem.h"
-#include "plugins/interfaces/HeaderPluginInterface.h"
+#include <core/AbstractHeaderItem.h>
+#include <plugins/interfaces/HeaderPluginInterface.h>
 
 
 class StandartHeadersPlugin : public QObject, public HeaderPluginInterface

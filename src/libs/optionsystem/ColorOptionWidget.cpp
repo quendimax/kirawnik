@@ -5,9 +5,10 @@
 #include <QCheckBox>
 #include <QLayout>
 
-#include "FileView.h"
+#include <core/FileView.h>
+#include <core/Application.h>
+
 #include "ColorButton.h"
-#include "Application.h"
 #include "ColorOptionWidget.h"
 
 

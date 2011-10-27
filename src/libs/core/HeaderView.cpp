@@ -9,9 +9,9 @@
 
 #include "plugins/interfaces/HeaderPluginInterface.h"
 
-#include "PluginManager.h"
-#include "Application.h"
-#include "HeaderView.h"
+#include <pluginsystem/PluginManager.h>
+#include <core/Application.h>
+#include <core/HeaderView.h>
 
 
 int HeaderView::s_showItemCount;

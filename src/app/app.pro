@@ -15,46 +15,14 @@ CONFIG(debug, debug|release) {
 QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS_DEBUG += -O1
 
-INCLUDEPATH = . ..
+INCLUDEPATH = . .. ../libs/
+LIBS += -L"../../lib/kirawnik/" -lcore -loptionsystem -lpluginsystem
 
-unix:TMP_BUILD_PATH = /tmp/$$TARGET
-win32:TMP_BUILD_PATH = c:/Windows/Temp/$$TARGET
+unix {
+	TMP_BUILD_PATH = /tmp/$$TARGET
+	MOC_DIR = $$TMP_BUILD_PATH
+	RCC_DIR = $$TMP_BUILD_PATH
+	OBJECTS_DIR = $$TMP_BUILD_PATH
+}
 
-MOC_DIR = $$TMP_BUILD_PATH
-RCC_DIR = $$TMP_BUILD_PATH
-OBJECTS_DIR = $$TMP_BUILD_PATH
-
-#CONFIG += precompile_header
-#PRECOMPILED_HEADER = pch.h
-
-HEADERS = \
-		Global.h \
-		MainWindow.h \
-		Application.h \
-		FileSystemView.h \
-		FilePanel.h \
-		AbstractHeaderItem.h \
-		HeaderView.h \
-		FileView.h \
-		PluginManager.h \
-		options/OptionDialog.h \
-		options/OptionWidget.h \
-		options/ColorOptionWidget.h \
-		options/ColorButton.h \
-		options/FontOptionWidget.h \
-		options/PluginOptionWidget.h
-
-SOURCES = \
-		main.cpp \
-		MainWindow.cpp \
-		Application.cpp \
-		FileSystemView.cpp \
-		FilePanel.cpp \
-		HeaderView.cpp \
-		FileView.cpp \
-		PluginManager.cpp \
-		options/OptionDialog.cpp \
-		options/ColorOptionWidget.cpp \
-		options/ColorButton.cpp \
-		options/FontOptionWidget.cpp \
-		options/PluginOptionWidget.cpp
+SOURCES = main.cpp

@@ -1,6 +1,7 @@
 #include <QListWidgetItem>
 
-#include "Application.h"
+#include <core/Application.h>
+
 #include "PluginOptionWidget.h"
 
 

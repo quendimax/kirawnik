@@ -1,8 +1,8 @@
 #include <QDir>
 #include <QSettings>
 
-#include "PluginManager.h"
-#include "Application.h"
+#include <pluginsystem/PluginManager.h>
+#include <core/Application.h>
 
 
 Application::Application(int &argc, char **argv)

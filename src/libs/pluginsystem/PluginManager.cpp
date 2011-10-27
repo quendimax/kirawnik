@@ -4,7 +4,8 @@
 #include <QSettings>
 #include <QCryptographicHash>
 
-#include "Application.h"
+#include <core/Application.h>
+
 #include "PluginManager.h"
 
 

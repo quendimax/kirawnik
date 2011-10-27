@@ -1,18 +1,18 @@
 #
-# Created: 29.09.11
+# Created:2011-10-27
 #      by: Maksim Tamkovich
 #
 
 TEMPLATE = lib
-CONFIG += plugin
-TARGET = kplugin_standartheaders
+TARGET = pluginsystem
 DESTDIR = ../../../lib/kirawnik/
 CONFIG += warn_on
 CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS_DEBUG += -O1
 
-INCLUDEPATH = . ../../ ../../libs/
+INCLUDEPATH = . ../../ ../
+LIBS += -L"../../../lib/kirawnik/" -lcore
 
 unix {
 	TMP_BUILD_PATH = /tmp/$$TARGET
@@ -21,8 +21,8 @@ unix {
 	OBJECTS_DIR = $$TMP_BUILD_PATH
 }
 
-HEADERS = StandartHeadersPlugin.h \
-          StandartHeaders.h
+HEADERS = \
+          PluginManager.h
 
-SOURCES = StandartHeadersPlugin.cpp \
-          StandartHeaders.cpp
+SOURCES = \
+          PluginManager.cpp

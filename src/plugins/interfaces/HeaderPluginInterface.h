@@ -3,7 +3,7 @@
 
 #include <QList>
 
-#include "app/AbstractHeaderItem.h"
+#include "libs/core/AbstractHeaderItem.h"
 #include "PluginInterface.h"
 
 

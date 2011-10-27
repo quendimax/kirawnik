@@ -5,11 +5,10 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 
-#include "options/OptionDialog.h"
-
-#include "Application.h"
-#include "FileSystemView.h"
-#include "MainWindow.h"
+#include <optionsystem/OptionDialog.h>
+#include <core/Application.h>
+#include <core/FileSystemView.h>
+#include <core/MainWindow.h>
 
 
 MainWindow::MainWindow(QWidget *parent)

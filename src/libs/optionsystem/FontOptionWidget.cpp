@@ -8,8 +8,9 @@
 #include <QPushButton>
 #include <QListWidgetItem>
 
-#include "FileView.h"
-#include "Application.h"
+#include <core/FileView.h>
+#include <core/Application.h>
+
 #include "FontOptionWidget.h"
 
 

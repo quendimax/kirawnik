@@ -2,7 +2,8 @@
 #include <QSettings>
 #include <QColorDialog>
 
-#include "Application.h"
+#include <core/Application.h>
+
 #include "ColorButton.h"
 
 
