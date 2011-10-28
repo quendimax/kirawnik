@@ -1,28 +1,22 @@
 #
-# Created: 27.07.11
+# Created: 2011-07-27
 #      by: Maksim Tamkovich
 #
 
+include(../../kirawnik.pri)
+
 TEMPLATE = app
 TARGET = kirawnik
+VERSION = KIRAWNIK_VERSION
 DESTDIR = ../../bin
-CONFIG += warn_on
-CONFIG += debug_and_release
 CONFIG(debug, debug|release) {
 	TARGET = $${TARGET}d
 	win32:CONFIG += console
 }
-QMAKE_CXXFLAGS += -std=c++0x
-#QMAKE_CXXFLAGS_DEBUG += -O1
+
+*g++* : QMAKE_LFLAGS += -Wl,--rpath="../lib/kirawnik/"
 
 INCLUDEPATH = . .. ../libs/
 LIBS += -L"../../lib/kirawnik/" -lcore -loptionsystem -lpluginsystem
-
-unix {
-	TMP_BUILD_PATH = /tmp/$$TARGET
-	MOC_DIR = $$TMP_BUILD_PATH
-	RCC_DIR = $$TMP_BUILD_PATH
-	OBJECTS_DIR = $$TMP_BUILD_PATH
-}
 
 SOURCES = main.cpp
