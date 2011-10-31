@@ -6,9 +6,9 @@
 include(../../../kirawnik.pri)
 
 TEMPLATE = lib
+TARGET = $$getTarget(core)
 CONFIG += shared
-TARGET = core
-VERSION = KIRAWNIK_VERSION
+VERSION = $$KIRAWNIK_VERSION
 DESTDIR = ../../../lib/kirawnik/
 
 INCLUDEPATH = . ../../ ../

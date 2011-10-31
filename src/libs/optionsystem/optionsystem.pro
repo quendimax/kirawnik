@@ -6,9 +6,9 @@
 include(../../../kirawnik.pri)
 
 TEMPLATE = lib
+TARGET = $$getTarget(optionsystem)
+VERSION = $$KIRAWNIK_VERSION
 CONFIG += shared
-TARGET = optionsystem
-VERSION = KIRAWNIK_VERSION
 DESTDIR = ../../../lib/kirawnik/
 
 INCLUDEPATH = . ../../ ../

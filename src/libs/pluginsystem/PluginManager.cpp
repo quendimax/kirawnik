@@ -38,9 +38,17 @@ QStringList PluginManager::getPluginList() const
 {
 	QStringList filters;
 #ifdef Q_OS_LINUX
-	filters << "libkplugin_*.so";
+	#ifdef KIRAWNIK_DEBUG
+		filters << "libkplugin_*d.so";
+	#else
+		filters << "libkplugin_*.so";
+	#endif
 #elif Q_OS_WIN32
-	filters << "kplugin_*.dll";
+	#ifdef KIRAWNIK_DEBUG
+		filters << "kplugin_*d.dll";
+	#else
+		filters << "kplugin_*.dll";
+	#endif
 #endif
 
 	QMap<QByteArray, QString> originalPlugins;

@@ -1,14 +1,14 @@
 #
-# Created: 29.09.11
+# Created: 2011-09-29
 #      by: Maksim Tamkovich
 #
 
 include(../../../kirawnik.pri)
 
 TEMPLATE = lib
+TARGET = $$getTarget(kplugin_standartheaders)
+VERSION = $$KIRAWNIK_VERSION
 CONFIG += plugin
-TARGET = kplugin_standartheaders
-VERSION = 0.0.0
 DESTDIR = ../../../lib/kirawnik/
 
 INCLUDEPATH = . ../../ ../../libs/

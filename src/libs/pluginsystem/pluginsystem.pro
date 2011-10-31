@@ -6,9 +6,9 @@
 include(../../../kirawnik.pri)
 
 TEMPLATE = lib
+TARGET = $$getTarget(pluginsystem)
+VERSION = $$KIRAWNIK_VERSION
 CONFIG += shared
-TARGET = pluginsystem
-VERSION = KIRAWNIK_VERSION
 DESTDIR = ../../../lib/kirawnik/
 
 INCLUDEPATH = . ../../ ../
