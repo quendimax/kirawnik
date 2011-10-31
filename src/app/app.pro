@@ -14,7 +14,6 @@ DESTDIR = ../../bin
 
 INCLUDEPATH = . .. ../libs/
 LIBS += -L"../../lib/kirawnik/"
-CONFIG(debug, debug|release): LIBS += -lcored -loptionsystemd -lpluginsystemd
-						else: LIBS += -lcore -loptionsystem -lpluginsystem
+LIBS += -l$$libraryName(core) -l$$libraryName(optionsystem) -l$$libraryName(pluginsystem)
 
 SOURCES = main.cpp

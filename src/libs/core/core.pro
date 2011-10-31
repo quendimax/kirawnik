@@ -23,6 +23,7 @@ HEADERS = \
 		MainWindow.h
 
 SOURCES = \
+		AbstractHeaderItem.cpp \
 		Application.cpp \
 		FilePanel.cpp \
 		FileSystemView.cpp \

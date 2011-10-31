@@ -19,6 +19,10 @@ unix {
 }
 
 defineReplace(getTarget) {
+	return($$libraryName($$1))
+}
+
+defineReplace(libraryName) {
 	CONFIG(debug, debug|release) {
 		name = $${1}d
 	}
