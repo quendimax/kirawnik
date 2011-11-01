@@ -32,7 +32,6 @@ OptionDialog::OptionDialog(QWidget *parent)
 
 	m_optionLayout->addWidget(m_optionLabel);
 	m_optionLayout->addWidget(m_optionWidgets.first());
-	m_optionLayout->addStretch();
 
 	m_splitter = new QSplitter;
 	m_splitter->addWidget(m_listWidget);
@@ -55,9 +54,7 @@ OptionDialog::OptionDialog(QWidget *parent)
 void OptionDialog::setCurrentOption(int index)
 {
 	m_optionLayout->takeAt(1)->widget()->hide();
-	m_optionLayout->takeAt(1);
 	m_optionLayout->addWidget(m_optionWidgets[index]);
-	m_optionLayout->addStretch();
 	m_optionLabel->setText(QString("<h3>%1</h3>").arg(m_listWidget->item(index)->text()));
 	m_optionWidgets[index]->show();
 }

@@ -59,7 +59,11 @@ ColorOptionWidget::ColorOptionWidget(QWidget *parent)
 	QGridLayout *mainLayout = new QGridLayout;
 	mainLayout->addWidget(leftGroupBox, 0, 0);
 
-	setLayout(mainLayout);
+	QVBoxLayout *vertLayout = new QVBoxLayout;
+	vertLayout->addLayout(mainLayout);
+	vertLayout->addStretch();
+
+	setLayout(vertLayout);
 }
 
 

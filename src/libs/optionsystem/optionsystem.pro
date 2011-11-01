@@ -27,3 +27,6 @@ SOURCES = \
 		FontOptionWidget.cpp \
 		OptionDialog.cpp \
 		PluginOptionWidget.cpp
+
+FORMS = \
+		PluginOptionWidget.ui

@@ -3,6 +3,10 @@
 
 #include "OptionWidget.h"
 
+namespace Ui {
+	class PluginOptionWidget;
+}
+
 
 class PluginOptionWidget : public OptionWidget
 {
@@ -10,8 +14,12 @@ class PluginOptionWidget : public OptionWidget
 
 public:
 	PluginOptionWidget(QWidget *parent = 0);
+	~PluginOptionWidget();
 
 	QListWidgetItem *createListWidgetItem() const;
+
+private:
+	Ui::PluginOptionWidget *ui;
 };
 
 

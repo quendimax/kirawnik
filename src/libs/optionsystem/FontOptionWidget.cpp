@@ -31,6 +31,7 @@ FontOptionWidget::FontOptionWidget(QWidget *parent)
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	setLayout(mainLayout);
 	mainLayout->addWidget(filePanelGroupBox);
+	mainLayout->addStretch();
 
 	initItems();
 
