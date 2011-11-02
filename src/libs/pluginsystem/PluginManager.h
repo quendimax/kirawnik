@@ -1,5 +1,5 @@
-#ifndef __APP_PLUGINMANAGER__
-#define __APP_PLUGINMANAGER__
+#ifndef __PLUGINSYSTEM_PLUGINMANAGER__
+#define __PLUGINSYSTEM_PLUGINMANAGER__
 
 #include <QList>
 #include <QObject>
@@ -7,7 +7,7 @@
 #include <QPluginLoader>
 #include <QSharedPointer>
 
-#include "plugins/interfaces/PluginInterface.h"
+#include "PluginObject.h"
 
 
 class PluginManager : public QObject
@@ -57,4 +57,4 @@ template<class Interface> QList<Interface *> PluginManager::getPlugins() const
 }
 
 
-#endif //__APP_PLUGINMANAGER__
+#endif //__PLUGINSYSTEM_PLUGINMANAGER__

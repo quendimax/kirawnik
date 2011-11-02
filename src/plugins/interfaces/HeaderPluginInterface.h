@@ -3,11 +3,10 @@
 
 #include <QList>
 
-#include "libs/core/AbstractHeaderItem.h"
-#include "PluginInterface.h"
+class AbstractHeaderItem;
 
 
-class HeaderPluginInterface : public PluginInterface
+class HeaderPluginInterface
 {
 public:
 	virtual QList<AbstractHeaderItem *> getHeaderItems() = 0;

@@ -108,7 +108,8 @@ void PluginManager::loadPlugins(const QStringList &pluginList)
 void PluginManager::unloadPlugins()
 {
 	foreach (PluginEntry plugin, m_pluginList)
-		plugin.loader->unload();
+		if (plugin.loader->isLoaded())
+			plugin.loader->unload();
 }
 
 

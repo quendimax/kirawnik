@@ -14,6 +14,6 @@ DESTDIR = ../../bin
 
 INCLUDEPATH = . .. ../libs/
 LIBS += -L"../../lib/kirawnik/"
-LIBS += -l$$libraryName(core) -l$$libraryName(optionsystem) -l$$libraryName(pluginsystem)
+LIBS += $$libraryName(core) $$libraryName(optionsystem) $$libraryName(pluginsystem)
 
 SOURCES = main.cpp

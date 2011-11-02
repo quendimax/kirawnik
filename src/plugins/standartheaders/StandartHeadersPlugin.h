@@ -1,11 +1,13 @@
 #ifndef __PLUGINS_STANDARTHEADERSPLUGIN_H__
 #define __PLUGINS_STANDARTHEADERSPLUGIN_H__
 
-#include <core/AbstractHeaderItem.h>
+#include <pluginsystem/PluginObject.h>
 #include <plugins/interfaces/HeaderPluginInterface.h>
 
+class AbstractHeaderItem;
 
-class StandartHeadersPlugin : public QObject, public HeaderPluginInterface
+
+class StandartHeadersPlugin : public PluginObject, public HeaderPluginInterface
 {
 	Q_OBJECT
 	Q_INTERFACES(HeaderPluginInterface)
@@ -16,7 +18,8 @@ public:
 
 	QList<AbstractHeaderItem *> getHeaderItems();
 
-	void initialize() {}
+private:
+	void initInformation();
 
 private:
 	QList<AbstractHeaderItem *> m_headers;

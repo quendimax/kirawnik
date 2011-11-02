@@ -14,7 +14,9 @@ DESTDIR = ../../../lib/kirawnik/
 INCLUDEPATH = . ../../ ../
 
 HEADERS = \
-          PluginManager.h
+		PluginManager.h \
+		PluginObject.h
 
 SOURCES = \
-          PluginManager.cpp
+		PluginManager.cpp \
+		PluginObject.cpp

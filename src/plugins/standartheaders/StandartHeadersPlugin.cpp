@@ -1,5 +1,7 @@
 #include <QtPlugin>
 
+#include <libs/core/Application.h>
+
 #include "StandartHeaders.h"
 #include "StandartHeadersPlugin.h"
 
@@ -19,14 +21,24 @@ StandartHeadersPlugin::StandartHeadersPlugin()
 
 StandartHeadersPlugin::~StandartHeadersPlugin()
 {
-	foreach (AbstractHeaderItem *item, m_headers)
-		delete item;
+	qDeleteAll(m_headers);
 }
 
 
 QList<AbstractHeaderItem *> StandartHeadersPlugin::getHeaderItems()
 {
 	return m_headers;
+}
+
+
+void StandartHeadersPlugin::initInformation()
+{
+	setName("Standart headers");
+	setVersion("0.0.0");
+	setVendor("Maksim Tamkovich");
+	setAuthor("Maksim Tamkovich");
+	setLicense("GPL");
+	setUrl("https://github.com/QuendiMax/");
 }
 
 

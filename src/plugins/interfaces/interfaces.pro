@@ -1,4 +1,4 @@
 TEMPLATE=subdirs
+INCLUDEPATH += ../../
 HEADERS= \
-	PluginInterface.h \
-	HeaderPluginInterface.h
+		HeaderPluginInterface.h
