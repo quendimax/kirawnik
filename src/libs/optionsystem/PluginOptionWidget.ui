@@ -16,6 +16,9 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTreeWidget" name="pluginTreeWidget">
+     <attribute name="headerCascadingSectionResizes">
+      <bool>true</bool>
+     </attribute>
      <column>
       <property name="text">
        <string>Name</string>

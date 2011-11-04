@@ -31,6 +31,16 @@ void PluginManager::addPluginPath(const QString &path)
 }
 
 
+void PluginManager::turnOnPlugin(const PluginObject *p, bool on)
+{
+	for (PluginEntry &entry : m_pluginList)
+		if (entry.instance == p) {
+			entry.on = on;
+			break;
+		}
+}
+
+
 /*!
   To get the list of unique plugins.
   */
@@ -81,11 +91,14 @@ void PluginManager::loadPlugins(const QStringList &pluginList)
 		plugin.loader = QSharedPointer<QPluginLoader>(new QPluginLoader);
 		plugin.loader->setFileName(file);
 		plugin.fileName = file;
+		plugin.instance = nullptr;
 
 		if (!sets->contains(file)) {
 			if (plugin.loader->load()) {
 				sets->setValue(file, true);
 				plugin.on = true;
+				plugin.instance = qobject_cast<PluginObject *>(plugin.loader->instance());
+				Q_ASSERT(plugin.instance);
 				m_pluginList.append(plugin);
 			}
 			else
@@ -97,6 +110,7 @@ void PluginManager::loadPlugins(const QStringList &pluginList)
 				if (!plugin.loader->load())
 					qWarning("Plugin \"%s\" cannot load", qPrintable(file));
 			}
+			plugin.instance = qobject_cast<PluginObject *>(plugin.loader->instance());
 			m_pluginList.append(plugin);
 		}
 	}

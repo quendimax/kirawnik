@@ -22,9 +22,13 @@ public:
 
 	template<class Interface> QList<Interface *> getPlugins() const;
 
+public slots:
+	void turnOnPlugin(const PluginObject *p, bool on);
+
 private:
 	struct PluginEntry {
 		QSharedPointer<QPluginLoader> loader;
+		PluginObject *instance;
 		QString fileName;
 		bool on;
 	};

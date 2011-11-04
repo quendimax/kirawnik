@@ -8,6 +8,5 @@ bool PluginDependency::operator ==(const PluginDependency &t) const
 
 
 PluginObject::PluginObject()
-	: m_enabled(true)
 {
 }

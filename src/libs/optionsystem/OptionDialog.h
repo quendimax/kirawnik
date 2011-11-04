@@ -1,5 +1,5 @@
-#ifndef __APP_OPTIONS_OPTIONDIALOG_H__
-#define __APP_OPTIONS_OPTIONDIALOG_H__
+#ifndef __OPTIONSYSTEM_OPTIONDIALOG_H__
+#define __OPTIONSYSTEM_OPTIONDIALOG_H__
 
 #include <QList>
 #include <QDialog>
@@ -38,4 +38,4 @@ private:
 };
 
 
-#endif //__APP_OPTIONS_OPTIONDIALOG_H__
+#endif //__OPTIONSYSTEM_OPTIONDIALOG_H__

@@ -1,11 +1,12 @@
-#ifndef __PLUGINOPTIONWIDGET_H__
-#define __PLUGINOPTIONWIDGET_H__
+#ifndef __OPTIONSYSTEM_PLUGINOPTIONWIDGET_H__
+#define __OPTIONSYSTEM_PLUGINOPTIONWIDGET_H__
+
+#include <QScopedPointer>
 
 #include "OptionWidget.h"
+#include "ui_PluginOptionWidget.h"
 
-namespace Ui {
-	class PluginOptionWidget;
-}
+class QTreeWidgetItem;
 
 
 class PluginOptionWidget : public OptionWidget
@@ -14,13 +15,18 @@ class PluginOptionWidget : public OptionWidget
 
 public:
 	PluginOptionWidget(QWidget *parent = 0);
-	~PluginOptionWidget();
 
 	QListWidgetItem *createListWidgetItem() const;
 
+private slots:
+	void showPluginDetailsView(QTreeWidgetItem *, int);
+
 private:
-	Ui::PluginOptionWidget *ui;
+	void initPluginTree();
+
+private:
+	QScopedPointer<Ui::PluginOptionWidget> ui;
 };
 
 
-#endif //__PLUGINOPTIONWIDGET_H__
+#endif //__OPTIONSYSTEM_PLUGINOPTIONWIDGET_H__

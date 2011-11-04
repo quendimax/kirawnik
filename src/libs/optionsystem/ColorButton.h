@@ -1,5 +1,5 @@
-#ifndef __APP_OPTIONS_COLORBUTTON_H__
-#define __APP_OPTIONS_COLORBUTTON_H__
+#ifndef __OPTIONSYSTEM_COLORBUTTON_H__
+#define __OPTIONSYSTEM_COLORBUTTON_H__
 
 #include <QFrame>
 
@@ -28,4 +28,4 @@ private:
 };
 
 
-#endif //__APP_OPTIONS_COLORBUTTON_H__
+#endif //__OPTIONSYSTEM_COLORBUTTON_H__

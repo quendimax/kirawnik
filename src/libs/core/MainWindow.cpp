@@ -50,9 +50,9 @@ void MainWindow::about()
 void MainWindow::initMenuBar()
 {
 	// File menu
-	QMenu *fileMenu = menuBar()->addMenu(tr("File"));
+	QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
-	QAction *exitAction = new QAction(tr("Exit"), this);
+	QAction *exitAction = new QAction(tr("E&xit"), this);
 	exitAction->setShortcut(QKeySequence::Quit);
 	exitAction->setIcon(QIcon::fromTheme("application-exit"));
 	connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
@@ -61,21 +61,21 @@ void MainWindow::initMenuBar()
 
 
 	// Option menu
-	QMenu *optionsMenu = menuBar()->addMenu(tr("Options"));
+	QMenu *optionsMenu = menuBar()->addMenu(tr("&Options"));
 
-	QAction *settingsAction = new QAction(tr("Settings..."), this);
+	QAction *settingsAction = new QAction(tr("&Settings..."), this);
 	connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
 
 	optionsMenu->addAction(settingsAction);
 
 	// Help menu
-	QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
+	QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
 
-	QAction *aboutAction = new QAction(tr("About..."), this);
+	QAction *aboutAction = new QAction(tr("&About..."), this);
 	aboutAction->setIcon(QIcon::fromTheme("help-about"));
 	connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
 
-	QAction *aboutQtAction = new QAction(tr("About Qt..."), this);
+	QAction *aboutQtAction = new QAction(tr("About &Qt..."), this);
 	connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
 	helpMenu->addAction(aboutAction);

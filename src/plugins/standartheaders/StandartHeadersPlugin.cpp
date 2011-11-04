@@ -16,6 +16,8 @@ StandartHeadersPlugin::StandartHeadersPlugin()
 	m_headers.append(new OwnerHeaderItem);
 	m_headers.append(new GroupHeaderItem);
 	m_headers.append(new ModifiedHeaderItem);
+
+	initInformation();
 }
 
 
@@ -33,12 +35,12 @@ QList<AbstractHeaderItem *> StandartHeadersPlugin::getHeaderItems()
 
 void StandartHeadersPlugin::initInformation()
 {
-	setName("Standart headers");
+	setName("Standart Headers");
 	setVersion("0.0.0");
 	setVendor(tr("Maksim Tamkovich"));
 	setAuthor(tr("Maksim Tamkovich"));
 	setLicense("GPL");
-	setUrl("https://github.com/QuendiMax/");
+	setUrl("https://github.com/QuendiMax/kirawnik/");
 	setDescription(tr("This is a plugin with classical head items."));
 }
 

@@ -1,5 +1,5 @@
-#ifndef __APP_OPTIONS_OPTIONWIDGET_H__
-#define __APP_OPTIONS_OPTIONWIDGET_H__
+#ifndef __OPTIONSYSTEM_OPTIONWIDGET_H__
+#define __OPTIONSYSTEM_OPTIONWIDGET_H__
 
 #include <QWidget>
 
@@ -17,4 +17,4 @@ public:
 };
 
 
-#endif //__APP_OPTIONS_OPTIONWIDGET_H__
+#endif //__OPTIONSYSTEM_OPTIONWIDGET_H__

@@ -3,11 +3,10 @@
 #include <pluginsystem/PluginObject.h>
 
 #include "PluginDetailsView.h"
-#include "ui_PluginDetailsView.h"
 
 
 PluginDetailsView::PluginDetailsView(const PluginObject *plugin, QWidget *parent)
-	: QDialog(parent)
+	: QDialog(parent), ui(new Ui::PluginDetailsView)
 {
 	if (QPushButton *button = ui->buttonBox->button(QDialogButtonBox::Close))
 		button->setDefault(true);

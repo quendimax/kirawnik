@@ -26,6 +26,8 @@ struct PluginDependency
 
 class PluginObject : public QObject
 {
+	Q_OBJECT
+
 public:
 	PluginObject();
 
@@ -38,8 +40,6 @@ public:
 	inline QString url() const { return m_url; }
 
 	inline QList<PluginDependency> dependencies() const { return m_dependecies; }
-	inline bool isEnabled() const { return m_enabled; }
-	inline void setEnabled(bool value) { m_enabled = value; }
 
 protected:
 	inline void setName(const QString &name) { m_name = name; }
@@ -54,7 +54,7 @@ protected:
 
 private:
 	bool operator == (const PluginObject &) const;
-	PluginObject &operator=(const PluginObject &);
+	PluginObject &operator = (const PluginObject &);
 
 private:
 	QString m_name;
@@ -65,7 +65,8 @@ private:
 	QString m_description;
 	QString m_url;
 	QList<PluginDependency> m_dependecies;
-	bool m_enabled;
+
+	friend class PluginManager;
 };
 
 
