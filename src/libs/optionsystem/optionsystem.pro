@@ -19,6 +19,7 @@ HEADERS = \
 		FontOptionWidget.h \
 		OptionDialog.h \
 		OptionWidget.h \
+		PluginDetailsView.h \
 		PluginOptionWidget.h
 
 SOURCES = \
@@ -26,7 +27,9 @@ SOURCES = \
 		ColorButton.cpp \
 		FontOptionWidget.cpp \
 		OptionDialog.cpp \
+		PluginDetailsView.cpp \
 		PluginOptionWidget.cpp
 
 FORMS = \
+		PluginDetailsView.ui \
 		PluginOptionWidget.ui

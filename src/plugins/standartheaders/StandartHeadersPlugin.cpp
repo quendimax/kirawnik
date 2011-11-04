@@ -35,10 +35,11 @@ void StandartHeadersPlugin::initInformation()
 {
 	setName("Standart headers");
 	setVersion("0.0.0");
-	setVendor("Maksim Tamkovich");
-	setAuthor("Maksim Tamkovich");
+	setVendor(tr("Maksim Tamkovich"));
+	setAuthor(tr("Maksim Tamkovich"));
 	setLicense("GPL");
 	setUrl("https://github.com/QuendiMax/");
+	setDescription(tr("This is a plugin with classical head items."));
 }
 
 
