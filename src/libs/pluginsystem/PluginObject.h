@@ -14,8 +14,6 @@ class PluginObject : public QObject
 public:
 	PluginObject();
 
-	virtual void initPluginSpec (PluginSpec *plugSpec) const = 0;
-
 private:
 	bool operator == (const PluginObject &) const;
 	PluginObject &operator = (const PluginObject &);

@@ -32,26 +32,4 @@ QList<AbstractHeaderItem *> StandartHeadersPlugin::getHeaderItems()
 }
 
 
-void StandartHeadersPlugin::initPluginSpec(PluginSpec *plugSpec) const
-{
-	class StandartHeaderPluginSpec : public PluginSpec
-	{
-	public:
-		StandartHeaderPluginSpec()
-		{
-			setName("Standart Headers");
-			setVersion("0.0.0");
-			setVendor(tr("Maksim Tamkovich"));
-			setAuthor(tr("Maksim Tamkovich"));
-			setLicense("GPL");
-			setUrl("https://github.com/QuendiMax/kirawnik/");
-			setDescription(tr("This is a plugin with classical head items."));
-		}
-	};
-
-	StandartHeaderPluginSpec spec;
-	*plugSpec = spec;
-}
-
-
 Q_EXPORT_PLUGIN2(kplugin_standartheaders, StandartHeadersPlugin)

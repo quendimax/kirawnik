@@ -16,7 +16,6 @@ public:
 	StandartHeadersPlugin();
 	~StandartHeadersPlugin();
 
-	void initPluginSpec(PluginSpec *plugSpec) const;
 	QList<AbstractHeaderItem *> getHeaderItems();
 
 private:

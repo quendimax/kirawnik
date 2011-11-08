@@ -1,15 +1,13 @@
-#ifndef __PLUGINSYSTEM_PLUGINSPECFILEHANDLER_H__
-#define __PLUGINSYSTEM_PLUGINSPECFILEHANDLER_H__
-
 #include <QXmlDefaultHandler>
 
-class PluginSpec;
+#include "PluginSpec.h"
+#include "PluginSpecReader.h"
 
 
 class PluginSpecFileHandler : public QXmlDefaultHandler
 {
 public:
-	PluginSpecFileHandler(PluginSpec *);
+	PluginSpecFileHandler(PluginSpec *pluginSpec) : m_pluginSpec(pluginSpec) {}
 
 	bool startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &atts);
 	bool endElement(const QString &namespaceURI, const QString &localName, const QString &qName);
@@ -20,4 +18,7 @@ private:
 };
 
 
-#endif //__PLUGINSYSTEM_PLUGINSPECFILEHANDLER_H__
+PluginSpecReader::PluginSpecReader(PluginSpec *pluginSpec)
+    : m_pluginSpec(pluginSpec)
+{
+}
