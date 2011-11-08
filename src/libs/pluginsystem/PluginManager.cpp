@@ -33,7 +33,7 @@ void PluginManager::addPluginPath(const QString &path)
 
 void PluginManager::turnOnPlugin(const PluginObject *p, bool on)
 {
-	for (PluginEntry &entry : m_pluginList)
+	for (auto &entry : m_pluginList)
 		if (entry.instance == p) {
 			entry.on = on;
 			break;

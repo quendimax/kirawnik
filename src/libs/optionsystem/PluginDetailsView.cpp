@@ -1,11 +1,11 @@
 #include <QPushButton>
 
-#include <pluginsystem/PluginObject.h>
+#include <pluginsystem/PluginSpec.h>
 
 #include "PluginDetailsView.h"
 
 
-PluginDetailsView::PluginDetailsView(const PluginObject *plugin, QWidget *parent)
+PluginDetailsView::PluginDetailsView(const PluginSpec *plugin, QWidget *parent)
 	: QDialog(parent), ui(new Ui::PluginDetailsView)
 {
 	if (QPushButton *button = ui->buttonBox->button(QDialogButtonBox::Close))
@@ -19,7 +19,7 @@ PluginDetailsView::PluginDetailsView(const PluginObject *plugin, QWidget *parent
 	ui->licenseTextEdit->setPlainText(plugin->license());
 	ui->descriptionTextEdit->setPlainText(plugin->description());
 
-	for (const PluginDependency &dep: plugin->dependencies()) {
+	for (auto &dep : plugin->dependencies()) {
 		QString dependItem = QString("%1 - %2").arg(dep.name).arg(dep.version);
 		if (dep.type == PluginDependency::Optional)
 			dependItem.append(", optional");

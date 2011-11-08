@@ -9,14 +9,19 @@ TEMPLATE = lib
 TARGET = $$getTarget(pluginsystem)
 VERSION = $$KIRAWNIK_VERSION
 CONFIG += shared
+QT += xml
 DESTDIR = ../../../lib/kirawnik/
 
 INCLUDEPATH = . ../../ ../
 
 HEADERS = \
 		PluginManager.h \
-		PluginObject.h
+		PluginObject.h \
+		PluginSpec.h \
+		PluginSpecFileHandler.h
 
 SOURCES = \
 		PluginManager.cpp \
-		PluginObject.cpp
+		PluginObject.cpp \
+		PluginSpec.cpp \
+		PluginSpecFileHandler.cpp

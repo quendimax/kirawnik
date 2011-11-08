@@ -16,9 +16,23 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTreeWidget" name="pluginTreeWidget">
+     <property name="sortingEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="animated">
+      <bool>true</bool>
+     </property>
      <attribute name="headerCascadingSectionResizes">
       <bool>true</bool>
      </attribute>
+     <attribute name="headerDefaultSectionSize">
+      <number>128</number>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Load</string>
+      </property>
+     </column>
      <column>
       <property name="text">
        <string>Name</string>

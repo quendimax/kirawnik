@@ -14,6 +14,7 @@ PluginOptionWidget::PluginOptionWidget(QWidget *parent)
 	setMinimumHeight(400);
 
 	ui->detailsButton->setDisabled(true);
+	ui->pluginTreeWidget->header()->setResizeMode(QHeaderView::Stretch);
 
 	initPluginTree();
 
@@ -38,12 +39,13 @@ void PluginOptionWidget::showPluginDetailsView(QTreeWidgetItem *, int)
 
 void PluginOptionWidget::initPluginTree()
 {
-	QList<PluginObject *> plugins = kApp->pluginManager()->getPlugins<PluginObject>();
-	for (const PluginObject *plugin: plugins) {
+/*	QList<PluginObject *> plugins = kApp->pluginManager()->getPlugins<PluginObject>();
+	for (const auto plugin : plugins) {
 		QStringList list;
-		list << plugin->name() << plugin->version() << plugin->author();
+		list << "" << plugin->name() << plugin->version() << plugin->author();
 
 		QTreeWidgetItem *item = new QTreeWidgetItem(ui->pluginTreeWidget, list);
+		item->setCheckState(0, Qt::Checked);
 		ui->pluginTreeWidget->addTopLevelItem(item);
-	}
+	}*/
 }

@@ -7,13 +7,13 @@
 #include "ui_PluginDetailsView.h"
 
 
-class PluginObject;
+class PluginSpec;
 
 
 class PluginDetailsView : public QDialog
 {
 public:
-	PluginDetailsView(const PluginObject *plugin, QWidget *parent = 0);
+	PluginDetailsView(const PluginSpec *plugin, QWidget *parent = 0);
 
 private:
 	QScopedPointer<Ui::PluginDetailsView> ui;
