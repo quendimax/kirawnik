@@ -41,9 +41,6 @@ public:
 	inline State state() const { return m_state; }
 
 private:
-	void readFromFile(const QString & fileName);
-
-private:
 	QString m_name;
 	QString m_version;
 	QString m_vendor;
@@ -56,7 +53,7 @@ private:
 	State m_state;
 	bool m_willLoad;
 
-	friend class PluginManager;
+	friend class PluginSpecHandler;
 };
 
 

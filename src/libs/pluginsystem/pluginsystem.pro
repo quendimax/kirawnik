@@ -18,10 +18,10 @@ HEADERS = \
 		PluginManager.h \
 		PluginObject.h \
 		PluginSpec.h \
-		PluginSpecReader.h
+		PluginSpecHandler.h
 
 SOURCES = \
 		PluginManager.cpp \
 		PluginObject.cpp \
 		PluginSpec.cpp \
-		PluginSpecReader.cpp
+		PluginSpecHandler.cpp

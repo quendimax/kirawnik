@@ -7,3 +7,4 @@ Makefile.Debug
 Makefile.Release
 *.o
 /kirawnik.pro.user
+*.user
