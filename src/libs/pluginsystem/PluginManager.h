@@ -7,6 +7,7 @@
 #include <QPluginLoader>
 #include <QSharedPointer>
 
+#include "PluginSpec.h"
 #include "PluginObject.h"
 
 
@@ -27,24 +28,15 @@ public slots:
 	void turnOnPlugin(const PluginObject *p, bool on);
 
 private:
-	struct PluginEntry {
-		QSharedPointer<QPluginLoader> loader;
-		PluginObject *instance;
-		QString fileName;
-		bool on;
-	};
-
-private:
-	QStringList getPluginList() const;
-	void loadPlugins(const QStringList &pluginList);
+	void getPluginList() const;
+	void loadPlugins();
 	void unloadPlugins();
 	void readPaths();
 	void writePaths() const;
-	QByteArray getPluginHash(const QString &fileName) const;
 
 private:
 	QStringList m_pluginPaths;
-	QList<PluginEntry> m_pluginList;
+	QList<PluginSpec> m_pluginList;
 };
 
 
@@ -52,9 +44,9 @@ template<class Interface> QList<Interface *> PluginManager::getPlugins() const
 {
 	QList<Interface *> resultList;
 
-	foreach (const PluginEntry &entry, m_pluginList) {
-		if (entry.on)
-			if (Interface *inf = qobject_cast<Interface *>(entry.loader->instance()))
+	for (const auto &entry : m_pluginList) {
+		if (entry.state() == PluginSpec::Loaded)
+			if (Interface *inf = qobject_cast<Interface *>(entry.plugin()))
 				resultList.append(inf);
 	}
 

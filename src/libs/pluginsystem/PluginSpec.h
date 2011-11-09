@@ -1,10 +1,12 @@
 #ifndef __PLUGINSYSTEM_PLUGINSPEC_H__
 #define __PLUGINSYSTEM_PLUGINSPEC_H__
 
-#include <QString>
 #include <QList>
+#include <QSharedPointer>
+#include <QString>
 
 
+class QPluginLoader;
 class PluginObject;
 
 
@@ -26,7 +28,9 @@ struct PluginDependency
 class PluginSpec
 {
 public:
-	enum State { Loaded, Unloaded };
+	enum State { Loaded, Unloaded, Invalid };
+
+	PluginSpec();
 
 	inline QString name() const { return m_name; }
 	inline QString version() const { return m_version; }
@@ -50,10 +54,12 @@ private:
 	QString m_url;
 	QList<PluginDependency> m_dependecies;
 	PluginObject *m_pluginObject;
+	QSharedPointer<QPluginLoader> m_loader;
 	State m_state;
 	bool m_willLoad;
 
 	friend class PluginSpecHandler;
+	friend class PluginManager;
 };
 
 

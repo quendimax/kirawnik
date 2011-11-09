@@ -1,11 +1,12 @@
-#include <QMap>
 #include <QDir>
 #include <QFile>
+#include <QMap>
 #include <QSettings>
-#include <QCryptographicHash>
+#include <QXmlSimpleReader>
 
 #include <core/Application.h>
 
+#include "PluginSpecHandler.h"
 #include "PluginManager.h"
 
 
@@ -13,8 +14,8 @@ PluginManager::PluginManager(QObject *parent)
     : QObject(parent)
 {
 	readPaths();
-	QStringList pluginList = getPluginList();
-	loadPlugins(pluginList);
+	getPluginList();
+	loadPlugins();
 }
 
 
@@ -34,8 +35,8 @@ void PluginManager::addPluginPath(const QString &path)
 void PluginManager::turnOnPlugin(const PluginObject *p, bool on)
 {
 	for (auto &entry : m_pluginList)
-		if (entry.instance == p) {
-			entry.on = on;
+		if (entry.plugin() == p) {
+			entry.m_willLoad = on;
 			break;
 		}
 }
@@ -44,50 +45,64 @@ void PluginManager::turnOnPlugin(const PluginObject *p, bool on)
 /*!
   To get the list of unique plugins.
   */
-QStringList PluginManager::getPluginList() const
+void PluginManager::getPluginList() const
 {
 	QStringList filters;
-#ifdef Q_OS_LINUX
-	#ifdef KIRAWNIK_DEBUG
-		filters << "libkplugin_*d.so";
-	#else
-		filters << "libkplugin_*.so";
-	#endif
-#elif Q_OS_WIN32
-	#ifdef KIRAWNIK_DEBUG
-		filters << "kplugin_*d.dll";
-	#else
-		filters << "kplugin_*.dll";
-	#endif
-#endif
+	filters << "*.pluginspec";
 
-	QMap<QByteArray, QString> originalPlugins;
-	foreach (QString path, m_pluginPaths) {
+	for (const QString &path : m_pluginPaths) {
 		QDir dir(path);
 		dir.setNameFilters(filters);
 
-		foreach (const QFileInfo &info, dir.entryInfoList()) {
-			QString pluginName = info.canonicalFilePath();
-			QByteArray pluginHash = getPluginHash(pluginName);
-			originalPlugins[pluginHash] = pluginName;
+		for (const auto &pluginSpecFile : dir.entryInfoList()) {
+			PluginSpec pluginSpec;
+			PluginSpecHandler handler(&pluginSpec);
+			QXmlSimpleReader reader;
+			reader.setContentHandler(&handler);
+
+			QFile specFile(pluginSpecFile.canonicalFilePath());
+			if (!specFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+				qWarning("Cannot open the \"%s\" file.", qPrintable(pluginSpecFile.canonicalFilePath()));
+				continue;
+			}
+			QXmlInputSource source(&specFile);
+			if (!reader.parse(source)) {
+				qWarning("Cannot parse the \"%s\" file.", qPrintable(pluginSpecFile.canonicalFilePath()));
+				pluginSpec.m_state = PluginSpec::Invalid;
+				m_pluginList.append(pluginSpec);
+				continue;
+			}
+
+			m_pluginList.append(pluginSpec);
 		}
 	}
-
-	QStringList pluginNameList;
-	foreach (const QByteArray &key, originalPlugins.uniqueKeys())
-		pluginNameList.append(originalPlugins[key]);
-
-	return pluginNameList;
 }
 
 
-void PluginManager::loadPlugins(const QStringList &pluginList)
+void PluginManager::loadPlugins()
 {
+	QString prefix, postfix;
+#ifdef Q_OS_LINUX
+	prefix = "lib";
+	#ifdef KIRAWNIK_DEBUG
+		postfix = "d.so";
+	#else
+		postfix = ".so";
+	#endif
+#elif defined(Q_OS_WIN32)
+	prefix = "";
+	#ifdef KIRAWNIK_DEBUG
+		postfix = "d.dll";
+	#else
+		postfix = ".dll";
+	#endif
+#endif
+
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("Plugins");
 
 	foreach (const QString &file, pluginList) {
-		PluginEntry plugin;
+		PluginSpec plugin;
 		plugin.loader = QSharedPointer<QPluginLoader>(new QPluginLoader);
 		plugin.loader->setFileName(file);
 		plugin.fileName = file;
@@ -127,24 +142,13 @@ void PluginManager::unloadPlugins()
 }
 
 
-QByteArray PluginManager::getPluginHash(const QString &fileName) const
-{
-	QCryptographicHash hash(QCryptographicHash::Md5);
-	QFile file(fileName);
-	file.open(QIODevice::ReadOnly);
-	hash.addData(file.read(0x7FFFFFFF));
-	file.close();
-	return hash.result();
-}
-
-
 void PluginManager::readPaths()
 {
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("Plugins");
 
 	QStringList defaultPaths;
-	defaultPaths << kApp->applicationDirPath() + "/../lib/kirawnik/";
+	defaultPaths << kApp->applicationDirPath() + "/../lib/kirawnik/plugins/";
 
 	m_pluginPaths = sets->value("Paths", defaultPaths).toStringList();
 
