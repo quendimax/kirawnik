@@ -1,19 +1,14 @@
-libcore.so*
-libcored.so*
-core.dll
-cored.dll
+/libcore.so*
+/libcored.so*
+/core.dll
+/cored.dll
 
-liboptionsystem.so*
-liboptionsystemd.so*
-optionsystem.dll
-optionsystemd.dll
+/liboptionsystem.so*
+/liboptionsystemd.so*
+/optionsystem.dll
+/optionsystemd.dll
 
-libpluginsystem.so*
-libpluginsystemd.so*
-pluginsystem.dll
-pluginsystemd.dll
-
-libkplugin_*.so
-libkplugin_*d.so
-kplugin_*.dll
-kplugin_*d.dll
+/libpluginsystem.so*
+/libpluginsystemd.so*
+/pluginsystem.dll
+/pluginsystemd.dll

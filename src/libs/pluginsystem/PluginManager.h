@@ -25,10 +25,10 @@ public:
 	template<class Interface> QList<Interface *> getPlugins() const;
 
 public slots:
-	void turnOnPlugin(const PluginObject *p, bool on);
+	void enablePlugin(const QString &pluginName, bool on);
 
 private:
-	void getPluginList() const;
+	void getPluginList();
 	void loadPlugins();
 	void unloadPlugins();
 	void readPaths();

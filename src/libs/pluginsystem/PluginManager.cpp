@@ -32,20 +32,16 @@ void PluginManager::addPluginPath(const QString &path)
 }
 
 
-void PluginManager::turnOnPlugin(const PluginObject *p, bool on)
+void PluginManager::enablePlugin(const QString &pluginName, bool value)
 {
-	for (auto &entry : m_pluginList)
-		if (entry.plugin() == p) {
-			entry.m_willLoad = on;
-			break;
+	for (PluginSpec &plugin : m_pluginList)
+		if (plugin.name() == pluginName) {
+			plugin.m_willLoad = value;
 		}
 }
 
 
-/*!
-  To get the list of unique plugins.
-  */
-void PluginManager::getPluginList() const
+void PluginManager::getPluginList()
 {
 	QStringList filters;
 	filters << "*.pluginspec";
@@ -54,7 +50,7 @@ void PluginManager::getPluginList() const
 		QDir dir(path);
 		dir.setNameFilters(filters);
 
-		for (const auto &pluginSpecFile : dir.entryInfoList()) {
+		for (const QFileInfo &pluginSpecFile : dir.entryInfoList()) {
 			PluginSpec pluginSpec;
 			PluginSpecHandler handler(&pluginSpec);
 			QXmlSimpleReader reader;
@@ -68,10 +64,21 @@ void PluginManager::getPluginList() const
 			QXmlInputSource source(&specFile);
 			if (!reader.parse(source)) {
 				qWarning("Cannot parse the \"%s\" file.", qPrintable(pluginSpecFile.canonicalFilePath()));
-				pluginSpec.m_state = PluginSpec::Invalid;
-				m_pluginList.append(pluginSpec);
 				continue;
 			}
+
+			pluginSpec.m_path = pluginSpecFile.canonicalPath();
+
+			for (const PluginSpec &plugin : m_pluginList) {
+				if (plugin.name() == pluginSpec.name()) {
+					qDebug("The %s plugin (%s) is duplicating\nthe %s plugin (%s)",
+					       qPrintable(pluginSpec.name()), qPrintable(pluginSpec.path()),
+					       qPrintable(plugin.name()), qPrintable(plugin.path()));
+				}
+			}
+
+			QSettings *sets = kApp->settings();
+			pluginSpec.m_willLoad = sets->value("Plugins/" + pluginSpec.name() + ".WillLoad", true).toBool();
 
 			m_pluginList.append(pluginSpec);
 		}
@@ -101,32 +108,21 @@ void PluginManager::loadPlugins()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("Plugins");
 
-	foreach (const QString &file, pluginList) {
-		PluginSpec plugin;
-		plugin.loader = QSharedPointer<QPluginLoader>(new QPluginLoader);
-		plugin.loader->setFileName(file);
-		plugin.fileName = file;
-		plugin.instance = nullptr;
+	for (PluginSpec &plugin : m_pluginList) {
+		if (!plugin.m_willLoad)
+			continue;
 
-		if (!sets->contains(file)) {
-			if (plugin.loader->load()) {
-				sets->setValue(file, true);
-				plugin.on = true;
-				plugin.instance = qobject_cast<PluginObject *>(plugin.loader->instance());
-				Q_ASSERT(plugin.instance);
-				m_pluginList.append(plugin);
-			}
-			else
-				qWarning("Plugin \"%s\" cannot load", qPrintable(file));
+		QString pluginFileName = plugin.path() + "/" + prefix + plugin.name() + postfix;
+		plugin.m_loader->setFileName(pluginFileName);
+
+		if (plugin.m_loader->load()) {
+			plugin.m_pluginObject = qobject_cast<PluginObject *>(plugin.m_loader->instance());
+			Q_ASSERT(plugin.m_pluginObject);
+			plugin.m_state = PluginSpec::Loaded;
 		}
 		else {
-			plugin.on = sets->value(file).toBool();
-			if (plugin.on) {
-				if (!plugin.loader->load())
-					qWarning("Plugin \"%s\" cannot load", qPrintable(file));
-			}
-			plugin.instance = qobject_cast<PluginObject *>(plugin.loader->instance());
-			m_pluginList.append(plugin);
+			plugin.m_state = PluginSpec::Invalid;
+			qWarning("Cannot load the \"%s\" plugin", qPrintable(plugin.name()));
 		}
 	}
 
@@ -136,9 +132,9 @@ void PluginManager::loadPlugins()
 
 void PluginManager::unloadPlugins()
 {
-	foreach (PluginEntry plugin, m_pluginList)
-		if (plugin.loader->isLoaded())
-			plugin.loader->unload();
+	for (PluginSpec &plugin : m_pluginList)
+		if (plugin.m_loader->isLoaded())
+			plugin.m_loader->unload();
 }
 
 

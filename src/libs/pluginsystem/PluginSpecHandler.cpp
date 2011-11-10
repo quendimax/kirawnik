@@ -40,6 +40,8 @@ bool PluginSpecHandler::endElement(const QString &, const QString &, const QStri
 		e_pluginSpec->m_author = m_text;
 	else if (qName == "description")
 		e_pluginSpec->m_description = m_text;
+	else if (qName == "category")
+		e_pluginSpec->m_category = m_text;
 	else if (qName == "url")
 		e_pluginSpec->m_url = m_text;
 

@@ -38,7 +38,9 @@ public:
 	inline QString license() const { return m_license; }
 	inline QString author() const { return m_author; }
 	inline QString description() const { return m_description; }
+	inline QString category() const { return m_category; }
 	inline QString url() const { return m_url; }
+	inline QString path() const { return m_path; }
 
 	inline QList<PluginDependency> dependencies() const { return m_dependecies; }
 	inline PluginObject *plugin() const { return m_pluginObject; }
@@ -51,7 +53,9 @@ private:
 	QString m_license;
 	QString m_author;
 	QString m_description;
+	QString m_category;
 	QString m_url;
+	QString m_path;
 	QList<PluginDependency> m_dependecies;
 	PluginObject *m_pluginObject;
 	QSharedPointer<QPluginLoader> m_loader;

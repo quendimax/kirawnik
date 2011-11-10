@@ -6,10 +6,10 @@
 include(../../../kirawnik.pri)
 
 TEMPLATE = lib
-TARGET = $$getTarget(kplugin_standartheaders)
+TARGET = $$getTarget(StandartHeaders)
 VERSION = $$KIRAWNIK_VERSION
 CONFIG += plugin
-DESTDIR = ../../../lib/kirawnik/
+DESTDIR = ../../../lib/kirawnik/plugins/
 
 INCLUDEPATH = . ../../ ../../libs/
 
