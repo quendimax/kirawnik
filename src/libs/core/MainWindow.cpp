@@ -39,11 +39,14 @@ void MainWindow::showSettings()
 void MainWindow::about()
 {
 	QMessageBox::about(this, tr("About ") + kApp->applicationName(),
-	                   tr("<p>Kirawnik is a dual-panel file manager for *nix systems (may be and others). "
-	                      "It uses Qt4 library.</p>"
+	                   tr("<h3>Kirawnik %1</h3>"
+	                      "<p>Built on %2 at %3.</p>"
+	                      "<p>Kirawnik is a dual-panel file manager for *nix systems (may be and others). "
+	                      "It uses Qt4 Framework.</p>"
 	                      "<p>You can find the source code at "
 	                      "<a href=\"https://github.com/QuendiMax/kirawnik\">"
-	                      "https://github.com/QuendiMax/kirawnik</a>.</p>"));
+	                      "https://github.com/QuendiMax/kirawnik</a>.</p>"
+	                      ).arg(kApp->applicationVersion()).arg(__DATE__).arg(__TIME__));
 }
 
 
