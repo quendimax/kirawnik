@@ -26,6 +26,7 @@ bool PluginSpecHandler::startElement(const QString &, const QString &, const QSt
 		e_pluginSpec->dependencies().append(dep);
 	}
 
+	m_text.clear();
 	return true;
 }
 
@@ -45,7 +46,6 @@ bool PluginSpecHandler::endElement(const QString &, const QString &, const QStri
 	else if (qName == "url")
 		e_pluginSpec->m_url = m_text;
 
-	m_text.clear();
 	return true;
 }
 

@@ -7,6 +7,7 @@
 #include "ui_PluginOptionWidget.h"
 
 class QTreeWidgetItem;
+class PluginSpec;
 
 
 class PluginOptionWidget : public OptionWidget
@@ -19,10 +20,13 @@ public:
 	QListWidgetItem *createListWidgetItem() const;
 
 private slots:
-	void showPluginDetailsView(QTreeWidgetItem *, int);
+	void showPluginDetailsView();
+	void enablePlugin(QTreeWidgetItem *, int);
+	void enableDetailsButton(const QModelIndex &);
 
 private:
 	void initPluginTree();
+	PluginSpec findPluginSpec(const QString &pluginName);
 
 private:
 	QScopedPointer<Ui::PluginOptionWidget> ui;

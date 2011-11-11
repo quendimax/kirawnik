@@ -9,7 +9,7 @@ Application::Application(int &argc, char **argv)
     : QApplication(argc, argv)
 {
 	QApplication::setApplicationName("Kirawnik");
-	QApplication::setApplicationVersion("pre");
+	QApplication::setApplicationVersion("0.0.0");
 	QApplication::setOrganizationName("Violators Software");
 
 	m_settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,

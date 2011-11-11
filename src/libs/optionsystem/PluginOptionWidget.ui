@@ -30,11 +30,6 @@
      </attribute>
      <column>
       <property name="text">
-       <string>Load</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>Name</string>
       </property>
      </column>

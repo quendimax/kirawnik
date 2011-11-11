@@ -1,9 +1,10 @@
 #include <QListWidgetItem>
 
 #include <core/Application.h>
-#include <pluginsystem/PluginObject.h>
+#include <pluginsystem/PluginSpec.h>
 #include <pluginsystem/PluginManager.h>
 
+#include "PluginDetailsView.h"
 #include "PluginOptionWidget.h"
 
 
@@ -14,12 +15,14 @@ PluginOptionWidget::PluginOptionWidget(QWidget *parent)
 	setMinimumHeight(400);
 
 	ui->detailsButton->setDisabled(true);
-	ui->pluginTreeWidget->header()->setResizeMode(QHeaderView::Stretch);
+	ui->pluginTreeWidget->header()->setResizeMode(QHeaderView::ResizeToContents);
 
 	initPluginTree();
 
-	connect(ui->pluginTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-	        this, SLOT(showPluginDetailsView(QTreeWidgetItem*, int)));
+	connect(ui->pluginTreeWidget, SIGNAL(pressed(QModelIndex)), this, SLOT(enableDetailsButton(QModelIndex)));
+	connect(ui->pluginTreeWidget, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+	        this, SLOT(enablePlugin(QTreeWidgetItem *, int)));
+	connect(ui->detailsButton, SIGNAL(clicked()), this, SLOT(showPluginDetailsView()));
 }
 
 
@@ -31,21 +34,43 @@ QListWidgetItem *PluginOptionWidget::createListWidgetItem() const
 }
 
 
-void PluginOptionWidget::showPluginDetailsView(QTreeWidgetItem *, int)
+void PluginOptionWidget::showPluginDetailsView()
 {
+	PluginSpec plugSpec = findPluginSpec(ui->pluginTreeWidget->currentItem()->text(0));
+	PluginDetailsView *view = new PluginDetailsView(plugSpec);
+	view->show();
+}
 
+
+void PluginOptionWidget::enablePlugin(QTreeWidgetItem *, int)
+{
+}
+
+
+void PluginOptionWidget::enableDetailsButton(const QModelIndex &)
+{
+	ui->detailsButton->setEnabled(true);
 }
 
 
 void PluginOptionWidget::initPluginTree()
 {
-/*	QList<PluginObject *> plugins = kApp->pluginManager()->getPlugins<PluginObject>();
-	for (const auto plugin : plugins) {
+	const auto &plugins = kApp->pluginManager()->pluginSpecs();
+	for (const auto &plugin : plugins) {
 		QStringList list;
-		list << "" << plugin->name() << plugin->version() << plugin->author();
+		list << plugin.name() << plugin.version() << plugin.author();
 
 		QTreeWidgetItem *item = new QTreeWidgetItem(ui->pluginTreeWidget, list);
 		item->setCheckState(0, Qt::Checked);
 		ui->pluginTreeWidget->addTopLevelItem(item);
-	}*/
+	}
+}
+
+
+PluginSpec PluginOptionWidget::findPluginSpec(const QString &pluginName)
+{
+	for (const PluginSpec &plugin : kApp->pluginManager()->pluginSpecs())
+		if (pluginName == plugin.name())
+			return plugin;
+	return PluginSpec();
 }

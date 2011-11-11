@@ -21,7 +21,7 @@ public:
 
 	void addPluginPath(const QString &path);
 
-	QList<PluginSpec> pluginSpecs() const;
+	inline const QList<PluginSpec> &pluginSpecs() const { return m_pluginList; }
 	template<class Interface> QList<Interface *> getPlugins() const;
 
 public slots:
