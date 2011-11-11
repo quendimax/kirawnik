@@ -1,9 +1,10 @@
-#ifndef __APP_HEADERVIEW_H__
-#define __APP_HEADERVIEW_H__
+#ifndef __CORE_HEADERVIEW_H__
+#define __CORE_HEADERVIEW_H__
 
-#include <QStyleOptionHeader>
 #include <QBitArray>
 #include <QList>
+#include <QMap>
+#include <QStyleOptionHeader>
 #include <QWidget>
 
 #include "AbstractHeaderItem.h"
@@ -25,15 +26,15 @@ public:
 	bool sectionIsShowing(int index) const;
 
 	bool isReverseSorting() const;
-	int sortingId() const;
+	QString sortingId() const;
 
-	int logicalIndex(int id) const;
+	int logicalIndex(const QString &id) const;
 	int count() const;
 	int hiddenCount() const;
 
 signals:
 	void geometryChanged();
-	void sortingChanged(int id, bool reverse);
+	void sortingChanged(const QString &id, bool reverse);
 
 protected:
 	void contextMenuEvent(QContextMenuEvent *);
@@ -62,7 +63,7 @@ private:
 	void paintMovableSection(QPainter &painter);
 
 	int indexAt(const QPoint &pos, bool *isResize = 0) const;
-	int indexAt(int id) const;
+	int indexAt(const QString &id) const;
 	int realyIndex(int logicalIndex) const;
 
 	void readSettings();
@@ -74,7 +75,7 @@ private:
 private:
 	static QList<HeaderView *> s_headerViews;
 	static QList<AbstractHeaderItem *> s_items;
-	static QBitArray s_showItems;
+	static QMap<QString, bool> s_showItems;
 	static int s_showItemCount;
 	static int s_objectCount;
 	static QMenu *s_menu;
@@ -83,24 +84,24 @@ private:
 	int m_objectNumber;
 	QPoint m_oldPos;
 	HeaderState m_headerState;
-	int m_sortingItemId;
-	int m_pressedItemId;
+	QString m_sortingItemId;
+	QString m_pressedItemId;
 	int m_resizeItemIndex;
 	bool m_reverseSorting;
 };
 
 
 inline AbstractHeaderItem *HeaderView::headerItem(int index) const { return s_items[realyIndex(index)]; }
-inline bool HeaderView::sectionIsShowing(int index) const { return s_showItems.at(s_items[realyIndex(index)]->id()); }
+inline bool HeaderView::sectionIsShowing(int index) const { return s_showItems[s_items[realyIndex(index)]->id()]; }
 
-inline int HeaderView::sortingId() const { return m_sortingItemId; }
+inline QString HeaderView::sortingId() const { return m_sortingItemId; }
 inline bool HeaderView::isReverseSorting() const { return m_reverseSorting; }
 
-inline int HeaderView::logicalIndex(int id) const { return indexAt(id) - (s_items.size() - s_showItemCount); }
+inline int HeaderView::logicalIndex(const QString &id) const { return indexAt(id) - (s_items.size() - s_showItemCount); }
 inline int HeaderView::count() const { return s_showItemCount; }
 inline int HeaderView::hiddenCount() const { return s_items.size() - s_showItemCount; }
 
 inline int HeaderView::realyIndex(int logicalIndex) const { return s_items.size() - s_showItemCount + logicalIndex; }
 
 
-#endif //__APP_HEADERVIEW_H__
+#endif //__CORE_HEADERVIEW_H__

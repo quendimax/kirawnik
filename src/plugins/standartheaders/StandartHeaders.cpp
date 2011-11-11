@@ -10,7 +10,7 @@ static QFileIconProvider iconProvider;
 
 NameHeaderItem::NameHeaderItem()
 {
-	m_name = "StandartHeadersPlugin.Name";
+	m_id = "StandartHeadersPlugin.Name";
 	m_title = QObject::tr("Name");
 	m_description = QObject::tr("Name of file without a suffix");
 	m_lessThan = 0;
@@ -57,7 +57,7 @@ void NameHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QP
 
 SuffixHeaderItem::SuffixHeaderItem()
 {
-	m_name = "StandartHeadersPlugin.Suffix";
+	m_id = "StandartHeadersPlugin.Suffix";
 	m_title = QObject::tr("Ext");
 	m_description = QObject::tr("Suffix of a file");
 	m_lessThan = 0;
@@ -77,7 +77,7 @@ void SuffixHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, 
 
 SizeHeaderItem::SizeHeaderItem()
 {
-	m_name = "StandartHeadersPlugin.Size";
+	m_id = "StandartHeadersPlugin.Size";
 	m_title = QObject::tr("Size");
 	m_description = QObject::tr("Size of a file");
 	m_lessThan = 0;
@@ -107,7 +107,7 @@ void SizeHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, QP
 
 TextPermsHeaderItem::TextPermsHeaderItem()
 {
-	m_name = "StandartHeadersPlugin.TextPerms";
+	m_id = "StandartHeadersPlugin.TextPerms";
 	m_title = QObject::tr("Perms");
 	m_description = QObject::tr("Permissions as text (rwxr-xr-x)");
 	m_lessThan = 0;
@@ -138,7 +138,7 @@ void TextPermsHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &o
 
 DigitPermsHeaderItem::DigitPermsHeaderItem()
 {
-	m_name = "StandartHeadersPlugin.DigitPerms";
+	m_id = "StandartHeadersPlugin.DigitPerms";
 	m_title = QObject::tr("Perms");
 	m_description = QObject::tr("Permissions as '0755'");
 	m_lessThan = 0;
@@ -160,7 +160,7 @@ void DigitPermsHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &
 
 OwnerHeaderItem::OwnerHeaderItem()
 {
-	m_name = "StandartHeadersPlugin.Owner";
+	m_id = "StandartHeadersPlugin.Owner";
 	m_title = QObject::tr("Owner");
 	m_description = QObject::tr("File owner");
 	m_lessThan = 0;
@@ -179,7 +179,7 @@ void OwnerHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, Q
 
 GroupHeaderItem::GroupHeaderItem()
 {
-	m_name = "StandartHeadersPlugin.Group";
+	m_id = "StandartHeadersPlugin.Group";
 	m_title = QObject::tr("Group");
 	m_description = QObject::tr("File group");
 	m_lessThan = 0;
@@ -198,7 +198,7 @@ void GroupHeaderItem::drawFileItem(const QFileInfo &fi, const PaintOption &op, Q
 
 ModifiedHeaderItem::ModifiedHeaderItem()
 {
-	m_name = "StandartHeadersPlugin.Modified";
+	m_id = "StandartHeadersPlugin.Modified";
 	m_title = QObject::tr("Modified");
 	m_description = QObject::tr("Last time of file modified");
 	m_lessThan = 0;

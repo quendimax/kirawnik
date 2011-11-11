@@ -1,5 +1,5 @@
-#ifndef __APP_APPLICATION_H__
-#define __APP_APPLICATION_H__
+#ifndef __CORE_APPLICATION_H__
+#define __CORE_APPLICATION_H__
 
 #include <QApplication>
 
@@ -41,4 +41,4 @@ inline PluginManager *Application::pluginManager() const { return m_pluginManage
 #define kApp static_cast<Application *>(QCoreApplication::instance())
 
 
-#endif //__APP_APPLICATION_H__
+#endif //__CORE_APPLICATION_H__
