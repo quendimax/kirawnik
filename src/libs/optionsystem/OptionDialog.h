@@ -19,6 +19,7 @@ class OptionDialog : public QDialog
 
 public:
 	OptionDialog(QWidget *parent = 0);
+	~OptionDialog();
 
 private slots:
 	void setCurrentOption(int index);

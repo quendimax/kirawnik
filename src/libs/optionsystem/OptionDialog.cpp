@@ -51,9 +51,20 @@ OptionDialog::OptionDialog(QWidget *parent)
 }
 
 
+OptionDialog::~OptionDialog()
+{
+	if (QLayoutItem *item = m_optionLayout->takeAt(1))
+		delete item;
+	qDeleteAll(m_optionWidgets);
+}
+
+
 void OptionDialog::setCurrentOption(int index)
 {
-	m_optionLayout->takeAt(1)->widget()->hide();
+	if (QLayoutItem *item = m_optionLayout->takeAt(1)) {
+		item->widget()->hide();
+		delete item;
+	}
 	m_optionLayout->addWidget(m_optionWidgets[index]);
 	m_optionLabel->setText(QString("<h3>%1</h3>").arg(m_listWidget->item(index)->text()));
 	m_optionWidgets[index]->show();
@@ -76,7 +87,7 @@ void OptionDialog::createListWidget()
 	m_listWidget->setIconSize(QSize(32, 32));
 	connect(m_listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(setCurrentOption(int)));
 
-	foreach (OptionWidget *widget, m_optionWidgets) {
+	for (auto widget : m_optionWidgets) {
 		m_listWidget->addItem(widget->createListWidgetItem());
 	}
 }
