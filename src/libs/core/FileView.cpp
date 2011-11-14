@@ -33,8 +33,8 @@ FileView::FileView(HeaderView *header, QWidget *parent)
 	readSettings();
 
 	initScroll();
-	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
-	initPixmap();
+	m_buffer = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
+	initBuffer();
 }
 
 
@@ -54,14 +54,14 @@ void FileView::setFileInfoList(const QFileInfoList &list)
 	m_current = 0;
 
 	initScroll();
-	initPixmap();
+	initBuffer();
 }
 
 
 void FileView::settingsUpdate()
 {
 	readSettings();
-	initPixmap();
+	initBuffer();
 	update();
 }
 
@@ -69,7 +69,7 @@ void FileView::settingsUpdate()
 void FileView::updateAll()
 {
 	foreach (FileView *view, s_fileViewes) {
-		view->initPixmap();
+		view->initBuffer();
 		view->update();
 	}
 }
@@ -78,7 +78,7 @@ void FileView::updateAll()
 void FileView::paintEvent(QPaintEvent *)
 {
 	QPainter painter;
-	painter.begin(&m_pixmap);
+	painter.begin(&m_buffer);
 	painter.setFont(font());
 
 	int start = m_scroll->value();
@@ -89,8 +89,8 @@ void FileView::paintEvent(QPaintEvent *)
 	int sub = m_scroll->value() - m_prevScrollValue;
 
 	if (0 <= qAbs(sub) && qAbs(sub) < m_scroll->pageStep()) {
-		QRect targetRect = m_pixmap.rect();
-		QRect sourceRect = m_pixmap.rect();
+		QRect targetRect = m_buffer.rect();
+		QRect sourceRect = m_buffer.rect();
 
 		if (sub > 0) {
 			sourceRect.setTop(sourceRect.top() + sub*m_itemHeight);
@@ -105,7 +105,13 @@ void FileView::paintEvent(QPaintEvent *)
 		else {
 			finish = start - 1;
 		}
-		painter.drawPixmap(targetRect, m_pixmap, sourceRect);
+
+		if (targetRect.top() != sourceRect.top()) {
+			QPixmap localBuffer(m_buffer.size());
+			QPainter bufferPainter(&localBuffer);
+			bufferPainter.drawPixmap(0, 0, m_buffer);
+			painter.drawPixmap(targetRect, localBuffer, sourceRect);
+		}
 	}
 
 	paintBackground(start, finish, painter);
@@ -114,7 +120,7 @@ void FileView::paintEvent(QPaintEvent *)
 	painter.end();
 
 	painter.begin(this);
-	painter.drawPixmap(0, 0, m_pixmap);
+	painter.drawPixmap(0, 0, m_buffer);
 	if (hasFocus()) {
 		if (m_scroll->value() <= m_current && m_current <= m_scroll->value() + m_scroll->pageStep())
 			paintCursor(painter);
@@ -128,7 +134,7 @@ void FileView::paintEvent(QPaintEvent *)
 void FileView::resizeEvent(QResizeEvent *)
 {
 	initScroll();
-	initPixmap();
+	initBuffer();
 }
 
 
@@ -294,19 +300,19 @@ void FileView::paintCursor(QPainter &painter)
 
 
 /*!
-  Paints full pixmap. Must be called at the moment when recreate the m_pixmap variable
+  Paints full buffer pixmap. Must be called at the moment when recreate the m_buffer variable
   */
-void FileView::initPixmap()
+void FileView::initBuffer()
 {
-	m_pixmap = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
+	m_buffer = QPixmap(m_width, ((height() + m_itemHeight - 1) / m_itemHeight) * m_itemHeight);
 
-	QPainter painter(&m_pixmap);
+	QPainter painter(&m_buffer);
 	painter.setFont(font());
 
 	int start = m_scroll->value();
 	int finish = qMin(m_scroll->value() + m_scroll->pageStep(), m_fileList.size() - 1);
 
-	painter.fillRect(m_pixmap.rect(), m_baseColor[0]);
+	painter.fillRect(m_buffer.rect(), m_baseColor[0]);
 	paintBackground(start, finish, painter);
 	paintForeground(start, finish, painter);
 }
@@ -335,7 +341,7 @@ void FileView::initScroll()
 
 void FileView::updateItem(int index)
 {
-	QPainter painter(&m_pixmap);
+	QPainter painter(&m_buffer);
 	painter.setFont(font());
 
 	paintBackground(index, index, painter);

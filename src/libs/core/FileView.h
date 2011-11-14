@@ -38,7 +38,7 @@ private:
 	void paintForeground(int start, int finish, QPainter &);
 	void paintCursor(QPainter &);
 
-	void initPixmap();
+	void initBuffer();
 	void initScroll();
 	void updateItem(int index);
 	QRect makeRectForSection(int index, int top) const;
@@ -55,7 +55,7 @@ private:
 	QFileInfoList m_fileList;
 	QFileIconProvider m_iconProvider;
 	QBitArray m_selectItems;
-	QPixmap m_pixmap;
+	QPixmap m_buffer;
 
 	int m_width;             //!< fileview width without scrollbar width
 	int m_current;
