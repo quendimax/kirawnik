@@ -1,10 +1,7 @@
-/qtcreator-build
-/kirawnik-build-*
 /debug
 /release
 Makefile
 Makefile.Debug
 Makefile.Release
 *.o
-/kirawnik.pro.user
 *.user
