@@ -10,7 +10,8 @@ bool PluginDependency::operator == (const PluginDependency &t) const
 
 
 PluginSpec::PluginSpec()
-    : m_pluginObject(nullptr),
+    : m_name("Kirawnik-Unknown"),
+      m_pluginObject(nullptr),
       m_loader(new QPluginLoader),
       m_state(Unloaded),
       m_willLoad(false)

@@ -27,9 +27,9 @@ PluginDetailsView::PluginDetailsView(const PluginSpec &plugin, QWidget *parent)
 	ui->descriptionTextEdit->setPlainText(plugin.description());
 
 	for (const PluginDependency &dep : plugin.dependencies()) {
-		QString dependItem = QString("%1 - %2").arg(dep.name).arg(dep.version);
+		QString dependItem = tr("%1 [%2]").arg(dep.name).arg(dep.version);
 		if (dep.type == PluginDependency::Optional)
-			dependItem.append(", optional");
+			dependItem.append(tr(", optional"));
 		ui->dependListWidget->addItem(dependItem);
 	}
 

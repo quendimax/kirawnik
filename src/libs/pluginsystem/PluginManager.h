@@ -1,6 +1,7 @@
 #ifndef __PLUGINSYSTEM_PLUGINMANAGER__
 #define __PLUGINSYSTEM_PLUGINMANAGER__
 
+#include <QMap>
 #include <QList>
 #include <QObject>
 #include <QStringList>
@@ -21,7 +22,7 @@ public:
 
 	void addPluginPath(const QString &path);
 
-	inline QList<PluginSpec> pluginSpecs() const { return m_pluginList; }
+	inline QList<PluginSpec> pluginSpecs() const { return m_plugins.values(); }
 	template<class Interface> QList<Interface *> getPlugins() const;
 
 public slots:
@@ -37,14 +38,13 @@ private:
 	void readPaths();
 	void writePaths() const;
 
-	PluginSpec *findPlugin(const QString &pluginName);
-
 	bool checkPluginDependency(const QString &pluginName);
 	void turnOnPluginDependency(const QString &pluginName);
+	void turnOffDependencyPlugins(const QString &pluginName);
 
 private:
 	QStringList m_pluginPaths;
-	QList<PluginSpec> m_pluginList;
+	QMap<QString, PluginSpec> m_plugins;	//!> QString - the plugin name, PluginSpec - the plugin
 };
 
 
@@ -52,7 +52,7 @@ template<class Interface> QList<Interface *> PluginManager::getPlugins() const
 {
 	QList<Interface *> resultList;
 
-	for (const auto &entry : m_pluginList) {
+	for (const auto &entry : m_plugins.values()) {
 		if (entry.state() == PluginSpec::Loaded)
 			if (Interface *inf = qobject_cast<Interface *>(entry.plugin()))
 				resultList.append(inf);

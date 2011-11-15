@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
 	fsView = new FileSystemView;
 	setCentralWidget(fsView);
 
+	resize(640, 460);
 	readSettings();
 }
 
@@ -92,9 +93,8 @@ void MainWindow::readSettings()
 
 	sets->beginGroup("MainWindow");
 	restoreState(sets->value("state").toByteArray());
+	restoreGeometry(sets->value("geometry").toByteArray());
 	setWindowState((Qt::WindowState) sets->value("windowState", (uint) Qt::WindowNoState).toUInt());
-	if (!isMaximized())
-		restoreGeometry(sets->value("geometry").toByteArray());
 	sets->endGroup();
 }
 

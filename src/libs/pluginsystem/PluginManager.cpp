@@ -34,12 +34,12 @@ void PluginManager::addPluginPath(const QString &path)
 
 bool PluginManager::enablePlugin(const QString &pluginName, bool on)
 {
-	PluginSpec *plugin = findPlugin(pluginName);
-	Q_ASSERT(plugin != nullptr);
+	Q_ASSERT(m_plugins.contains(pluginName));
+	PluginSpec &plugin = m_plugins[pluginName];
 
 	if (!on) {
-		plugin->m_willLoad = false;
-		emit pluginTurnedOn(plugin->name(), false);
+		plugin.m_willLoad = false;
+		emit pluginTurnedOn(plugin.name(), false);
 		return true;
 	}
 
@@ -81,18 +81,19 @@ void PluginManager::getPluginList()
 
 			pluginSpec.m_path = pluginSpecFile.canonicalPath();
 
-			for (const PluginSpec &plugin : m_pluginList) {
-				if (plugin.name() == pluginSpec.name()) {
-					qDebug("The %s plugin (%s) is duplicating\nthe %s plugin (%s)",
-					       qPrintable(pluginSpec.name()), qPrintable(pluginSpec.path()),
-					       qPrintable(plugin.name()), qPrintable(plugin.path()));
-				}
+			PluginSpec plugin = m_plugins.value(pluginSpec.name());
+			if (plugin.name() != "Kirawnik-Unknown") {
+				qDebug("The %s plugin (%s) is duplicating\nthe %s plugin (%s)",
+				       qPrintable(pluginSpec.name()), qPrintable(pluginSpec.path()),
+				       qPrintable(plugin.name()), qPrintable(plugin.path()));
+				continue;
 			}
 
+			//TODO: have to add setting up of willLoad
 			QSettings *sets = kApp->settings();
 			pluginSpec.m_willLoad = sets->value("Plugins/" + pluginSpec.name() + ".WillLoad", true).toBool();
 
-			m_pluginList.append(pluginSpec);
+			m_plugins[pluginSpec.name()] = pluginSpec;
 		}
 	}
 }
@@ -120,7 +121,10 @@ void PluginManager::loadPlugins()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("Plugins");
 
-	for (PluginSpec &plugin : m_pluginList) {
+	QMutableMapIterator<QString, PluginSpec> it(m_plugins);
+	while (it.hasNext()) {
+		PluginSpec &plugin = it.next().value();
+
 		if (!plugin.m_willLoad)
 			continue;
 
@@ -145,7 +149,9 @@ void PluginManager::loadPlugins()
 void PluginManager::unloadPlugins()
 {
 	QSettings *sets = kApp->settings();
-	for (PluginSpec &plugin : m_pluginList) {
+	QMutableMapIterator<QString, PluginSpec> it(m_plugins);
+	while (it.hasNext()) {
+		PluginSpec &plugin = it.next().value();
 		if (plugin.m_loader->isLoaded())
 			plugin.m_loader->unload();
 		sets->setValue("Plugins/" + plugin.name() + ".WillLoad", plugin.willLoad());
@@ -176,22 +182,12 @@ void PluginManager::writePaths() const
 }
 
 
-PluginSpec *PluginManager::findPlugin(const QString &pluginName)
-{
-	for (PluginSpec &plugin : m_pluginList) {
-		if (plugin.name() == pluginName)
-			return &plugin;
-	}
-	return nullptr;
-}
-
-
 bool PluginManager::checkPluginDependency(const QString &pluginName)
 {
-	const PluginSpec *plugin = findPlugin(pluginName);
-	if (!plugin) return false;
+	if (!m_plugins.contains(pluginName)) return false;
 
-	for (const PluginDependency &dependency : plugin->dependencies()) {
+	const PluginSpec &plugin = m_plugins[pluginName];
+	for (const PluginDependency &dependency : plugin.dependencies()) {
 		if (!checkPluginDependency(dependency.name))
 			return false;
 	}
@@ -201,12 +197,21 @@ bool PluginManager::checkPluginDependency(const QString &pluginName)
 
 void PluginManager::turnOnPluginDependency(const QString &pluginName)
 {
-	PluginSpec *plugin = findPlugin(pluginName);
-	Q_ASSERT(plugin);
+	Q_ASSERT(m_plugins.contains(pluginName));
+	PluginSpec &plugin = m_plugins[pluginName];
 
-	plugin->m_willLoad = true;
+	plugin.m_willLoad = true;
 	emit pluginTurnedOn(pluginName, true);
 
-	for (const PluginDependency &dependency : plugin->dependencies())
+	for (const PluginDependency &dependency : plugin.dependencies())
 		turnOnPluginDependency(dependency.name);
+}
+
+
+void PluginManager::turnOffDependencyPlugins(const QString &pluginName)
+{
+	Q_ASSERT(m_plugins.contains(pluginName));
+	PluginSpec &plugin = m_plugins[pluginName];
+
+	plugin.m_willLoad = false;
 }
