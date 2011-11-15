@@ -21,11 +21,14 @@ public:
 
 	void addPluginPath(const QString &path);
 
-	inline const QList<PluginSpec> &pluginSpecs() const { return m_pluginList; }
+	inline QList<PluginSpec> pluginSpecs() const { return m_pluginList; }
 	template<class Interface> QList<Interface *> getPlugins() const;
 
 public slots:
-	void enablePlugin(const QString &pluginName, bool on);
+	bool enablePlugin(const QString &pluginName, bool on);
+
+signals:
+	void pluginTurnedOn(const QString &pluginName, bool on);
 
 private:
 	void getPluginList();
@@ -33,6 +36,11 @@ private:
 	void unloadPlugins();
 	void readPaths();
 	void writePaths() const;
+
+	PluginSpec *findPlugin(const QString &pluginName);
+
+	bool checkPluginDependency(const QString &pluginName);
+	void turnOnPluginDependency(const QString &pluginName);
 
 private:
 	QStringList m_pluginPaths;

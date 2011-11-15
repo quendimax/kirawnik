@@ -23,6 +23,8 @@ PluginOptionWidget::PluginOptionWidget(QWidget *parent)
 	connect(ui->pluginTreeWidget, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
 	        this, SLOT(enablePlugin(QTreeWidgetItem *, int)));
 	connect(ui->detailsButton, SIGNAL(clicked()), this, SLOT(showPluginDetailsView()));
+	connect(this, SIGNAL(pluginStateChanged(QString, bool)), kApp->pluginManager(), SLOT(enablePlugin(QString, bool)));
+	connect(kApp->pluginManager(), SIGNAL(pluginTurnedOn(QString, bool)), this, SLOT(turnOnPlugin(QString, bool)));
 }
 
 
@@ -42,8 +44,9 @@ void PluginOptionWidget::showPluginDetailsView()
 }
 
 
-void PluginOptionWidget::enablePlugin(QTreeWidgetItem *, int)
+void PluginOptionWidget::enablePlugin(QTreeWidgetItem *item, int)
 {
+	emit pluginStateChanged(item->text(0), item->checkState(0) == Qt::Checked);
 }
 
 
@@ -53,16 +56,28 @@ void PluginOptionWidget::enableDetailsButton(const QModelIndex &)
 }
 
 
+void PluginOptionWidget::turnOnPlugin(const QString &pluginName, bool on)
+{
+	Q_ASSERT(m_items.contains(pluginName));
+
+	m_items[pluginName]->setCheckState(0, on ? Qt::Checked : Qt::Unchecked);
+}
+
+
 void PluginOptionWidget::initPluginTree()
 {
 	const auto &plugins = kApp->pluginManager()->pluginSpecs();
-	for (const auto &plugin : plugins) {
+	for (const PluginSpec &plugin : plugins) {
 		QStringList list;
 		list << plugin.name() << plugin.version() << plugin.author();
 
 		QTreeWidgetItem *item = new QTreeWidgetItem(ui->pluginTreeWidget, list);
-		item->setCheckState(0, Qt::Checked);
+		if (plugin.willLoad())
+			item->setCheckState(0, Qt::Checked);
+		else
+			item->setCheckState(0, Qt::Unchecked);
 		ui->pluginTreeWidget->addTopLevelItem(item);
+		m_items[plugin.name()] = item;
 	}
 }
 

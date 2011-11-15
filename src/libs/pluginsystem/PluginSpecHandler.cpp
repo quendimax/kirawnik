@@ -23,7 +23,7 @@ bool PluginSpecHandler::startElement(const QString &, const QString &, const QSt
 		QString type = attrs.value("type");
 		if (type == "optional") dep.type = PluginDependency::Optional;
 		else if (type == "required") dep.type = PluginDependency::Required;
-		e_pluginSpec->dependencies().append(dep);
+		e_pluginSpec->m_dependecies.append(dep);
 	}
 
 	m_text.clear();

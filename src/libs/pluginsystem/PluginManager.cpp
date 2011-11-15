@@ -32,12 +32,24 @@ void PluginManager::addPluginPath(const QString &path)
 }
 
 
-void PluginManager::enablePlugin(const QString &pluginName, bool value)
+bool PluginManager::enablePlugin(const QString &pluginName, bool on)
 {
-	for (PluginSpec &plugin : m_pluginList)
-		if (plugin.name() == pluginName) {
-			plugin.m_willLoad = value;
-		}
+	PluginSpec *plugin = findPlugin(pluginName);
+	Q_ASSERT(plugin != nullptr);
+
+	if (!on) {
+		plugin->m_willLoad = false;
+		emit pluginTurnedOn(plugin->name(), false);
+		return true;
+	}
+
+	// else if (on)
+
+	if (checkPluginDependency(pluginName)) {
+		turnOnPluginDependency(pluginName);
+	}
+
+	return true;
 }
 
 
@@ -132,9 +144,12 @@ void PluginManager::loadPlugins()
 
 void PluginManager::unloadPlugins()
 {
-	for (PluginSpec &plugin : m_pluginList)
+	QSettings *sets = kApp->settings();
+	for (PluginSpec &plugin : m_pluginList) {
 		if (plugin.m_loader->isLoaded())
 			plugin.m_loader->unload();
+		sets->setValue("Plugins/" + plugin.name() + ".WillLoad", plugin.willLoad());
+	}
 }
 
 
@@ -158,4 +173,40 @@ void PluginManager::writePaths() const
 	sets->beginGroup("Plugins");
 	sets->setValue("Paths", m_pluginPaths);
 	sets->endGroup();
+}
+
+
+PluginSpec *PluginManager::findPlugin(const QString &pluginName)
+{
+	for (PluginSpec &plugin : m_pluginList) {
+		if (plugin.name() == pluginName)
+			return &plugin;
+	}
+	return nullptr;
+}
+
+
+bool PluginManager::checkPluginDependency(const QString &pluginName)
+{
+	const PluginSpec *plugin = findPlugin(pluginName);
+	if (!plugin) return false;
+
+	for (const PluginDependency &dependency : plugin->dependencies()) {
+		if (!checkPluginDependency(dependency.name))
+			return false;
+	}
+	return true;
+}
+
+
+void PluginManager::turnOnPluginDependency(const QString &pluginName)
+{
+	PluginSpec *plugin = findPlugin(pluginName);
+	Q_ASSERT(plugin);
+
+	plugin->m_willLoad = true;
+	emit pluginTurnedOn(pluginName, true);
+
+	for (const PluginDependency &dependency : plugin->dependencies())
+		turnOnPluginDependency(dependency.name);
 }

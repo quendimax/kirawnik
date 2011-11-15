@@ -45,6 +45,7 @@ public:
 	inline QList<PluginDependency> dependencies() const { return m_dependecies; }
 	inline PluginObject *plugin() const { return m_pluginObject; }
 	inline State state() const { return m_state; }
+	inline bool willLoad() const { return m_willLoad; }
 
 private:
 	QString m_name;

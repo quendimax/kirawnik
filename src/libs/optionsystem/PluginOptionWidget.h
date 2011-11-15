@@ -1,6 +1,7 @@
 #ifndef __OPTIONSYSTEM_PLUGINOPTIONWIDGET_H__
 #define __OPTIONSYSTEM_PLUGINOPTIONWIDGET_H__
 
+#include <QMap>
 #include <QScopedPointer>
 
 #include "OptionWidget.h"
@@ -23,6 +24,10 @@ private slots:
 	void showPluginDetailsView();
 	void enablePlugin(QTreeWidgetItem *, int);
 	void enableDetailsButton(const QModelIndex &);
+	void turnOnPlugin(const QString &pluginName, bool on);
+
+signals:
+	void pluginStateChanged(const QString &pluginName, bool willLoad);
 
 private:
 	void initPluginTree();
@@ -30,6 +35,7 @@ private:
 
 private:
 	QScopedPointer<Ui::PluginOptionWidget> ui;
+	QMap<QString, QTreeWidgetItem *> m_items;
 };
 
 
