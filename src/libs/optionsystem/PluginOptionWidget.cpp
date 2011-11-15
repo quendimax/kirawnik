@@ -39,7 +39,7 @@ QListWidgetItem *PluginOptionWidget::createListWidgetItem() const
 void PluginOptionWidget::showPluginDetailsView()
 {
 	PluginSpec plugSpec = findPluginSpec(ui->pluginTreeWidget->currentItem()->text(0));
-	PluginDetailsView *view = new PluginDetailsView(plugSpec);
+	PluginDetailsView *view = new PluginDetailsView(plugSpec, this);
 	view->show();
 }
 

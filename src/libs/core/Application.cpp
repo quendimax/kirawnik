@@ -2,14 +2,15 @@
 #include <QSettings>
 
 #include <pluginsystem/PluginManager.h>
-#include <core/Application.h>
+
+#include "Application.h"
 
 
 Application::Application(int &argc, char **argv)
     : QApplication(argc, argv)
 {
 	QApplication::setApplicationName("Kirawnik");
-	QApplication::setApplicationVersion("0.0.0");
+	QApplication::setApplicationVersion(KIRAWNIK_VERSION);
 	QApplication::setOrganizationName("Violators Software");
 
 	m_settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,

@@ -28,6 +28,17 @@ defineReplace(libraryName) {
 }
 
 
+defineReplace(externLibraryName) {
+	libname = $$1
+	win32 {
+		libname = $${libname}.lib
+	}
+	else:unix {
+		libname = -l$$libname
+	}
+}
+
+
 #
 # HEADER
 #
@@ -38,6 +49,7 @@ CONFIG(debug, debug|release) {
 	DEFINES += KIRAWNIK_DEBUG
 	win32:CONFIG += console
 }
+DEFINES += KIRAWNIK_VERSION=\\\"$$KIRAWNIK_VERSION\\\"
 
 *g++* {
 	#QMAKE_CXXFLAGS_DEBUG += -O1
