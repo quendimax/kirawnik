@@ -28,9 +28,6 @@
        <property name="text">
         <string/>
        </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
        <property name="textInteractionFlags">
         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
        </property>
@@ -47,9 +44,6 @@
       <widget class="QLabel" name="versionLabel">
        <property name="text">
         <string/>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
        </property>
        <property name="textInteractionFlags">
         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -68,9 +62,6 @@
        <property name="text">
         <string/>
        </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
        <property name="textInteractionFlags">
         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
        </property>
@@ -88,9 +79,6 @@
        <property name="text">
         <string/>
        </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
        <property name="textInteractionFlags">
         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
        </property>
@@ -107,9 +95,6 @@
       <widget class="QLabel" name="categoryLabel">
        <property name="text">
         <string/>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
        </property>
        <property name="textInteractionFlags">
         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>

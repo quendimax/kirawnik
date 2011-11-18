@@ -20,7 +20,7 @@ PluginDetailsView::PluginDetailsView(const PluginSpec &plugin, QWidget *parent)
 	ui->versionLabel->setText(plugin.version());
 	ui->vendorLabel->setText(plugin.vendor());
 	ui->authorLabel->setText(plugin.author());
-	ui->pathLabel->setText(plugin.path());
+    ui->pathLabel->setText(QString("<a href=\"%1\">%1</a>").arg(plugin.path()));
 	ui->categoryLabel->setText(plugin.category());
 	ui->urlLabel->setText(QString("<a href=\"%1\">%1</a>").arg(plugin.url()));
 	ui->licenseTextEdit->setPlainText(plugin.license());
