@@ -10,7 +10,7 @@ TARGET = $$getTarget(kirawnik)
 VERSION = $$KIRAWNIK_VERSION
 DESTDIR = ../../bin
 
-*g++* : QMAKE_LFLAGS += -Wl,--rpath="../lib/kirawnik/"
+*g++* : QMAKE_LFLAGS += -Wl,-z,origin \'-Wl,-rpath,\$\$ORIGIN/../lib/kirawnik/\'
 
 INCLUDEPATH = . .. ../libs/
 LIBS += -L"../../lib/kirawnik/"
