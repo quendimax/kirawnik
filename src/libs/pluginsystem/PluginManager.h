@@ -29,7 +29,7 @@ public slots:
 	bool enablePlugin(const QString &pluginName, bool on);
 
 signals:
-	void pluginTurnedOn(const QString &pluginName, bool on);
+	void pluginEnabled(const QString &pluginName, bool on);
 
 private:
 	void getPluginList();
@@ -39,12 +39,12 @@ private:
 	void writePaths() const;
 
 	bool checkPluginDependency(const QString &pluginName);
-	void turnOnPluginDependency(const QString &pluginName);
-	void turnOffDependencyPlugins(const QString &pluginName);
+	void enablePluginDependency(const QString &pluginName);
+	void disablePluginDependency(const QString &pluginName);
 
 private:
 	QStringList m_pluginPaths;
-	QMap<QString, PluginSpec> m_plugins;	//!> QString - the plugin name, PluginSpec - the plugin
+	QMap<QString, PluginSpec> m_plugins;	//!> QString - plugin name, PluginSpec - plugin
 };
 
 

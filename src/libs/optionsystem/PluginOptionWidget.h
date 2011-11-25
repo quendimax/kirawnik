@@ -22,9 +22,9 @@ public:
 
 private slots:
 	void showPluginDetailsView();
-	void enablePlugin(QTreeWidgetItem *, int);
+	void sendEnablePluginSignal(QTreeWidgetItem *, int);
 	void enableDetailsButton(const QModelIndex &);
-	void turnOnPlugin(const QString &pluginName, bool on);
+	void setPluginCheckBox(const QString &pluginName, bool on);
 
 signals:
 	void pluginStateChanged(const QString &pluginName, bool willLoad);

@@ -21,10 +21,10 @@ PluginOptionWidget::PluginOptionWidget(QWidget *parent)
 
 	connect(ui->pluginTreeWidget, SIGNAL(pressed(QModelIndex)), this, SLOT(enableDetailsButton(QModelIndex)));
 	connect(ui->pluginTreeWidget, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
-	        this, SLOT(enablePlugin(QTreeWidgetItem *, int)));
+			this, SLOT(sendEnablePluginSignal(QTreeWidgetItem *, int)));
 	connect(ui->detailsButton, SIGNAL(clicked()), this, SLOT(showPluginDetailsView()));
 	connect(this, SIGNAL(pluginStateChanged(QString, bool)), kApp->pluginManager(), SLOT(enablePlugin(QString, bool)));
-	connect(kApp->pluginManager(), SIGNAL(pluginTurnedOn(QString, bool)), this, SLOT(turnOnPlugin(QString, bool)));
+	connect(kApp->pluginManager(), SIGNAL(pluginEnabled(QString,bool)), this, SLOT(setPluginCheckBox(QString, bool)));
 }
 
 
@@ -44,7 +44,7 @@ void PluginOptionWidget::showPluginDetailsView()
 }
 
 
-void PluginOptionWidget::enablePlugin(QTreeWidgetItem *item, int)
+void PluginOptionWidget::sendEnablePluginSignal(QTreeWidgetItem *item, int)
 {
 	emit pluginStateChanged(item->text(0), item->checkState(0) == Qt::Checked);
 }
@@ -56,7 +56,7 @@ void PluginOptionWidget::enableDetailsButton(const QModelIndex &)
 }
 
 
-void PluginOptionWidget::turnOnPlugin(const QString &pluginName, bool on)
+void PluginOptionWidget::setPluginCheckBox(const QString &pluginName, bool on)
 {
 	Q_ASSERT(m_items.contains(pluginName));
 

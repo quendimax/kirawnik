@@ -35,18 +35,12 @@ void PluginManager::addPluginPath(const QString &path)
 bool PluginManager::enablePlugin(const QString &pluginName, bool on)
 {
 	Q_ASSERT(m_plugins.contains(pluginName));
-	PluginSpec &plugin = m_plugins[pluginName];
 
 	if (!on) {
-		plugin.m_willLoad = false;
-		emit pluginTurnedOn(plugin.name(), false);
-		return true;
+		disablePluginDependency(pluginName);
 	}
-
-	// else if (on)
-
-	if (checkPluginDependency(pluginName)) {
-		turnOnPluginDependency(pluginName);
+	else if (checkPluginDependency(pluginName)) {
+		enablePluginDependency(pluginName);
 	}
 
 	return true;
@@ -195,23 +189,31 @@ bool PluginManager::checkPluginDependency(const QString &pluginName)
 }
 
 
-void PluginManager::turnOnPluginDependency(const QString &pluginName)
+void PluginManager::enablePluginDependency(const QString &pluginName)
 {
 	Q_ASSERT(m_plugins.contains(pluginName));
 	PluginSpec &plugin = m_plugins[pluginName];
 
 	plugin.m_willLoad = true;
-	emit pluginTurnedOn(pluginName, true);
+	emit pluginEnabled(pluginName, true);
 
 	for (const PluginDependency &dependency : plugin.dependencies())
-		turnOnPluginDependency(dependency.name);
+		enablePluginDependency(dependency.name);
 }
 
 
-void PluginManager::turnOffDependencyPlugins(const QString &pluginName)
+void PluginManager::disablePluginDependency(const QString &pluginName)
 {
 	Q_ASSERT(m_plugins.contains(pluginName));
 	PluginSpec &plugin = m_plugins[pluginName];
 
 	plugin.m_willLoad = false;
+	emit pluginEnabled(pluginName, false);
+
+	for (const PluginSpec &spec : m_plugins) {
+		for (const PluginDependency &dependency : spec.dependencies()) {
+			if (dependency.name == pluginName && dependency.type == PluginDependency::Required)
+				disablePluginDependency(spec.name());
+		}
+	}
 }
