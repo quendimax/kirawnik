@@ -42,7 +42,7 @@ defineReplace(externLibraryName) {
 #
 # HEADER
 #
-KIRAWNIK_VERSION = 0.0.0
+KIRAWNIK_VERSION = 0.1.0
 CONFIG += warn_on
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) {
