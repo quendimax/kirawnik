@@ -1,4 +1,5 @@
 #include <QDir>
+#include <QIcon>
 #include <QSettings>
 
 #include <pluginsystem/PluginManager.h>
@@ -12,6 +13,8 @@ Application::Application(int &argc, char **argv)
 	QApplication::setApplicationName("Kirawnik");
 	QApplication::setApplicationVersion(KIRAWNIK_VERSION);
 	QApplication::setOrganizationName("Violators Software");
+
+	setWindowIcon(QIcon(kApp->applicationDirPath() + "/../share/icons/hicolor/512x512/apps/kirawnik.png"));
 
 	m_settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
 	                           QApplication::organizationName(),
