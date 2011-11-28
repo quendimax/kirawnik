@@ -27,13 +27,14 @@ cp -r ../DEBIAN .
 
 find usr/ -name \.gitignore | xargs rm -f
 
-find . -type d | xargs chmod 755
+#find . -type d | xargs chmod 755
 find . -type f | xargs chmod 644
-find . -type f -a -name "kirawnik" | xargs chmod 755
-find . -type f -a -name "postinst" | xargs chmod 755
+
+chmod 755 usr/bin/kirawnik DEBIAN/postinst
 
 md5deep -rl -o f usr > DEBIAN/md5sums
 
 cd ..
 fakeroot dpkg-deb --build $DEB_DIR $OUTPUT_FILE
 
+rm -rf $DEB_DIR/
