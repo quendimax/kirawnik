@@ -1,6 +1,16 @@
 #!/bin/sh
 # The script creates a deb packet for the Kirawnik project.
 
+
+if [ $1 = "--help" -o $1 = "help" -o $1 = "-h" ] ; then
+	echo "Usage: $0 <application-name>.deb"
+	echo "  or:  $0 --help | help | -h"
+	echo ""
+	echo " -h, --help, help        print this message"
+	echo ""
+	exit 0
+fi
+
 umask 0022
 
 
@@ -29,8 +39,7 @@ find usr/ -name \.gitignore | xargs rm -f
 
 #find . -type d | xargs chmod 755
 find . -type f | xargs chmod 644
-
-chmod 755 usr/bin/kirawnik DEBIAN/postinst
+chmod 755 usr/bin/kirawnik
 
 md5deep -rl -o f usr > DEBIAN/md5sums
 
