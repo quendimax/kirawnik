@@ -2,7 +2,7 @@
 # The script creates a deb packet for the Kirawnik project.
 
 
-if [ $1 = "--help" -o $1 = "help" -o $1 = "-h" ] ; then
+if [ "$1" = "--help" -o "$1" = "help" -o "$1" = "-h" ] ; then
 	echo "Usage: $0 <application-name>.deb"
 	echo "  or:  $0 --help | help | -h"
 	echo ""
@@ -14,10 +14,10 @@ fi
 umask 0022
 
 
-OUTPUT_FILE=$1
+OUTPUT_FILE="$1"
 DEB_DIR="deb-kirawnik"
 
-if [ -z $1 ] ; then
+if [ -z "$1" ] ; then
 	OUTPUT_FILE="kirawnik.deb"
 fi
 
@@ -34,6 +34,11 @@ cp ../../bin/kirawnik usr/bin
 cp -r ../../lib/* usr/lib/
 cp -r ../../share/* usr/share
 cp -r ../DEBIAN .
+
+cd usr/share/doc/kirawnik/
+gzip -9 changelog
+mv changelog.gz changelog.Debian.gz
+cd ../../../../
 
 find usr/ -name \.gitignore | xargs rm -f
 
