@@ -53,7 +53,7 @@ DEFINES += KIRAWNIK_VERSION=\\\"$$KIRAWNIK_VERSION\\\"
 
 *g++* {
 	#QMAKE_CXXFLAGS_DEBUG += -O1
-	QMAKE_CXXFLAGS += -std=c++0x
+	#QMAKE_CXXFLAGS += -std=c++0x
 	!CONFIG(debug, debug|release) {
 		QMAKE_LFLAGS += -Wl,-s
 	}

@@ -66,8 +66,8 @@ void PluginOptionWidget::setPluginCheckBox(const QString &pluginName, bool on)
 
 void PluginOptionWidget::initPluginTree()
 {
-	const auto &plugins = kApp->pluginManager()->pluginSpecs();
-	for (const PluginSpec &plugin : plugins) {
+	const QList<PluginSpec> &plugins = kApp->pluginManager()->pluginSpecs();
+	foreach (const PluginSpec &plugin, plugins) {
 		QStringList list;
 		list << plugin.name() << plugin.version() << plugin.author();
 
@@ -84,7 +84,7 @@ void PluginOptionWidget::initPluginTree()
 
 PluginSpec PluginOptionWidget::findPluginSpec(const QString &pluginName)
 {
-	for (const PluginSpec &plugin : kApp->pluginManager()->pluginSpecs())
+	foreach (const PluginSpec &plugin, kApp->pluginManager()->pluginSpecs())
 		if (pluginName == plugin.name())
 			return plugin;
 	return PluginSpec();

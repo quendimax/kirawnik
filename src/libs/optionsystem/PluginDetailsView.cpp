@@ -26,7 +26,7 @@ PluginDetailsView::PluginDetailsView(const PluginSpec &plugin, QWidget *parent)
 	ui->licenseTextEdit->setPlainText(plugin.license());
 	ui->descriptionTextEdit->setPlainText(plugin.description());
 
-	for (const PluginDependency &dep : plugin.dependencies()) {
+	foreach (const PluginDependency &dep, plugin.dependencies()) {
 		QString dependItem = tr("%1 [%2]").arg(dep.name).arg(dep.version);
 		if (dep.type == PluginDependency::Optional)
 			dependItem.append(tr(", optional"));

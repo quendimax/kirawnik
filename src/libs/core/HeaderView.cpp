@@ -19,7 +19,7 @@ int HeaderView::s_objectCount = 0;
 QMap<QString, bool> HeaderView::s_showItems;
 AbstractHeaderItem HeaderView::s_movableItem;
 QList<HeaderView *> HeaderView::s_headerViews;
-QMenu *HeaderView::s_menu = nullptr;
+QMenu *HeaderView::s_menu = 0;
 QList<AbstractHeaderItem *> HeaderView::s_items;
 
 
@@ -403,7 +403,7 @@ void HeaderView::paintMovableSection(QPainter &painter)
 
 void HeaderView::updateAll()
 {
-	for (auto view : s_headerViews)
+	foreach (HeaderView *view, s_headerViews)
 		view->update();
 }
 
