@@ -52,7 +52,7 @@ template<class Interface> QList<Interface *> PluginManager::getPlugins() const
 {
 	QList<Interface *> resultList;
 
-	for (const auto &entry : m_plugins.values()) {
+	foreach (const PluginSpec &entry, m_plugins.values()) {
 		if (entry.state() == PluginSpec::Loaded)
 			if (Interface *inf = qobject_cast<Interface *>(entry.plugin()))
 				resultList.append(inf);

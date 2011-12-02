@@ -87,7 +87,7 @@ void OptionDialog::createListWidget()
 	m_listWidget->setIconSize(QSize(32, 32));
 	connect(m_listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(setCurrentOption(int)));
 
-	for (auto widget : m_optionWidgets) {
+	foreach (OptionWidget *widget, m_optionWidgets) {
 		m_listWidget->addItem(widget->createListWidgetItem());
 	}
 }

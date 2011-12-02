@@ -52,11 +52,11 @@ void PluginManager::getPluginList()
 	QStringList filters;
 	filters << "*.pluginspec";
 
-	for (const QString &path : m_pluginPaths) {
+	foreach (const QString &path, m_pluginPaths) {
 		QDir dir(path);
 		dir.setNameFilters(filters);
 
-		for (const QFileInfo &pluginSpecFile : dir.entryInfoList()) {
+		foreach (const QFileInfo &pluginSpecFile, dir.entryInfoList()) {
 			PluginSpec pluginSpec;
 			PluginSpecHandler handler(&pluginSpec);
 			QXmlSimpleReader reader;
@@ -181,7 +181,7 @@ bool PluginManager::checkPluginDependency(const QString &pluginName)
 	if (!m_plugins.contains(pluginName)) return false;
 
 	const PluginSpec &plugin = m_plugins[pluginName];
-	for (const PluginDependency &dependency : plugin.dependencies()) {
+	foreach (const PluginDependency &dependency, plugin.dependencies()) {
 		if (!checkPluginDependency(dependency.name))
 			return false;
 	}
@@ -197,7 +197,7 @@ void PluginManager::enablePluginDependency(const QString &pluginName)
 	plugin.m_willLoad = true;
 	emit pluginEnabled(pluginName, true);
 
-	for (const PluginDependency &dependency : plugin.dependencies())
+	foreach (const PluginDependency &dependency, plugin.dependencies())
 		enablePluginDependency(dependency.name);
 }
 
@@ -210,8 +210,8 @@ void PluginManager::disablePluginDependency(const QString &pluginName)
 	plugin.m_willLoad = false;
 	emit pluginEnabled(pluginName, false);
 
-	for (const PluginSpec &spec : m_plugins) {
-		for (const PluginDependency &dependency : spec.dependencies()) {
+	foreach (const PluginSpec &spec, m_plugins) {
+		foreach (const PluginDependency &dependency, spec.dependencies()) {
 			if (dependency.name == pluginName && dependency.type == PluginDependency::Required)
 				disablePluginDependency(spec.name());
 		}
