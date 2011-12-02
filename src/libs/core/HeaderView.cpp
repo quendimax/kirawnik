@@ -495,29 +495,13 @@ void HeaderView::writeSettings()
 }
 
 
-void HeaderView::sortItems()
+inline bool headerItemOffsetLess(const AbstractHeaderItem *it1, const AbstractHeaderItem *it2)
 {
-	if (s_items.size() > 1)
-		sortItems(0, s_items.size() - 1);
+	return it1->offset() < it2->offset();
 }
 
 
-void HeaderView::sortItems(int left, int right)
+void HeaderView::sortItems()
 {
-	int x = s_items[(left + right)/2]->offset();
-	int i = left;
-	int j = right;
-
-	do {
-		while (s_items[i]->offset() < x) i++;
-		while (x < s_items[j]->offset()) j--;
-		if (i <= j) {
-			qSwap(s_items[i], s_items[j]);
-			i++, j--;
-		}
-	}
-	while (i <= j);
-
-	if (left < j) sortItems(left, j);
-	if (i < right) sortItems(i, right);
+	qSort(s_items.begin(), s_items.end(), headerItemOffsetLess);
 }

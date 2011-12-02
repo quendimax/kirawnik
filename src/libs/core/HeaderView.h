@@ -70,7 +70,6 @@ private:
 	void writeSettings();
 
 	void sortItems();
-	void sortItems(int left, int right);
 
 private:
 	static QList<HeaderView *> s_headerViews;
