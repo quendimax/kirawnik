@@ -6,7 +6,7 @@ Section: comm
 Description: Dual panel file manager.
  Kirawnik is a dual-panel file manager for *nix-systems (may be and other).
  It uses Qt4-library.
-Depends: libc6 (>= 2.11.1), libstdc++6 (>= 4.4.3), libqtcore4 (>= 4.6), libqtgui4 (>= 4.6)
+Depends: libc6 (>= 2.11.1), libstdc++6 (>= 4.4.3), libqtcore4 (>= 4.6), libqtgui4 (>= 4.6), libqt4-xml (>= 4.6)
 Installed-Size: 431
 Priority: optional
 Origin: https://github.com/QuendiMax/kirawnik
