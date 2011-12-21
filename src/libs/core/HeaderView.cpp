@@ -25,7 +25,10 @@ QList<AbstractHeaderItem *> HeaderView::s_items;
 
 
 HeaderView::HeaderView(QWidget *parent)
-	: QWidget(parent)
+	: QWidget(parent),
+      m_headerState(HS_Free),
+      m_pressedItemId(AbstractHeaderItem::nothingId()),		// nothings is pressed
+      m_resizeItemIndex(-1)
 {
 	// have to be first
 	m_objectNumber = s_objectCount;
@@ -33,10 +36,6 @@ HeaderView::HeaderView(QWidget *parent)
 	Q_ASSERT(0 < s_objectCount && s_objectCount <= 2);
 
 	s_headerViews.append(this);
-
-	m_headerState = HS_Free;
-	m_pressedItemId = AbstractHeaderItem::nothingId();		// nothings is pressed
-	m_resizeItemIndex = -1;
 
 	QFontMetrics metrics(font());
 	setFixedHeight(metrics.height() + 8);
@@ -448,7 +447,8 @@ void HeaderView::readSettings()
 	QSettings *sets = kApp->settings();
 	sets->beginGroup("HeaderView");
 
-	m_sortingItemId = sets->value("SortingItemId." + QString::number(m_objectNumber), 0).toString();
+	m_sortingItemId = sets->value("SortingItemId." + QString::number(m_objectNumber),
+	                              AbstractHeaderItem::nothingId()).toString();
 	m_reverseSorting = sets->value("ReverseSorting." + QString::number(m_objectNumber), false).toBool();
 
 	if (s_objectCount == 1) {
