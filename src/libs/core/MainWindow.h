@@ -28,7 +28,7 @@ private:
 	void writeSettings();
 
 private:
-	FileSystemView *fsView;
+	FileSystemView *m_fsView;
 };
 
 

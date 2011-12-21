@@ -16,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	initMenuBar();
 
-	fsView = new FileSystemView;
-	setCentralWidget(fsView);
+	m_fsView = new FileSystemView;
+	setCentralWidget(m_fsView);
 
 	resize(640, 460);
 	readSettings();

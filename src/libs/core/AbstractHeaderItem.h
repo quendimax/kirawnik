@@ -24,6 +24,8 @@ public:
 public:
 	AbstractHeaderItem();
 
+	static const QString &nothingId();
+
 	inline QString id() const { return m_id; }
 	inline QString title() const { return m_title; }
 	inline QString description() const { return m_description; }

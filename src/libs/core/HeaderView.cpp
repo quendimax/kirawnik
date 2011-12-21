@@ -35,7 +35,7 @@ HeaderView::HeaderView(QWidget *parent)
 	s_headerViews.append(this);
 
 	m_headerState = HS_Free;
-	m_pressedItemId = "Nothing";		// nothings is pressed
+	m_pressedItemId = AbstractHeaderItem::nothingId();		// nothings is pressed
 	m_resizeItemIndex = -1;
 
 	QFontMetrics metrics(font());
@@ -153,7 +153,7 @@ void HeaderView::mouseReleaseEvent(QMouseEvent *e)
 		return;
 	}
 
-	if (m_pressedItemId != "Nothing" && m_headerState != HS_Moving) {
+	if (m_pressedItemId != AbstractHeaderItem::nothingId() && m_headerState != HS_Moving) {
 		int index = indexAt(e->pos());
 
 		if (s_items[index]->id() == m_pressedItemId) {
@@ -168,9 +168,9 @@ void HeaderView::mouseReleaseEvent(QMouseEvent *e)
 			emit sortingChanged(newSortingItemId, m_reverseSorting);
 		}
 	}
-	m_pressedItemId = "Nothing";
+	m_pressedItemId = AbstractHeaderItem::nothingId();
 	m_resizeItemIndex = -1;
-	s_movableItem.m_id = "Nothing";
+	s_movableItem.m_id = AbstractHeaderItem::nothingId();
 	m_headerState = HS_Free;
 
 	updateAll();
@@ -263,7 +263,7 @@ void HeaderView::paintEvent(QPaintEvent *)
 			paintSection(i, painter);
 	}
 
-	if (s_movableItem.id() != "Nothing") {
+	if (s_movableItem.id() != AbstractHeaderItem::nothingId()) {
 		paintMovableSection(painter);
 	}
 }
