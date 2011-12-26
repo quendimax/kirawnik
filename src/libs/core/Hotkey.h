@@ -1,12 +1,34 @@
 #ifndef __CORE_HOTKEY_H__
 #define __CORE_HOTKEY_H__
 
-
 #include <QKeySequence>
 
 
 class Hotkey
 {
+public:
+	enum Command {
+		CursorUp,
+		CursorDown,
+		CursorPageUp,
+		CursorPageDown,
+		CursorHome,
+		CursorEnd,
+
+		SelectItem,
+		SelectItemAndDown,
+		SelectItemAndUp,
+		SelectAll,
+		UnselectAll,
+
+		RenameUnderCursor,
+
+		CopyItems,
+		MoveItems,
+		MoveItemsToTrash,
+		DeleteItems
+	};
+
 public:
 	Hotkey(const QKeySequence &key1 = QKeySequence::UnknownKey, const QKeySequence &key2 = QKeySequence::UnknownKey);
 
@@ -24,5 +46,6 @@ private:
 	QKeySequence m_keySequence1;
 	QKeySequence m_keySequence2;
 };
+
 
 #endif //__CORE_HOTKEY_H__
