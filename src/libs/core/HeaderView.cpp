@@ -19,7 +19,7 @@ int HeaderView::s_objectCount = 0;
 QMap<QString, bool> HeaderView::s_showItems;
 AbstractHeaderItem HeaderView::s_movableItem;
 QList<HeaderView *> HeaderView::s_headerViews;
-QMenu *HeaderView::s_menu = 0;
+QMenu *HeaderView::s_menu = nullptr;
 QList<AbstractHeaderItem *> HeaderView::s_items;
 
 

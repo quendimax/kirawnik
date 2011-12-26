@@ -6,10 +6,10 @@
 #include "FileSystemView.h"
 
 
-FilePanel *FileSystemView::m_leftPanel = 0;
-FilePanel *FileSystemView::m_rightPanel = 0;
-FilePanel *FileSystemView::m_activePanel = 0;
-FilePanel *FileSystemView::m_inactivePanel = 0;
+FilePanel *FileSystemView::m_leftPanel = nullptr;
+FilePanel *FileSystemView::m_rightPanel = nullptr;
+FilePanel *FileSystemView::m_activePanel = nullptr;
+FilePanel *FileSystemView::m_inactivePanel = nullptr;
 
 
 FileSystemView::FileSystemView(QWidget *parent)
@@ -24,7 +24,7 @@ FileSystemView::FileSystemView(QWidget *parent)
 	barLayout->addWidget(new QPushButton("F5 Copy"));
 	barLayout->addWidget(new QPushButton("F6 Move"));
 	barLayout->addWidget(new QPushButton("F8 Remove"));
-	barLayout->addWidget(new QPushButton("Alt-F4 Exit"));
+	barLayout->addWidget(new QPushButton("F10 Exit"));
 	for (int i = 0; i < 7; i++)
 		barLayout->itemAt(i)->widget()->setFocusPolicy(Qt::NoFocus);
 

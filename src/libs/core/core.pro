@@ -20,6 +20,7 @@ HEADERS = \
 		FileSystemView.h \
 		FileView.h \
 		HeaderView.h \
+		Hotkey.h \
 		MainWindow.h
 
 SOURCES = \
@@ -29,4 +30,5 @@ SOURCES = \
 		FileSystemView.cpp \
 		FileView.cpp \
 		HeaderView.cpp \
+		Hotkey.cpp \
 		MainWindow.cpp

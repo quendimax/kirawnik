@@ -5,7 +5,7 @@ AbstractHeaderItem::AbstractHeaderItem()
     : m_id(nothingId()),
       m_title(QObject::tr("Unknown")),
       m_description(QObject::tr("I don't know :(")),
-      m_lessThan(0),
+	  m_lessThan(nullptr),
       m_offset(0),
       m_width(0)
 {}
