@@ -8,6 +8,7 @@ class Hotkey
 {
 public:
 	enum Command {
+		// FilePanel commands
 		CursorUp,
 		CursorDown,
 		CursorPageUp,
@@ -23,6 +24,8 @@ public:
 
 		RenameUnderCursor,
 
+		// FileSystem commands
+		RenameItems,
 		CopyItems,
 		MoveItems,
 		MoveItemsToTrash,

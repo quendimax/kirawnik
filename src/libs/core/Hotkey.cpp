@@ -2,8 +2,8 @@
 
 
 Hotkey::Hotkey(const QKeySequence &key1, const QKeySequence &key2)
-	: m_keySequence1(key1),
-	  m_keySequence2(key2)
+    : m_keySequence1(key1),
+      m_keySequence2(key2)
 {
 }
 
